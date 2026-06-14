@@ -23,10 +23,12 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import com.example.loancalcandroid.LoanCalcApplication
 import com.example.loancalcandroid.R
 import com.example.loancalcandroid.ui.common.FeatureCalculationProgress
 import com.example.loancalcandroid.ui.common.FeatureDateRow
@@ -44,9 +46,12 @@ import java.util.Date
 fun CompareScreen(
     loanId: Long,
     onBack: () -> Unit,
+    onPurchaseRequired: () -> Unit = {},
 ) {
     val viewModel: CompareViewModel = loanViewModel(loanId, ::CompareViewModel)
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
+    val licenseManager = (LocalContext.current.applicationContext as LoanCalcApplication).licenseManager
+    val isLicensed by licenseManager.isLicensed.collectAsStateWithLifecycle()
 
     LoanCalcScaffold(
         title = stringResource(R.string.menu_compare),
@@ -118,7 +123,13 @@ fun CompareScreen(
                 }
             } else {
                 Button(
-                    onClick = viewModel::calculate,
+                    onClick = {
+                        if (isLicensed) {
+                            viewModel.calculate()
+                        } else {
+                            onPurchaseRequired()
+                        }
+                    },
                     modifier = Modifier.fillMaxWidth(),
                 ) {
                     Text(stringResource(R.string.forecast_calculate).uppercase())

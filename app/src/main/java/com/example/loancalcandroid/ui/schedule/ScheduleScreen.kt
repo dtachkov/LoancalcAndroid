@@ -15,6 +15,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.RowScope
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
@@ -45,11 +46,13 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import android.widget.Toast
 import com.example.loancalcandroid.R
+import com.example.loancalcandroid.ui.common.AutoShrinkText
 import com.example.loancalcandroid.ui.common.LoanCalcScaffold
 import com.example.loancalcandroid.ui.loanViewModel
 import com.example.loancalcandroid.ui.theme.LoanBlueDark
@@ -60,6 +63,15 @@ import com.example.loancalcandroid.ui.theme.ScheduleRowExtra
 import com.example.loancalcandroid.ui.theme.ScheduleRowOdd
 import com.example.loancalcandroid.ui.theme.ScheduleRowSelected
 import com.example.loancalcandroid.util.Formatters
+
+private val BriefNumberColumnWidth = 40.dp
+private val BriefDummyColumnWidth = 50.dp
+private val BriefMinColumnWidth = 70.dp
+private val BriefDateMinColumnWidth = 96.dp
+private const val BriefDateColumnWeight = 1.45f
+private const val BriefAmountColumnWeight = 1f
+private val BriefCellStyle
+    @Composable get() = MaterialTheme.typography.bodySmall.copy(fontSize = 14.sp)
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -95,7 +107,7 @@ fun ScheduleScreen(
             }
             IconButton(
                 onClick = {
-                    viewModel.share { message ->
+                    viewModel.share(context) { message ->
                         Toast.makeText(context, message, Toast.LENGTH_LONG).show()
                     }
                 },
@@ -285,11 +297,18 @@ private fun BriefHeaderRow() {
             .background(LoanBlueDark)
             .padding(vertical = 8.dp),
     ) {
-        ScheduleHeaderCell(stringResource(R.string.schedule_col_number), 36.dp)
-        ScheduleHeaderCell(stringResource(R.string.schedule_brief_col_date), 0.dp, weight = 1f)
-        ScheduleHeaderCell(stringResource(R.string.schedule_brief_col_payment), 0.dp, weight = 1f)
-        ScheduleHeaderCell("", 40.dp)
-        ScheduleHeaderCell(stringResource(R.string.schedule_brief_col_balance), 0.dp, weight = 1f)
+        BriefHeaderCell(stringResource(R.string.schedule_col_number), BriefNumberColumnWidth)
+        BriefHeaderCell(
+            text = stringResource(R.string.schedule_brief_col_date),
+            weight = BriefDateColumnWeight,
+            minWidth = BriefDateMinColumnWidth,
+        )
+        BriefHeaderCell(
+            text = stringResource(R.string.schedule_brief_col_payment),
+            weight = BriefAmountColumnWeight,
+        )
+        BriefHeaderCell("", BriefDummyColumnWidth)
+        BriefHeaderCell(stringResource(R.string.schedule_brief_col_balance), weight = BriefAmountColumnWeight)
     }
     HorizontalDivider(color = LoanBlueDark, thickness = 2.dp)
 }
@@ -318,38 +337,18 @@ private fun BriefPaymentRow(
     onPaymentClick: (listIndex: Int, previousPaymentDateMillis: Long) -> Unit,
     previousPaymentDateMillis: Long,
 ) {
-    Row(
-        modifier = Modifier
-            .fillMaxWidth()
-            .background(rowBackground(row, isExtra = false))
-            .clickable { onPaymentClick(row.listIndex, previousPaymentDateMillis) }
-            .padding(vertical = 8.dp),
-        verticalAlignment = Alignment.CenterVertically,
+    BriefTableRow(
+        background = rowBackground(row, isExtra = false),
+        onClick = { onPaymentClick(row.listIndex, previousPaymentDateMillis) },
     ) {
-        ScheduleBodyCell(row.displayNumber, 36.dp, fontWeight = FontWeight.Bold)
-        Box(
-            modifier = Modifier.weight(1f),
-            contentAlignment = Alignment.CenterEnd,
-        ) {
-            Row(verticalAlignment = Alignment.CenterVertically) {
-                if (row.date.isWeekend()) {
-                    Image(
-                        painter = painterResource(R.drawable.ic_schedule_calendar),
-                        contentDescription = null,
-                        modifier = Modifier
-                            .padding(end = 4.dp)
-                            .size(18.dp),
-                    )
-                }
-                Text(
-                    text = Formatters.date(row.date),
-                    style = MaterialTheme.typography.bodySmall,
-                )
-            }
-        }
-        ScheduleBodyCell(Formatters.moneyFixed(row.total), 0.dp, weight = 1f)
-        Box(modifier = Modifier.width(40.dp))
-        ScheduleBodyCell(Formatters.moneyFixed(row.endBalance), 0.dp, weight = 1f)
+        BriefNumberCell(row.displayNumber)
+        BriefDateCell(
+            text = Formatters.date(row.date),
+            showWeekendIcon = row.date.isWeekend(),
+        )
+        BriefAmountCell(Formatters.moneyFixed(row.total))
+        Box(modifier = Modifier.width(BriefDummyColumnWidth))
+        BriefAmountCell(Formatters.moneyFixed(row.endBalance))
     }
 }
 
@@ -371,27 +370,15 @@ private fun BriefExtraRow(
         stringResource(R.string.schedule_extra_payment)
     }
 
-    Row(
-        modifier = Modifier
-            .fillMaxWidth()
-            .background(rowBackground(row, isExtra = true))
-            .clickable { onPaymentClick(row.listIndex, previousPaymentDateMillis) }
-            .padding(vertical = 8.dp),
-        verticalAlignment = Alignment.CenterVertically,
+    BriefTableRow(
+        background = rowBackground(row, isExtra = true),
+        onClick = { onPaymentClick(row.listIndex, previousPaymentDateMillis) },
     ) {
-        ScheduleBodyCell(row.displayNumber, 36.dp, fontWeight = FontWeight.Bold)
-        ScheduleBodyCell(typeLabel, 0.dp, weight = 1f, textAlign = TextAlign.End)
-        ScheduleBodyCell(amountText, 0.dp, weight = 1f)
-        Text(
-            text = Formatters.monthDay(row.date),
-            modifier = Modifier
-                .width(40.dp)
-                .padding(horizontal = 2.dp),
-            style = MaterialTheme.typography.labelSmall.copy(fontSize = 9.sp),
-            color = LoanTextSecondary,
-            textAlign = TextAlign.Center,
-        )
-        ScheduleBodyCell(Formatters.moneyFixed(row.endBalance), 0.dp, weight = 1f)
+        BriefNumberCell(row.displayNumber)
+        BriefLabelCell(typeLabel)
+        BriefAmountCell(amountText)
+        BriefExtraDateCell(Formatters.monthDay(row.date))
+        BriefAmountCell(Formatters.moneyFixed(row.endBalance))
     }
 }
 
@@ -518,6 +505,141 @@ private fun DetailedRateChangeRow(
 }
 
 @Composable
+private fun BriefTableRow(
+    background: Color,
+    onClick: () -> Unit,
+    content: @Composable RowScope.() -> Unit,
+) {
+    Row(
+        modifier = Modifier
+            .fillMaxWidth()
+            .background(background)
+            .clickable(onClick = onClick)
+            .padding(vertical = 8.dp),
+        verticalAlignment = Alignment.CenterVertically,
+        content = content,
+    )
+}
+
+@Composable
+private fun RowScope.BriefHeaderCell(
+    text: String,
+    width: androidx.compose.ui.unit.Dp = 0.dp,
+    weight: Float = 0f,
+    minWidth: androidx.compose.ui.unit.Dp = BriefMinColumnWidth,
+) {
+    Text(
+        text = text,
+        modifier = Modifier
+            .then(
+                if (weight > 0f) {
+                    Modifier
+                        .weight(weight)
+                        .widthIn(min = minWidth)
+                } else {
+                    Modifier.width(width)
+                },
+            )
+            .padding(horizontal = 4.dp),
+        style = MaterialTheme.typography.labelMedium.copy(
+            fontWeight = FontWeight.Bold,
+            color = Color.White,
+        ),
+        textAlign = TextAlign.Center,
+        maxLines = 1,
+        overflow = TextOverflow.Ellipsis,
+    )
+}
+
+@Composable
+private fun RowScope.BriefNumberCell(text: String) {
+    Text(
+        text = text,
+        modifier = Modifier
+            .width(BriefNumberColumnWidth)
+            .padding(horizontal = 4.dp),
+        style = BriefCellStyle.copy(fontWeight = FontWeight.Bold),
+        textAlign = TextAlign.Center,
+        maxLines = 1,
+    )
+}
+
+@Composable
+private fun RowScope.BriefDateCell(
+    text: String,
+    showWeekendIcon: Boolean = false,
+) {
+    Row(
+        modifier = Modifier
+            .weight(BriefDateColumnWeight)
+            .widthIn(min = BriefDateMinColumnWidth)
+            .padding(horizontal = 4.dp),
+        verticalAlignment = Alignment.CenterVertically,
+    ) {
+        if (showWeekendIcon) {
+            Image(
+                painter = painterResource(R.drawable.ic_schedule_calendar),
+                contentDescription = null,
+                modifier = Modifier
+                    .padding(end = 4.dp)
+                    .size(18.dp),
+            )
+        }
+        AutoShrinkText(
+            text = text,
+            modifier = Modifier.weight(1f),
+            style = BriefCellStyle,
+            textAlign = TextAlign.End,
+            minFontSize = 9.sp,
+        )
+    }
+}
+
+@Composable
+private fun RowScope.BriefLabelCell(text: String) {
+    Text(
+        text = text,
+        modifier = Modifier
+            .weight(BriefDateColumnWeight)
+            .widthIn(min = BriefDateMinColumnWidth)
+            .padding(horizontal = 4.dp),
+        style = BriefCellStyle,
+        textAlign = TextAlign.End,
+        maxLines = 1,
+        overflow = TextOverflow.Ellipsis,
+    )
+}
+
+@Composable
+private fun RowScope.BriefAmountCell(text: String) {
+    Text(
+        text = text,
+        modifier = Modifier
+            .weight(BriefAmountColumnWeight)
+            .widthIn(min = BriefMinColumnWidth)
+            .padding(horizontal = 4.dp),
+        style = BriefCellStyle,
+        textAlign = TextAlign.Center,
+        maxLines = 1,
+        overflow = TextOverflow.Ellipsis,
+    )
+}
+
+@Composable
+private fun RowScope.BriefExtraDateCell(text: String) {
+    Text(
+        text = text,
+        modifier = Modifier
+            .width(BriefDummyColumnWidth)
+            .padding(horizontal = 4.dp),
+        style = BriefCellStyle.copy(fontSize = 9.sp),
+        color = LoanTextSecondary,
+        textAlign = TextAlign.Center,
+        maxLines = 1,
+    )
+}
+
+@Composable
 private fun ScheduleSummaryBlock(summary: ScheduleSummary) {
     HorizontalDivider()
     Row(
@@ -618,8 +740,8 @@ private fun RowScope.ScheduleBodyCell(
 
 private fun rowBackground(row: ScheduleRow, isExtra: Boolean): Color {
     return when {
+        isExtra && !row.isCurrent -> ScheduleRowExtra
         row.isCurrent -> ScheduleRowSelected
-        isExtra -> ScheduleRowExtra
         row.isOdd -> ScheduleRowOdd
         else -> LoanCardSurface
     }

@@ -1,8 +1,9 @@
 package com.example.loancalcandroid.util
 
+import android.app.Activity
+import android.content.ClipData
 import android.content.Context
 import android.content.Intent
-import android.content.pm.PackageManager
 import androidx.core.content.FileProvider
 import com.example.loancalcandroid.BuildConfig
 import com.example.loancalcandroid.R
@@ -39,34 +40,27 @@ object ShareScheduleUtil {
 
     private fun startShareActivity(context: Context, loan: Loan, filePath: String) {
         val file = File(filePath)
+        val authority = "${BuildConfig.APPLICATION_ID}.fileprovider"
+        val fileUri = FileProvider.getUriForFile(context, authority, file)
+
         val sendIntent = Intent(Intent.ACTION_SEND).apply {
-            type = "text/plain"
+            type = "text/html"
             putExtra(
                 Intent.EXTRA_SUBJECT,
                 "${context.getString(R.string.share_mail_title)} ${loan.title.orEmpty()}",
             )
-            val fileUri = FileProvider.getUriForFile(
-                context,
-                "${BuildConfig.APPLICATION_ID}.fileprovider",
-                file,
-            )
             putExtra(Intent.EXTRA_STREAM, fileUri)
+            clipData = ClipData.newRawUri("", fileUri)
             addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
+        }
 
-            val resInfoList = context.packageManager.queryIntentActivities(
-                this,
-                PackageManager.MATCH_DEFAULT_ONLY,
-            )
-            for (resolveInfo in resInfoList) {
-                val packageName = resolveInfo.activityInfo.packageName
-                context.grantUriPermission(
-                    packageName,
-                    fileUri,
-                    Intent.FLAG_GRANT_READ_URI_PERMISSION,
-                )
+        val chooser = Intent.createChooser(sendIntent, context.getString(R.string.menu_share)).apply {
+            addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
+            if (context !is Activity) {
+                addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
             }
         }
-        context.startActivity(Intent.createChooser(sendIntent, context.getString(R.string.menu_share)))
+        context.startActivity(chooser)
     }
 
     private fun saveHtml(context: Context, loanId: Long, html: String): String? {

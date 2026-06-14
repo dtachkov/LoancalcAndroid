@@ -18,8 +18,12 @@ object Route {
     const val BEST_DATE = "loans/{loanId}/best-date"
     const val TAX = "loans/{loanId}/tax"
     const val COMPARE = "loans/{loanId}/compare"
+    const val SUM_BY_PAYMENT = "sum-by-payment"
     const val OFFERS = "offers"
     const val OFFER_DETAIL = "offers/{offerId}"
+    const val PURCHASE = "purchase/{featureTitle}"
+
+    const val ARG_FEATURE_TITLE = "featureTitle"
 
     const val ARG_LOAN_ID = "loanId"
     const val ARG_EXTRA_ID = "extraId"
@@ -55,4 +59,5 @@ object Route {
     fun tax(loanId: Long) = "loans/$loanId/tax"
     fun compare(loanId: Long) = "loans/$loanId/compare"
     fun offerDetail(offerId: Long) = "offers/$offerId"
+    fun purchase(featureTitle: String) = "purchase/${android.net.Uri.encode(featureTitle)}"
 }

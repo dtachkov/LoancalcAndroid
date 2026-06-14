@@ -40,6 +40,8 @@ class HomeViewModel(
     private val _uiState = MutableStateFlow(HomeUiState())
     val uiState: StateFlow<HomeUiState> = _uiState.asStateFlow()
 
+    private var hasResolvedInitialPager = false
+
     init {
         viewModelScope.launch {
             loanRepository.observeLoans().collect { loans ->
@@ -96,6 +98,14 @@ class HomeViewModel(
         } else {
             _uiState.update { it.copy(selectedLoanId = loanId) }
         }
+    }
+
+    fun globalFeatureLoanId(): Long? {
+        val loans = _uiState.value.loansRaw
+        if (loans.isEmpty()) return null
+        val lastId = chestPreferences.getLastCalculatedLoanId()
+        if (lastId > 0 && loans.any { it.id == lastId }) return lastId
+        return loans.first().id
     }
 
     fun duplicateSelectedLoan() {
@@ -171,18 +181,28 @@ class HomeViewModel(
         previousPagerIndex: Int,
         previousSelectedId: Long?,
     ): Int {
-        if (loans.isEmpty()) return 0
+        if (loans.isEmpty()) {
+            hasResolvedInitialPager = false
+            return 0
+        }
+
         if (previousSelectedId != null) {
             val loanIndex = loans.indexOfFirst { it.id == previousSelectedId }
             if (loanIndex >= 0) return loanIndex + 1
         }
-        if (data.settingsPreferences.isLoadLastLoanAtStart()) {
-            val lastLoanId = chestPreferences.getLastCalculatedLoanId()
-            if (lastLoanId > 0) {
-                val loanIndex = loans.indexOfFirst { it.id == lastLoanId }
-                if (loanIndex >= 0) return loanIndex + 1
+
+        if (!hasResolvedInitialPager) {
+            hasResolvedInitialPager = true
+            if (data.settingsPreferences.isLoadLastLoanAtStart()) {
+                val lastLoanId = chestPreferences.getLastCalculatedLoanId()
+                if (lastLoanId > 0) {
+                    val loanIndex = loans.indexOfFirst { it.id == lastLoanId }
+                    if (loanIndex >= 0) return loanIndex + 1
+                }
             }
+            return 1
         }
+
         return previousPagerIndex.coerceIn(0, loans.size)
     }
 

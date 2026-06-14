@@ -1,6 +1,7 @@
 package com.example.loancalcandroid.ui.schedule
 
 import android.app.Application
+import android.content.Context
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.loancalcandroid.util.Formatters
@@ -57,14 +58,14 @@ class ScheduleViewModel(
         _uiState.update { it.copy(showPreviousPayments = !it.showPreviousPayments) }
     }
 
-    fun share(onError: (String) -> Unit) {
+    fun share(context: Context, onError: (String) -> Unit) {
         if (loanId == 0L) {
             onError("Сначала сохраните кредит")
             return
         }
         viewModelScope.launch {
             try {
-                ShareScheduleUtil.share(getApplication(), loanId)
+                ShareScheduleUtil.share(context, loanId)
             } catch (e: Exception) {
                 onError(CalculationErrors.format(e))
             }

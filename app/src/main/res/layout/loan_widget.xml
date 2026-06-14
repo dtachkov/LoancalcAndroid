@@ -1,0 +1,80 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/widget_root"
+    android:layout_width="match_parent"
+    android:layout_height="70dp"
+    android:clickable="true"
+    android:orientation="vertical">
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="@drawable/bg_widget">
+
+        <TextView
+            android:id="@+id/tv_loan_title"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentStart="true"
+            android:layout_alignParentTop="true"
+            android:layout_marginStart="@dimen/margin_widget_default"
+            android:layout_marginTop="@dimen/margin_widget_default"
+            android:textColor="#000"
+            tools:text="Ипотека" />
+
+        <TextView
+            android:id="@+id/tv_payment_date"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerVertical="true"
+            android:layout_marginStart="@dimen/margin_widget_default"
+            android:layout_marginTop="2dp"
+            android:textColor="#4e8efa"
+            tools:text="29 ноября 2013 г." />
+
+        <TextView
+            android:id="@+id/tv_info"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentStart="true"
+            android:layout_alignParentBottom="true"
+            android:layout_marginStart="@dimen/margin_widget_default"
+            android:layout_marginBottom="@dimen/margin_widget_default"
+            android:text="@string/widget_payment_label"
+            android:textColor="#000" />
+
+        <TextView
+            android:id="@+id/tv_monthly_payment"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_alignParentEnd="true"
+            android:layout_centerVertical="true"
+            android:layout_marginEnd="@dimen/margin_widget_default"
+            android:gravity="end"
+            android:textAppearance="?android:attr/textAppearanceLarge"
+            android:textColor="#4e8efa"
+            tools:text="25 000" />
+
+        <RelativeLayout
+            android:id="@+id/widget_loading"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentStart="true"
+            android:layout_alignParentTop="true"
+            android:layout_alignParentEnd="true"
+            android:layout_alignParentBottom="true"
+            android:background="#cacaca"
+            android:visibility="invisible">
+
+            <TextView
+                android:id="@+id/tv_widget_link"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_centerInParent="true"
+                android:gravity="center"
+                android:text="@string/widget_select_loan"
+                android:textAppearance="?android:attr/textAppearanceLarge" />
+        </RelativeLayout>
+    </RelativeLayout>
+</LinearLayout>

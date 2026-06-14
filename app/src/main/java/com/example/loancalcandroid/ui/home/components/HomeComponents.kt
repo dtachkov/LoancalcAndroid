@@ -33,7 +33,9 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import com.example.loancalcandroid.R
+import com.example.loancalcandroid.ui.common.AutoShrinkText
 import com.example.loancalcandroid.ui.theme.LoanBlueDark
 import com.example.loancalcandroid.ui.theme.LoanBlueEnd
 import com.example.loancalcandroid.ui.theme.LoanBlueStart
@@ -112,18 +114,34 @@ fun LoanCardStat(
     label: String,
     value: String,
     modifier: Modifier = Modifier,
+    shrinkLabel: Boolean = false,
 ) {
     Column(modifier = modifier) {
-        Text(
-            text = label,
-            style = MaterialTheme.typography.labelMedium,
-            color = Color.White.copy(alpha = 0.85f),
-        )
+        if (shrinkLabel) {
+            AutoShrinkText(
+                text = label,
+                style = MaterialTheme.typography.labelMedium.copy(
+                    color = Color.White.copy(alpha = 0.85f),
+                ),
+                minFontSize = 8.sp,
+                maxLines = 1,
+            )
+        } else {
+            Text(
+                text = label,
+                style = MaterialTheme.typography.labelMedium,
+                color = Color.White.copy(alpha = 0.85f),
+                maxLines = 1,
+                overflow = TextOverflow.Ellipsis,
+            )
+        }
         Text(
             text = value,
             style = MaterialTheme.typography.titleMedium,
             color = Color.White,
             fontWeight = FontWeight.SemiBold,
+            maxLines = 1,
+            overflow = TextOverflow.Ellipsis,
         )
     }
 }

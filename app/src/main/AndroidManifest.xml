@@ -9,6 +9,8 @@
     <uses-permission android:name="android.permission.POST_NOTIFICATIONS" />
     <uses-permission android:name="android.permission.SCHEDULE_EXACT_ALARM" />
 
+    <uses-permission android:name="com.android.vending.BILLING" />
+
     <application
         android:name=".LoanCalcApplication"
         android:allowBackup="true"
@@ -20,6 +22,13 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.LoanCalcAndroid"
         tools:targetApi="31">
+        <meta-data
+            android:name="console_app_id_value"
+            android:value="@string/console_application_id" />
+        <meta-data
+            android:name="sdk_pay_scheme_value"
+            android:value="loancalcscheme" />
+
         <activity
             android:name=".MainActivity"
             android:exported="true"
@@ -30,6 +39,14 @@
                 <action android:name="android.intent.action.MAIN" />
 
                 <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+            <intent-filter>
+                <action android:name="android.intent.action.VIEW" />
+
+                <category android:name="android.intent.category.DEFAULT" />
+                <category android:name="android.intent.category.BROWSABLE" />
+
+                <data android:scheme="loancalcscheme" />
             </intent-filter>
         </activity>
 
@@ -56,6 +73,44 @@
                 <action android:name="ru.kredit.calculator.DISMISS_NOTIFICATION" />
             </intent-filter>
         </receiver>
+
+        <activity
+            android:name=".widget.WidgetConfigActivity"
+            android:allowTaskReparenting="false"
+            android:exported="false"
+            android:taskAffinity=""
+            android:theme="@style/Theme.LoanCalcAndroid">
+            <intent-filter>
+                <action android:name="android.appwidget.action.APPWIDGET_CONFIGURE" />
+            </intent-filter>
+        </activity>
+
+        <receiver
+            android:name=".widget.LoanWidgetProvider"
+            android:exported="false"
+            android:label="@string/app_name">
+            <intent-filter>
+                <action android:name="android.appwidget.action.APPWIDGET_UPDATE" />
+            </intent-filter>
+            <meta-data
+                android:name="android.appwidget.provider"
+                android:resource="@xml/widget_provider" />
+        </receiver>
+
+        <receiver
+            android:name=".widget.ScheduleWidgetsUpdateReceiver"
+            android:exported="false">
+            <intent-filter>
+                <action android:name="android.intent.action.TIME_SET" />
+                <action android:name="android.intent.action.TIMEZONE_CHANGED" />
+                <action android:name="android.intent.action.BOOT_COMPLETED" />
+                <action android:name="android.intent.action.MY_PACKAGE_REPLACED" />
+            </intent-filter>
+        </receiver>
+
+        <service
+            android:name=".widget.WidgetDailyUpdateService"
+            android:exported="false" />
 
         <provider
             android:name="androidx.core.content.FileProvider"

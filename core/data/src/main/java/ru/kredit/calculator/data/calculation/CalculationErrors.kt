@@ -4,6 +4,10 @@ import com.zoom.loancalc.ExtraForecastException
 import com.zoom.loancalc.InfiniteLoanException
 
 object CalculationErrors {
+    fun isInfiniteLoan(error: Throwable): Boolean = error is InfiniteLoanException
+
+    fun isExtraForecastError(error: Throwable): Boolean = error is ExtraForecastException
+
     fun format(e: Throwable): String = when (e) {
         is ExtraForecastException -> {
             val details = e.numbers?.joinToString(", ").orEmpty()

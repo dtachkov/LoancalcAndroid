@@ -35,20 +35,17 @@ object LoanPresentationMapper {
     ): AllLoansSummaryUiModel {
         val totalAmount = loans.sumOf { it.amount.toDouble() }
         val totalDebt = loans.sumOf { loan ->
-            calculations[loan.id]?.owingAmount ?: estimateDebt(loan).toDouble()
+            calculations[loan.id]?.owingAmount ?: 0.0
         }
-        val nearest = loans.mapNotNull { loan ->
-            val calculation = calculations[loan.id] ?: return@mapNotNull null
-            val paymentDate = calculation.currentPaymentDate ?: return@mapNotNull null
-            paymentDate to calculation.currentPayment
-        }.minByOrNull { it.first.time }
+        val paymentsThisMonth = loans.sumOf { loan ->
+            calculations[loan.id]?.currentPayment ?: 0.0
+        }
 
         return AllLoansSummaryUiModel(
             loansCount = loans.size,
             totalAmount = Formatters.money(totalAmount),
             totalDebt = Formatters.money(totalDebt),
-            nearestPaymentDate = nearest?.first?.let(Formatters::shortDate),
-            nearestPaymentAmount = nearest?.second?.let(Formatters::money),
+            paymentsThisMonth = Formatters.money(paymentsThisMonth),
         )
     }
 
@@ -84,21 +81,6 @@ object LoanPresentationMapper {
             extrasCount = earlyExtras,
             forecastEnabled = loan.isForecastActive,
         )
-    }
-
-    private fun estimateDebt(loan: Loan): Float {
-        val monthlyPayment = effectiveMonthlyPayment(loan)
-        val monthsPaid = estimateMonthsPaid(loan)
-        val paidPrincipal = minOf(loan.amount, monthlyPayment * monthsPaid * 0.55f)
-        return max(0f, loan.amount - paidPrincipal)
-    }
-
-    private fun effectiveMonthlyPayment(loan: Loan): Float {
-        if (loan.monthlyPayment > 0f) return loan.monthlyPayment
-        val monthlyRate = loan.rate / 100f / 12f
-        if (monthlyRate <= 0f) return loan.amount / max(loan.term, 1)
-        val factor = Math.pow((1 + monthlyRate).toDouble(), loan.term.toDouble()).toFloat()
-        return loan.amount * monthlyRate * factor / (factor - 1f)
     }
 
     private fun dayOfMonth(date: Date?): Int {

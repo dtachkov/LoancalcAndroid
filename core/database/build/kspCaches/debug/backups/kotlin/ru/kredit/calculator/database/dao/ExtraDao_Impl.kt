@@ -140,6 +140,26 @@ public class ExtraDao_Impl(
     __updateAdapterOfExtraEntity.handle(_connection, extra)
   }
 
+  public override fun observeCount(): Flow<Int> {
+    val _sql: String = "SELECT COUNT(*) FROM extras"
+    return createFlow(__db, false, arrayOf("extras")) { _connection ->
+      val _stmt: SQLiteStatement = _connection.prepare(_sql)
+      try {
+        val _result: Int
+        if (_stmt.step()) {
+          val _tmp: Int
+          _tmp = _stmt.getLong(0).toInt()
+          _result = _tmp
+        } else {
+          _result = 0
+        }
+        _result
+      } finally {
+        _stmt.close()
+      }
+    }
+  }
+
   public override fun observeByLoanId(loanId: Long): Flow<List<ExtraEntity>> {
     val _sql: String = "SELECT * FROM extras WHERE loanId = ? ORDER BY _id ASC"
     return createFlow(__db, false, arrayOf("extras")) { _connection ->

@@ -12,6 +12,11 @@ import ru.kredit.calculator.database.entity.ExtraEntity
 @Dao
 interface ExtraDao {
     @Query(
+        "SELECT COUNT(*) FROM ${DatabaseContract.ExtraColumns.TABLE_NAME}"
+    )
+    fun observeCount(): Flow<Int>
+
+    @Query(
         "SELECT * FROM ${DatabaseContract.ExtraColumns.TABLE_NAME} " +
             "WHERE ${DatabaseContract.ExtraColumns.LOAN_ID} = :loanId " +
             "ORDER BY ${DatabaseContract.ExtraColumns.ID} ASC"

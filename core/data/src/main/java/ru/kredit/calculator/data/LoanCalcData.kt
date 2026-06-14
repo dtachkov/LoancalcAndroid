@@ -5,6 +5,8 @@ import kotlinx.coroutines.Dispatchers
 import ru.kredit.calculator.data.calculation.FeatureCalculators
 import ru.kredit.calculator.data.calculation.LoanCalculator
 import ru.kredit.calculator.data.network.OffersApiFactory
+import ru.kredit.calculator.data.network.WebLoanApiFactory
+import ru.kredit.calculator.data.preferences.ApplicationReviewPreferences
 import ru.kredit.calculator.data.preferences.ChestPreferences
 import ru.kredit.calculator.data.preferences.SettingsPreferences
 import ru.kredit.calculator.data.preferences.ShownNotificationsPreferences
@@ -12,6 +14,7 @@ import ru.kredit.calculator.data.repository.ExtraRepository
 import ru.kredit.calculator.data.repository.ImportExportRepository
 import ru.kredit.calculator.data.repository.LoanRepository
 import ru.kredit.calculator.data.repository.OfferRepository
+import ru.kredit.calculator.data.repository.WebLoanImportRepository
 import ru.kredit.calculator.database.LoancalcDatabase
 
 class LoanCalcData private constructor(
@@ -20,8 +23,10 @@ class LoanCalcData private constructor(
     val extraRepository: ExtraRepository,
     val offerRepository: OfferRepository,
     val importExportRepository: ImportExportRepository,
+    val webLoanImportRepository: WebLoanImportRepository,
     val settingsPreferences: SettingsPreferences,
     val chestPreferences: ChestPreferences,
+    val applicationReviewPreferences: ApplicationReviewPreferences,
     val shownNotificationsPreferences: ShownNotificationsPreferences,
     val loanCalculator: LoanCalculator,
     val featureCalculators: FeatureCalculators,
@@ -65,6 +70,12 @@ class LoanCalcData private constructor(
                 extraRepository = extraRepository,
                 ioDispatcher = ioDispatcher,
             )
+            val webLoanImportRepository = WebLoanImportRepository(
+                api = WebLoanApiFactory.create(),
+                loanRepository = loanRepository,
+                extraRepository = extraRepository,
+                ioDispatcher = ioDispatcher,
+            )
 
             val loanCalculator = LoanCalculator()
 
@@ -74,8 +85,10 @@ class LoanCalcData private constructor(
                 extraRepository = extraRepository,
                 offerRepository = offerRepository,
                 importExportRepository = importExportRepository,
+                webLoanImportRepository = webLoanImportRepository,
                 settingsPreferences = SettingsPreferences(context),
                 chestPreferences = ChestPreferences(context, buildType),
+                applicationReviewPreferences = ApplicationReviewPreferences(context),
                 shownNotificationsPreferences = ShownNotificationsPreferences(context),
                 loanCalculator = loanCalculator,
                 featureCalculators = FeatureCalculators(loanCalculator),

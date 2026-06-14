@@ -10,8 +10,11 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.ui.Modifier
 import com.example.loancalcandroid.navigation.LoanCalcNavGraph
 import com.example.loancalcandroid.notification.NotificationActions
+import com.example.loancalcandroid.review.ReviewRequester
 import com.example.loancalcandroid.ui.theme.LoanCalcAndroidTheme
 import ru.kredit.calculator.data.LoanCalcData
+import ru.rustore.sdk.pay.RuStorePayClient
+import ru.rustore.sdk.pay.model.SdkTheme
 import java.util.Date
 
 class MainActivity : ComponentActivity() {
@@ -19,7 +22,11 @@ class MainActivity : ComponentActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        if (savedInstanceState != null) {
+            RuStorePayClient.instance.getIntentInteractor().proceedIntent(intent, SdkTheme.LIGHT)
+        }
         handleNotificationIntent(intent)
+        ReviewRequester.maybeRequestReview(this)
         enableEdgeToEdge()
         setContent {
             LoanCalcAndroidTheme {
@@ -35,6 +42,7 @@ class MainActivity : ComponentActivity() {
     override fun onNewIntent(intent: Intent) {
         super.onNewIntent(intent)
         setIntent(intent)
+        RuStorePayClient.instance.getIntentInteractor().proceedIntent(intent, SdkTheme.LIGHT)
         handleNotificationIntent(intent)
     }
 

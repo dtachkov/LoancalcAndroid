@@ -34,11 +34,15 @@ import com.example.loancalcandroid.ui.settings.SettingsScreen
 import com.example.loancalcandroid.ui.home.HomeScreen
 import com.example.loancalcandroid.ui.home.HomeViewModel
 import com.example.loancalcandroid.ui.loan.LoanEditorScreen
+import com.example.loancalcandroid.billing.navigateToPurchase
+import com.example.loancalcandroid.billing.navigateWithLicenseCheck
 import com.example.loancalcandroid.ui.offers.OfferDetailScreen
+import com.example.loancalcandroid.ui.purchase.PurchaseScreen
 import com.example.loancalcandroid.ui.offers.OffersScreen
 import com.example.loancalcandroid.ui.requisites.RequisitesScreen
 import com.example.loancalcandroid.ui.schedule.SchedulePaymentDetailScreen
 import com.example.loancalcandroid.ui.schedule.ScheduleScreen
+import com.example.loancalcandroid.ui.sumbypayment.SumByPaymentScreen
 import com.example.loancalcandroid.ui.tax.TaxScreen
 import ru.kredit.calculator.data.model.ExtraType
 
@@ -70,7 +74,12 @@ fun LoanCalcNavGraph(
                 onSettingsClick = { navController.navigate(Route.SETTINGS) },
                 onAddLoanClick = { navController.navigate(Route.ADD_LOAN) },
                 onEditLoanClick = { loanId -> navController.navigate(Route.editLoan(loanId)) },
-                onEarlyPaymentClick = { loanId -> navController.navigate(Route.extraForm(loanId)) },
+                onEarlyPaymentClick = { loanId ->
+                    navController.navigateWithLicenseCheck(
+                        featureTitleRes = R.string.feature_extra_payments,
+                        destinationRoute = Route.extraForm(loanId),
+                    )
+                },
                 onScheduleClick = { loanId -> navController.navigate(Route.schedule(loanId)) },
                 onRequisitesClick = { loanId -> navController.navigate(Route.requisites(loanId)) },
                 onExtrasClick = { loanId -> navController.navigate(Route.extrasList(loanId)) },
@@ -78,7 +87,12 @@ fun LoanCalcNavGraph(
                 onBestDateClick = { loanId -> navController.navigate(Route.bestDate(loanId)) },
                 onTaxClick = { loanId -> navController.navigate(Route.tax(loanId)) },
                 onCompareClick = { loanId -> navController.navigate(Route.compare(loanId)) },
+                onSumByPaymentClick = { navController.navigate(Route.SUM_BY_PAYMENT) },
             )
+        }
+
+        composable(Route.SUM_BY_PAYMENT) {
+            SumByPaymentScreen(onBack = { navController.popBackStack() })
         }
 
         composable(Route.SETTINGS) {
@@ -88,6 +102,23 @@ fun LoanCalcNavGraph(
                 onHelpClick = { navController.navigate(Route.helpTopic(Route.HELP_TOPIC_APP)) },
                 onVoteClick = { navController.navigate(Route.helpTopic(Route.HELP_TOPIC_VOTE)) },
                 onExtraTypesHelpClick = { navController.navigate(Route.helpTopic(Route.HELP_TOPIC_EXTRA_TYPES)) },
+                onPremiumClick = {
+                    navController.navigateToPurchase(R.string.feature_premium)
+                },
+            )
+        }
+
+        composable(
+            route = Route.PURCHASE,
+            arguments = listOf(navArgument(Route.ARG_FEATURE_TITLE) { type = NavType.StringType }),
+        ) { backStackEntry ->
+            val featureTitle = android.net.Uri.decode(
+                backStackEntry.arguments?.getString(Route.ARG_FEATURE_TITLE).orEmpty(),
+            )
+            PurchaseScreen(
+                featureTitle = featureTitle,
+                onBack = { navController.popBackStack() },
+                onPurchased = { navController.popBackStack() },
             )
         }
 
@@ -136,7 +167,12 @@ fun LoanCalcNavGraph(
             ScheduleScreen(
                 loanId = loanId,
                 onBack = { navController.popBackStack() },
-                onAddExtra = { navController.navigate(Route.extraForm(loanId)) },
+                onAddExtra = {
+                    navController.navigateWithLicenseCheck(
+                        featureTitleRes = R.string.feature_extra_payments,
+                        destinationRoute = Route.extraForm(loanId),
+                    )
+                },
                 onHelp = { navController.navigate(Route.helpTopic(Route.HELP_TOPIC_SCHEDULE)) },
                 onPaymentClick = { listIndex, prevDateMillis ->
                     navController.navigate(Route.schedulePayment(loanId, listIndex, prevDateMillis))
@@ -209,7 +245,12 @@ fun LoanCalcNavGraph(
             ExtrasTabsScreen(
                 loanId = loanId,
                 onBack = { navController.popBackStack() },
-                onAddExtra = { category -> navController.navigate(Route.extraForm(loanId, category)) },
+                onAddExtra = { category ->
+                    navController.navigateWithLicenseCheck(
+                        featureTitleRes = R.string.feature_extra_payments,
+                        destinationRoute = Route.extraForm(loanId, category),
+                    )
+                },
                 onEditExtra = { extraId -> navController.navigate(Route.editExtra(loanId, extraId)) },
                 onBestDateClick = { navController.navigate(Route.bestDate(loanId)) },
             )
@@ -305,14 +346,18 @@ fun LoanCalcNavGraph(
             BestDateScreen(
                 loanId = loanId,
                 onBack = { navController.popBackStack() },
+                onPurchaseRequired = {
+                    navController.navigateToPurchase(R.string.feature_best_date)
+                },
                 onAddExtra = { amount, dateMillis, extraType ->
                     navController.currentBackStackEntry?.savedStateHandle?.apply {
                         set(Route.ARG_PREFILL_AMOUNT, amount)
                         set(Route.ARG_PREFILL_DATE_MILLIS, dateMillis)
                         set(Route.ARG_PREFILL_EXTRA_TYPE, extraType)
                     }
-                    navController.navigate(
-                        Route.extraForm(
+                    navController.navigateWithLicenseCheck(
+                        featureTitleRes = R.string.feature_extra_payments,
+                        destinationRoute = Route.extraForm(
                             loanId = loanId,
                             category = ExtraCategory.EARLY,
                         ),
@@ -334,7 +379,13 @@ fun LoanCalcNavGraph(
             arguments = listOf(navArgument(Route.ARG_LOAN_ID) { type = NavType.LongType }),
         ) { backStackEntry ->
             val loanId = backStackEntry.arguments?.getLong(Route.ARG_LOAN_ID) ?: return@composable
-            CompareScreen(loanId = loanId, onBack = { navController.popBackStack() })
+            CompareScreen(
+                loanId = loanId,
+                onBack = { navController.popBackStack() },
+                onPurchaseRequired = {
+                    navController.navigateToPurchase(R.string.feature_best_loan)
+                },
+            )
         }
 
         composable(Route.OFFERS) {

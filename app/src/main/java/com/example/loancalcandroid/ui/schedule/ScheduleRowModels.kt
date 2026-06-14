@@ -46,8 +46,10 @@ object ScheduleRowsGenerator {
         var odd = false
         var prevYear = 0
         var listIndex = 0
+        var rowNumber = 0
 
         for (payment in payments) {
+            rowNumber++
             odd = !odd
             val calendar = Calendar.getInstance().apply { time = payment.date }
             val year = calendar.get(Calendar.YEAR)
@@ -74,7 +76,7 @@ object ScheduleRowsGenerator {
                 displayNumber = "+"
             } else {
                 type = ScheduleRowType.PAYMENT
-                displayNumber = (payment.index - numberCorrection).toString()
+                displayNumber = (rowNumber - numberCorrection).toString()
             }
 
             rows += ScheduleRow(

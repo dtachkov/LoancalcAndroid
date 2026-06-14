@@ -100,6 +100,10 @@ class ExtraRepository(
     private val ioDispatcher: CoroutineDispatcher,
 ) {
 
+    fun observeExtrasChanges(): Flow<Int> {
+        return extraDao.observeCount()
+    }
+
     fun observeExtras(loanId: Long): Flow<List<Extra>> {
         return extraDao.observeByLoanId(loanId).map { extras -> extras.map { it.toDomain() } }
     }

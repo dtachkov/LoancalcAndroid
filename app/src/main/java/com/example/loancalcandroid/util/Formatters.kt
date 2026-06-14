@@ -82,6 +82,10 @@ object Formatters {
         return yearFormat.format(date)
     }
 
+    fun currentMonthName(locale: Locale = Locale.getDefault()): String {
+        return SimpleDateFormat("LLLL", locale).format(Date())
+    }
+
     fun parseInt(text: String): Int {
         val normalized = text.trim()
         if (normalized.isBlank()) return 0

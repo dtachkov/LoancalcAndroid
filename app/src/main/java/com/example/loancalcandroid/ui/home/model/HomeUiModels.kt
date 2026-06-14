@@ -15,8 +15,7 @@ data class AllLoansSummaryUiModel(
     val loansCount: Int,
     val totalAmount: String,
     val totalDebt: String,
-    val nearestPaymentDate: String?,
-    val nearestPaymentAmount: String?,
+    val paymentsThisMonth: String,
 )
 
 data class LoanDetailsUiModel(

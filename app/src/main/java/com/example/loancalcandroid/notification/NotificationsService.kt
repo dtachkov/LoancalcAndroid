@@ -5,6 +5,7 @@ import android.content.Intent
 import android.os.IBinder
 import android.os.PowerManager
 import kotlinx.coroutines.runBlocking
+import com.example.loancalcandroid.LoanCalcApplication
 import ru.kredit.calculator.data.LoanCalcData
 import ru.kredit.calculator.data.calculation.LoanCalculationResult
 import ru.kredit.calculator.data.calculation.PaymentSummary
@@ -15,6 +16,10 @@ class NotificationsService : Service() {
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
         val data = LoanCalcData.get()
         if (!data.settingsPreferences.areNotificationsEnabled()) {
+            stopSelf(startId)
+            return START_NOT_STICKY
+        }
+        if (!(application as LoanCalcApplication).licenseManager.isAppPurchased()) {
             stopSelf(startId)
             return START_NOT_STICKY
         }

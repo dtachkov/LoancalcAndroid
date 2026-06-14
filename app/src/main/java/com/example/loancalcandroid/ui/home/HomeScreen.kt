@@ -22,6 +22,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.example.loancalcandroid.R
+import com.example.loancalcandroid.ui.home.components.AllLoansMenuSection
 import com.example.loancalcandroid.ui.home.components.DebtProgressSection
 import com.example.loancalcandroid.ui.home.components.HomeTopBar
 import com.example.loancalcandroid.ui.home.components.LoanActionsSection
@@ -45,11 +46,13 @@ fun HomeScreen(
     onBestDateClick: (Long) -> Unit,
     onTaxClick: (Long) -> Unit,
     onCompareClick: (Long) -> Unit,
+    onSumByPaymentClick: () -> Unit,
 ) {
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
     var showDeleteDialog by remember { mutableStateOf(false) }
     val selectedLoanId = uiState.selectedLoanId
     val details = uiState.loanDetails
+    val globalFeatureLoanId = viewModel.globalFeatureLoanId()
 
     if (showDeleteDialog && details != null) {
         AlertDialog(
@@ -98,11 +101,23 @@ fun HomeScreen(
                     pagerIndex = uiState.pagerIndex,
                     onPageChanged = viewModel::onPagerPageChanged,
                     onLoanCardClick = onEditLoanClick,
+                    onAddLoanClick = onAddLoanClick,
                 )
                 Spacer(modifier = Modifier.height(20.dp))
             }
 
-            if (selectedLoanId != null && details != null) {
+            if (uiState.pagerIndex == 0) {
+                item {
+                    AllLoansMenuSection(
+                        showCompare = (uiState.allLoansSummary?.loansCount ?: 0) > 0,
+                        onCompareClick = {
+                            globalFeatureLoanId?.let(onCompareClick)
+                        },
+                        onSumByPaymentClick = onSumByPaymentClick,
+                    )
+                    Spacer(modifier = Modifier.height(24.dp))
+                }
+            } else if (selectedLoanId != null && details != null) {
                 item {
                     QuickActionsRow(
                         enabled = true,
@@ -127,7 +142,6 @@ fun HomeScreen(
                         onForecastClick = { onForecastClick(selectedLoanId) },
                         onBestDateClick = { onBestDateClick(selectedLoanId) },
                         onTaxClick = { onTaxClick(selectedLoanId) },
-                        onCompareClick = { onCompareClick(selectedLoanId) },
                     )
                     Spacer(modifier = Modifier.height(16.dp))
                 }

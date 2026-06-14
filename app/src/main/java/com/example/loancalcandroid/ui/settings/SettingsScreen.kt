@@ -56,12 +56,14 @@ fun SettingsScreen(
     onHelpClick: () -> Unit,
     onVoteClick: () -> Unit,
     onExtraTypesHelpClick: () -> Unit,
+    onPremiumClick: () -> Unit = {},
     viewModel: SettingsViewModel = viewModel(),
 ) {
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
     val context = LocalContext.current
     val snackbarHostState = remember { SnackbarHostState() }
     var showNotificationDialog by remember { mutableStateOf(false) }
+    var showImportUrlDialog by remember { mutableStateOf(false) }
 
     val notificationPermissionLauncher = rememberLauncherForActivityResult(
         contract = ActivityResultContracts.RequestPermission(),
@@ -103,6 +105,22 @@ fun SettingsScreen(
             snackbarHostState.showSnackbar(message)
             viewModel.clearSnackbarMessage()
         }
+    }
+
+    if (showImportUrlDialog) {
+        ImportFromUrlDialog(
+            onDismiss = { showImportUrlDialog = false },
+            onLoad = { url ->
+                showImportUrlDialog = false
+                viewModel.importFromUrl(
+                    context = context,
+                    url = url,
+                    invalidUrlMessage = context.getString(R.string.error_parse_url),
+                    notFoundMessage = context.getString(R.string.error_guid_not_found),
+                    networkErrorMessage = context.getString(R.string.error_network_import_url),
+                )
+            },
+        )
     }
 
     if (showNotificationDialog) {
@@ -178,6 +196,10 @@ fun SettingsScreen(
                                 viewModel.setNotificationsEnabled(false)
                                 return@SettingsSwitchRow
                             }
+                            if (!uiState.isLicensed) {
+                                onPremiumClick()
+                                return@SettingsSwitchRow
+                            }
                             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
                                 val granted = ContextCompat.checkSelfPermission(
                                     context,
@@ -199,8 +221,21 @@ fun SettingsScreen(
                         MenuNavigationRow(
                             title = stringResource(R.string.settings_notification_title),
                             subtitle = notificationSummary,
-                            onClick = { showNotificationDialog = true },
+                            onClick = {
+                                if (uiState.isLicensed) {
+                                    showNotificationDialog = true
+                                } else {
+                                    onPremiumClick()
+                                }
+                            },
                             showDivider = false,
+                        )
+                    } else if (!uiState.isLicensed) {
+                        Text(
+                            text = stringResource(R.string.widget_label_license_required),
+                            style = MaterialTheme.typography.bodySmall,
+                            color = LoanTextSecondary,
+                            modifier = Modifier.padding(horizontal = 16.dp, vertical = 4.dp),
                         )
                     }
                 }
@@ -212,6 +247,15 @@ fun SettingsScreen(
                         onClick = {
                             if (!uiState.isImporting && !uiState.isExporting) {
                                 importLauncher.launch(arrayOf("*/*"))
+                            }
+                        },
+                    )
+                    MenuNavigationRow(
+                        title = stringResource(R.string.menu_item_import_url),
+                        subtitle = stringResource(R.string.menu_item_import_url_hint),
+                        onClick = {
+                            if (!uiState.isImporting && !uiState.isExporting) {
+                                showImportUrlDialog = true
                             }
                         },
                     )
@@ -228,6 +272,15 @@ fun SettingsScreen(
                 }
 
                 SettingsCard(modifier = Modifier.padding(top = 16.dp)) {
+                    MenuNavigationRow(
+                        title = stringResource(R.string.menu_item_premium),
+                        subtitle = if (uiState.isLicensed) {
+                            stringResource(R.string.premium_title)
+                        } else {
+                            stringResource(R.string.feature_request_title)
+                        },
+                        onClick = onPremiumClick,
+                    )
                     MenuNavigationRow(
                         title = stringResource(R.string.label_help_app),
                         subtitle = null,

@@ -36,10 +36,12 @@ android {
     buildTypes {
         debug {
             signingConfig = signingConfigs.getByName("debug")
+            buildConfigField("boolean", "APP_PURCHASED", "true")
         }
         release {
             signingConfig = signingConfigs.getByName("release")
             isMinifyEnabled = false
+            buildConfigField("boolean", "APP_PURCHASED", "false")
             proguardFiles(
                 getDefaultProguardFile("proguard-android-optimize.txt"),
                 "proguard-rules.pro"
@@ -76,6 +78,10 @@ dependencies {
     implementation(libs.androidx.material3)
     implementation("androidx.compose.material:material-icons-extended")
     implementation(libs.coil.compose)
+    implementation(platform(libs.rustore.bom))
+    implementation(libs.rustore.pay)
+    implementation(libs.rustore.review)
+    implementation(libs.rustore.billingclient)
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)

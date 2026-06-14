@@ -13,14 +13,18 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
+import com.example.loancalcandroid.LoanCalcApplication
 import com.example.loancalcandroid.notification.NotificationScheduler
 import ru.kredit.calculator.data.LoanCalcData
+import ru.kredit.calculator.data.repository.WebLoanImportError
+import ru.kredit.calculator.data.repository.WebLoanImportException
 import ru.kredit.calculator.data.preferences.SettingsPreferences
 import java.io.File
 
 data class SettingsUiState(
     val loadLastLoanAtStart: Boolean = false,
     val notificationsEnabled: Boolean = false,
+    val isLicensed: Boolean = false,
     val notificationDays: Int = SettingsPreferences.DEFAULT_DAYS,
     val notificationHour: Int = SettingsPreferences.DEFAULT_HOUR,
     val notificationMinute: Int = SettingsPreferences.DEFAULT_MINUTE,
@@ -33,18 +37,29 @@ class SettingsViewModel(
     application: Application,
 ) : AndroidViewModel(application) {
     private val data = LoanCalcData.get()
+    private val licenseManager = (application as LoanCalcApplication).licenseManager
     private val settings = data.settingsPreferences
     private val shownNotifications = data.shownNotificationsPreferences
     private val importExportRepository = data.importExportRepository
+    private val webLoanImportRepository = data.webLoanImportRepository
     private val loanRepository = data.loanRepository
 
     private val _uiState = MutableStateFlow(loadState())
     val uiState: StateFlow<SettingsUiState> = _uiState.asStateFlow()
 
+    init {
+        viewModelScope.launch {
+            licenseManager.isLicensed.collect { licensed ->
+                _uiState.update { it.copy(isLicensed = licensed) }
+            }
+        }
+    }
+
     private fun loadState(): SettingsUiState {
         return SettingsUiState(
             loadLastLoanAtStart = settings.isLoadLastLoanAtStart(),
             notificationsEnabled = settings.areNotificationsEnabled(),
+            isLicensed = licenseManager.isAppPurchased(),
             notificationDays = settings.getNotificationDays(),
             notificationHour = settings.getNotificationHour(),
             notificationMinute = settings.getNotificationMinute(),
@@ -145,6 +160,37 @@ class SettingsViewModel(
                     snackbarMessage = result.fold(
                         onSuccess = { count -> formatExportMessage(context, count) },
                         onFailure = { error -> error.message.orEmpty() },
+                    ),
+                )
+            }
+        }
+    }
+
+    fun importFromUrl(
+        context: Context,
+        url: String,
+        invalidUrlMessage: String,
+        notFoundMessage: String,
+        networkErrorMessage: String,
+    ) {
+        viewModelScope.launch {
+            _uiState.update { it.copy(isImporting = true, snackbarMessage = null) }
+            val result = runCatching {
+                webLoanImportRepository.importFromUrl(url)
+            }
+            _uiState.update {
+                it.copy(
+                    isImporting = false,
+                    snackbarMessage = result.fold(
+                        onSuccess = { count -> formatImportMessage(context, count) },
+                        onFailure = { error ->
+                            when ((error as? WebLoanImportException)?.error) {
+                                WebLoanImportError.INVALID_URL -> invalidUrlMessage
+                                WebLoanImportError.NOT_FOUND -> notFoundMessage
+                                WebLoanImportError.NETWORK -> networkErrorMessage
+                                else -> error.message.orEmpty()
+                            }
+                        },
                     ),
                 )
             }

@@ -8,6 +8,7 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxHeight
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
@@ -37,6 +38,7 @@ import androidx.compose.ui.graphics.StrokeCap
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import com.example.loancalcandroid.R
 import com.example.loancalcandroid.ui.home.model.AllLoansSummaryUiModel
@@ -48,6 +50,7 @@ import com.example.loancalcandroid.ui.theme.LoanCardSurface
 import com.example.loancalcandroid.ui.theme.LoanGreen
 import com.example.loancalcandroid.ui.theme.LoanRed
 import com.example.loancalcandroid.ui.theme.LoanTextSecondary
+import com.example.loancalcandroid.util.Formatters
 
 @Composable
 fun LoanCardsPager(
@@ -56,6 +59,7 @@ fun LoanCardsPager(
     pagerIndex: Int,
     onPageChanged: (Int) -> Unit,
     onLoanCardClick: (Long) -> Unit,
+    onAddLoanClick: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
     val pageCount = 1 + loanCards.size
@@ -83,7 +87,10 @@ fun LoanCardsPager(
             pageSpacing = 12.dp,
         ) { page ->
             when {
-                page == 0 -> SummaryLoanCard(summary = summary)
+                page == 0 -> SummaryLoanCard(
+                    summary = summary,
+                    onAddLoanClick = onAddLoanClick,
+                )
                 else -> SingleLoanCard(
                     card = loanCards[page - 1],
                     onClick = { onLoanCardClick(loanCards[page - 1].id) },
@@ -98,34 +105,67 @@ fun LoanCardsPager(
 }
 
 @Composable
-private fun SummaryLoanCard(summary: AllLoansSummaryUiModel?) {
-    LoanGradientCard {
-        Column(verticalArrangement = Arrangement.SpaceBetween, modifier = Modifier.fillMaxHeight()) {
-            Text(
-                text = stringResource(R.string.all_loans_card_title),
-                style = MaterialTheme.typography.titleLarge,
-                color = Color.White,
-                fontWeight = FontWeight.Bold,
-            )
-            if (summary == null || summary.loansCount == 0) {
+private fun SummaryLoanCard(
+    summary: AllLoansSummaryUiModel?,
+    onAddLoanClick: () -> Unit,
+) {
+    val isEmpty = summary == null || summary.loansCount == 0
+    LoanGradientCard(
+        modifier = if (isEmpty) {
+            Modifier.clickable(onClick = onAddLoanClick)
+        } else {
+            Modifier
+        },
+    ) {
+        if (isEmpty) {
+            Box(
+                modifier = Modifier.fillMaxSize(),
+                contentAlignment = Alignment.Center,
+            ) {
                 Text(
-                    text = stringResource(R.string.no_loans_hint),
+                    text = stringResource(R.string.all_loans_empty_message),
+                    style = MaterialTheme.typography.bodyLarge,
+                    color = Color.White,
+                    fontWeight = FontWeight.Medium,
+                    textAlign = TextAlign.Center,
+                    modifier = Modifier.padding(horizontal = 12.dp),
+                )
+            }
+        } else {
+            Column(modifier = Modifier.fillMaxSize()) {
+                Text(
+                    text = stringResource(R.string.all_loans_card_title),
+                    style = MaterialTheme.typography.titleLarge,
+                    color = Color.White,
+                    fontWeight = FontWeight.Bold,
+                )
+                Text(
+                    text = stringResource(R.string.all_loans_count, summary!!.loansCount),
                     color = Color.White.copy(alpha = 0.9f),
                 )
-            } else {
-                Text(
-                    text = stringResource(R.string.all_loans_count, summary.loansCount),
-                    color = Color.White.copy(alpha = 0.9f),
-                )
-                Spacer(modifier = Modifier.height(8.dp))
-                Row(horizontalArrangement = Arrangement.spacedBy(24.dp)) {
+                Spacer(modifier = Modifier.weight(1f))
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.spacedBy(12.dp),
+                ) {
                     LoanCardStat(
                         label = stringResource(R.string.all_loans_total_amount),
                         value = summary.totalAmount,
+                        modifier = Modifier.weight(1f),
                     )
                     LoanCardStat(
                         label = stringResource(R.string.all_loans_total_debt),
                         value = summary.totalDebt,
+                        modifier = Modifier.weight(1f),
+                    )
+                    LoanCardStat(
+                        label = stringResource(
+                            R.string.all_loans_payments_for_month,
+                            Formatters.currentMonthName(),
+                        ),
+                        value = summary.paymentsThisMonth,
+                        modifier = Modifier.weight(1f),
+                        shrinkLabel = true,
                     )
                 }
             }
@@ -406,13 +446,42 @@ private fun StatRow(label: String, value: String) {
 }
 
 @Composable
+fun AllLoansMenuSection(
+    onCompareClick: () -> Unit,
+    onSumByPaymentClick: () -> Unit,
+    showCompare: Boolean = true,
+    modifier: Modifier = Modifier,
+) {
+    Surface(
+        modifier = modifier.fillMaxWidth(),
+        shape = RoundedCornerShape(12.dp),
+        color = LoanCardSurface,
+    ) {
+        Column {
+            if (showCompare) {
+                MenuNavigationRow(
+                    title = stringResource(R.string.menu_all_loans_compare),
+                    subtitle = stringResource(R.string.menu_all_loans_compare_hint),
+                    onClick = onCompareClick,
+                )
+            }
+            MenuNavigationRow(
+                title = stringResource(R.string.menu_all_loans_sum_by_payment),
+                subtitle = stringResource(R.string.menu_all_loans_sum_by_payment_hint),
+                onClick = onSumByPaymentClick,
+                showDivider = false,
+            )
+        }
+    }
+}
+
+@Composable
 fun NavigationMenuSection(
     details: LoanDetailsUiModel,
     onExtrasClick: () -> Unit,
     onForecastClick: () -> Unit,
     onBestDateClick: () -> Unit,
     onTaxClick: () -> Unit,
-    onCompareClick: () -> Unit,
 ) {
     Surface(
         modifier = Modifier.fillMaxWidth(),
@@ -442,11 +511,6 @@ fun NavigationMenuSection(
                 title = stringResource(R.string.menu_tax),
                 subtitle = stringResource(R.string.menu_tax_hint),
                 onClick = onTaxClick,
-            )
-            MenuNavigationRow(
-                title = stringResource(R.string.menu_compare),
-                subtitle = stringResource(R.string.menu_compare_hint),
-                onClick = onCompareClick,
                 showDivider = false,
             )
         }
