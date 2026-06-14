@@ -12,7 +12,6 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.rememberScrollState
-import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.KeyboardArrowDown
@@ -41,14 +40,15 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.ViewModelStoreOwner
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.example.loancalcandroid.R
+import com.example.loancalcandroid.review.RequestRuStoreReviewEffect
 import com.example.loancalcandroid.ui.common.FeatureDateRow
 import com.example.loancalcandroid.ui.common.LoanCalcScaffold
+import com.example.loancalcandroid.ui.common.LoanDecimalOutlinedTextField
 import com.example.loancalcandroid.ui.common.LoanOutlinedTextField
 import com.example.loancalcandroid.ui.extraFormViewModel
 import com.example.loancalcandroid.ui.theme.LoanTextSecondary
@@ -77,6 +77,8 @@ fun ExtraFormScreen(
     }
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
     var showDatePicker by remember { mutableStateOf(false) }
+
+    RequestRuStoreReviewEffect(uiState.reviewRequestTrigger)
 
     LaunchedEffect(uiState.saved) {
         if (uiState.saved) onSaved()
@@ -149,7 +151,7 @@ fun ExtraFormScreen(
                 Text(text = error, color = MaterialTheme.colorScheme.error)
             }
 
-            LoanOutlinedTextField(
+            LoanDecimalOutlinedTextField(
                 value = uiState.amount,
                 onValueChange = viewModel::updateAmount,
                 label = {
@@ -165,7 +167,6 @@ fun ExtraFormScreen(
                 },
                 modifier = Modifier.fillMaxWidth(),
                 singleLine = true,
-                keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Decimal),
                 isError = uiState.amountError != null,
                 supportingText = uiState.amountError?.let { { Text(it) } },
             )

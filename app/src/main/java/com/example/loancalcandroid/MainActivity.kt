@@ -12,7 +12,6 @@ import com.example.loancalcandroid.analytics.AnalyticsHelper
 import com.example.loancalcandroid.billing.RuStorePayHelper
 import com.example.loancalcandroid.navigation.LoanCalcNavGraph
 import com.example.loancalcandroid.notification.NotificationActions
-import com.example.loancalcandroid.review.ReviewRequester
 import com.example.loancalcandroid.ui.theme.LoanCalcAndroidTheme
 import com.example.loancalcandroid.BuildConfig
 import ru.kredit.calculator.data.LoanCalcData
@@ -25,7 +24,6 @@ class MainActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
         RuStorePayHelper.proceedPaymentIntent(this, intent)
         handleNotificationIntent(intent)
-        ReviewRequester.maybeRequestReview(this)
         AnalyticsHelper.logEvent("APP_OPEN", BuildConfig.VERSION_NAME)
         enableEdgeToEdge()
         setContent {

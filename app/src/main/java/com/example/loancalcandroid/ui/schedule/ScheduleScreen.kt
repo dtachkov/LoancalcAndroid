@@ -242,9 +242,10 @@ private fun BriefScheduleTab(
         summary?.let { ScheduleSummaryBlock(it) }
     }
 
-    LaunchedEffect(showPreviousPayments) {
-        if (showPreviousPayments) {
-            listState.animateScrollToItem(0)
+    LaunchedEffect(rows) {
+        if (rows.isNotEmpty()) {
+            val currentIndex = rows.indexOfFirst { it.isCurrent }.coerceAtLeast(0)
+            listState.animateScrollToItem(currentIndex.coerceAtMost(rows.lastIndex))
         }
     }
 }

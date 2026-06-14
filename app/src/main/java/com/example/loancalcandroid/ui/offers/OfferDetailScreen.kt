@@ -40,6 +40,7 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import coil.compose.AsyncImage
 import com.example.loancalcandroid.R
 import com.example.loancalcandroid.analytics.AnalyticsHelper
+import com.example.loancalcandroid.review.RequestRuStoreReviewEffect
 import com.example.loancalcandroid.ui.common.LoanCalcScaffold
 import com.example.loancalcandroid.ui.theme.LoanDivider
 import com.example.loancalcandroid.ui.theme.LoanTextSecondary
@@ -57,6 +58,8 @@ fun OfferDetailScreen(
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
     val context = LocalContext.current
     var menuExpanded by remember { mutableStateOf(false) }
+
+    RequestRuStoreReviewEffect(uiState.reviewRequestTrigger)
 
     LoanCalcScaffold(
         title = stringResource(R.string.offer_detail_title),

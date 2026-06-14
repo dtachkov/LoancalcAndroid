@@ -112,7 +112,7 @@ fun HomeScreen(
                     item {
                         AllLoansPaymentsSection(
                             loans = loans,
-                            onLoanClick = viewModel::selectLoan,
+                            onPaymentClick = onScheduleClick,
                         )
                         Spacer(modifier = Modifier.height(16.dp))
                     }
@@ -148,7 +148,10 @@ fun HomeScreen(
                     Spacer(modifier = Modifier.height(24.dp))
                 }
                 item {
-                    DebtProgressSection(details = details)
+                    DebtProgressSection(
+                        details = details,
+                        onCurrentPaymentClick = { onScheduleClick(selectedLoanId) },
+                    )
                     Spacer(modifier = Modifier.height(16.dp))
                 }
                 item {

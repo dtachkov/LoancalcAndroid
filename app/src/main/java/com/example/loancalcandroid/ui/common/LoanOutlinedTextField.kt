@@ -9,7 +9,13 @@ import androidx.compose.material3.TextFieldColors
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.text.input.KeyboardType
 import com.example.loancalcandroid.ui.theme.LoanInputBorder
+
+object LoanKeyboardOptions {
+    val Decimal = KeyboardOptions(keyboardType = KeyboardType.Decimal)
+    val Number = KeyboardOptions(keyboardType = KeyboardType.Number)
+}
 
 @Composable
 fun loanOutlinedTextFieldColors(
@@ -63,5 +69,73 @@ fun LoanOutlinedTextField(
         keyboardOptions = keyboardOptions,
         trailingIcon = trailingIcon,
         colors = loanOutlinedTextFieldColors(),
+    )
+}
+
+@Composable
+fun LoanDecimalOutlinedTextField(
+    value: String,
+    onValueChange: (String) -> Unit,
+    modifier: Modifier = Modifier,
+    enabled: Boolean = true,
+    readOnly: Boolean = false,
+    label: @Composable (() -> Unit)? = null,
+    placeholder: @Composable (() -> Unit)? = null,
+    supportingText: @Composable (() -> Unit)? = null,
+    isError: Boolean = false,
+    singleLine: Boolean = false,
+    maxLines: Int = if (singleLine) 1 else Int.MAX_VALUE,
+    minLines: Int = 1,
+    trailingIcon: @Composable (() -> Unit)? = null,
+) {
+    LoanOutlinedTextField(
+        value = value,
+        onValueChange = onValueChange,
+        modifier = modifier,
+        enabled = enabled,
+        readOnly = readOnly,
+        label = label,
+        placeholder = placeholder,
+        supportingText = supportingText,
+        isError = isError,
+        singleLine = singleLine,
+        maxLines = maxLines,
+        minLines = minLines,
+        keyboardOptions = LoanKeyboardOptions.Decimal,
+        trailingIcon = trailingIcon,
+    )
+}
+
+@Composable
+fun LoanNumberOutlinedTextField(
+    value: String,
+    onValueChange: (String) -> Unit,
+    modifier: Modifier = Modifier,
+    enabled: Boolean = true,
+    readOnly: Boolean = false,
+    label: @Composable (() -> Unit)? = null,
+    placeholder: @Composable (() -> Unit)? = null,
+    supportingText: @Composable (() -> Unit)? = null,
+    isError: Boolean = false,
+    singleLine: Boolean = false,
+    maxLines: Int = if (singleLine) 1 else Int.MAX_VALUE,
+    minLines: Int = 1,
+    trailingIcon: @Composable (() -> Unit)? = null,
+) {
+    LoanOutlinedTextField(
+        value = value,
+        onValueChange = onValueChange,
+        modifier = modifier,
+        enabled = enabled,
+        readOnly = readOnly,
+        label = label,
+        placeholder = placeholder,
+        supportingText = supportingText,
+        isError = isError,
+        singleLine = singleLine,
+        maxLines = maxLines,
+        minLines = minLines,
+        keyboardOptions = LoanKeyboardOptions.Number,
+        trailingIcon = trailingIcon,
     )
 }

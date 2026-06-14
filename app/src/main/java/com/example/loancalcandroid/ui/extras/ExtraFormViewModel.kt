@@ -40,6 +40,7 @@ data class ExtraFormUiState(
     val dateError: String? = null,
     val saveError: String? = null,
     val saved: Boolean = false,
+    val reviewRequestTrigger: Int = 0,
     val showInterestBreakdown: Boolean = false,
     val interestToPay: Double = 0.0,
     val netExtraAmount: Double = 0.0,
@@ -126,7 +127,13 @@ class ExtraFormViewModel(
                     documentNumber = state.documentNumber.ifBlank { null },
                 )
                 extraRepository.saveExtra(extra)
-                _uiState.update { it.copy(isSaving = false, saved = true) }
+                _uiState.update {
+                    it.copy(
+                        isSaving = false,
+                        saved = true,
+                        reviewRequestTrigger = if (!it.isEditMode) it.reviewRequestTrigger + 1 else it.reviewRequestTrigger,
+                    )
+                }
             } catch (e: Exception) {
                 _uiState.update {
                     it.copy(isSaving = false, saveError = e.message ?: "Ошибка сохранения")

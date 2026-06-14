@@ -177,7 +177,7 @@ private fun SummaryLoanCard(
 @Composable
 fun AllLoansPaymentsSection(
     loans: List<AllLoanPaymentRowUiModel>,
-    onLoanClick: (Long) -> Unit,
+    onPaymentClick: (Long) -> Unit,
     modifier: Modifier = Modifier,
 ) {
     if (loans.isEmpty()) return
@@ -192,7 +192,7 @@ fun AllLoansPaymentsSection(
             loans.forEachIndexed { index, loan ->
                 AllLoanPaymentRow(
                     loan = loan,
-                    onClick = { onLoanClick(loan.loanId) },
+                    onClick = { onPaymentClick(loan.loanId) },
                 )
                 if (index < loans.lastIndex) {
                     HorizontalDivider(
@@ -381,6 +381,7 @@ private fun QuickActionItem(
 @Composable
 fun DebtProgressSection(
     details: LoanDetailsUiModel,
+    onCurrentPaymentClick: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
     Column(
@@ -388,7 +389,10 @@ fun DebtProgressSection(
         verticalArrangement = Arrangement.spacedBy(12.dp),
     ) {
         DebtProgressCard(details = details)
-        CurrentPaymentCard(details = details)
+        CurrentPaymentCard(
+            details = details,
+            onClick = onCurrentPaymentClick,
+        )
     }
 }
 
@@ -464,9 +468,14 @@ private fun DebtProgressCard(details: LoanDetailsUiModel) {
 }
 
 @Composable
-private fun CurrentPaymentCard(details: LoanDetailsUiModel) {
+private fun CurrentPaymentCard(
+    details: LoanDetailsUiModel,
+    onClick: () -> Unit,
+) {
     Surface(
-        modifier = Modifier.fillMaxWidth(),
+        modifier = Modifier
+            .fillMaxWidth()
+            .clickable(onClick = onClick),
         shape = RoundedCornerShape(12.dp),
         color = LoanCardSurface,
     ) {

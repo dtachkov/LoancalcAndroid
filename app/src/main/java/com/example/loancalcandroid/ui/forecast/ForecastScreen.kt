@@ -10,13 +10,11 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Button
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedButton
-import com.example.loancalcandroid.ui.common.LoanOutlinedTextField
 import androidx.compose.material3.Switch
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -25,13 +23,14 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.example.loancalcandroid.R
 import com.example.loancalcandroid.ui.common.DatePickerField
 import com.example.loancalcandroid.ui.common.FeatureTypeSegmentedControl
 import com.example.loancalcandroid.ui.common.LoanCalcScaffold
+import com.example.loancalcandroid.ui.common.LoanDecimalOutlinedTextField
+import com.example.loancalcandroid.ui.common.LoanNumberOutlinedTextField
 import com.example.loancalcandroid.ui.loanViewModel
 import com.example.loancalcandroid.ui.theme.LoanTextSecondary
 
@@ -90,23 +89,21 @@ fun ForecastScreen(
             )
 
             if (uiState.forecastEnabled) {
-                LoanOutlinedTextField(
+                LoanDecimalOutlinedTextField(
                     value = uiState.monthlyPayment,
                     onValueChange = viewModel::updateMonthlyPayment,
                     label = { Text(stringResource(R.string.forecast_monthly_payment)) },
                     modifier = Modifier.fillMaxWidth(),
                     singleLine = true,
-                    keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Decimal),
                     isError = uiState.monthlyPaymentError != null,
                     supportingText = uiState.monthlyPaymentError?.let { { Text(it) } },
                 )
-                LoanOutlinedTextField(
+                LoanNumberOutlinedTextField(
                     value = uiState.daysBeforePayment,
                     onValueChange = viewModel::updateDaysBeforePayment,
                     label = { Text(stringResource(R.string.forecast_days_before)) },
                     modifier = Modifier.fillMaxWidth(),
                     singleLine = true,
-                    keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
                     isError = uiState.daysError != null,
                     supportingText = uiState.daysError?.let { { Text(it) } },
                 )

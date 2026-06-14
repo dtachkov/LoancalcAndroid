@@ -3,24 +3,17 @@ package com.example.loancalcandroid.review
 import android.app.Activity
 import com.example.loancalcandroid.analytics.AnalyticsHelper
 import ru.kredit.calculator.data.LoanCalcData
-import ru.kredit.calculator.data.preferences.ApplicationReviewPreferences
 import ru.rustore.sdk.review.RuStoreReviewManagerFactory
 
 object ReviewRequester {
-    fun onAppStart() {
-        val reviewPreferences = LoanCalcData.get().applicationReviewPreferences
-        if (!reviewPreferences.isRedirectedForReview()) {
-            reviewPreferences.incrementAppLaunchesCount()
-        }
-    }
+    private var reviewFlowInProgress = false
 
-    fun maybeRequestReview(activity: Activity) {
+    fun requestReviewAfterPositiveAction(activity: Activity) {
         val reviewPreferences = LoanCalcData.get().applicationReviewPreferences
         if (reviewPreferences.dontAskForReview()) return
-        if (reviewPreferences.getAppLaunchesCount() < ApplicationReviewPreferences.LAUNCHES_BEFORE_ASK_REVIEW) {
-            return
-        }
+        if (reviewFlowInProgress) return
 
+        reviewFlowInProgress = true
         AnalyticsHelper.logEvent("REQUEST_REVIEW", "REQUEST")
 
         val manager = RuStoreReviewManagerFactory.create(activity)
@@ -28,14 +21,16 @@ object ReviewRequester {
             .addOnSuccessListener { reviewInfo ->
                 manager.launchReviewFlow(reviewInfo)
                     .addOnSuccessListener {
-                        reviewPreferences.resetAppLaunchesCount()
+                        reviewPreferences.setDontAskForReview()
+                        reviewFlowInProgress = false
                     }
                     .addOnFailureListener {
-                        reviewPreferences.resetAppLaunchesCount()
+                        reviewFlowInProgress = false
                     }
             }
             .addOnFailureListener {
                 // RuStore may silently refuse to show the dialog.
+                reviewFlowInProgress = false
             }
     }
 }

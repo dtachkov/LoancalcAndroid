@@ -97,6 +97,12 @@
     <string name="loan_editor_amount">Сумма кредита</string>
     <string name="loan_editor_rate">Процентная ставка (%)</string>
     <string name="loan_editor_term">Срок кредита (мес)</string>
+    <plurals name="loan_term_preset_years">
+        <item quantity="one">%d год</item>
+        <item quantity="few">%d года</item>
+        <item quantity="many">%d лет</item>
+        <item quantity="other">%d лет</item>
+    </plurals>
     <string name="loan_term">Срок, мес.</string>
     <string name="loan_type">Тип платежа</string>
     <string name="loan_type_annuity">аннуитентный</string>

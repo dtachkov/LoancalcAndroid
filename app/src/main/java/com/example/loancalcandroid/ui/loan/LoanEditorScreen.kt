@@ -13,7 +13,6 @@ import androidx.compose.material3.Button
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme
-import com.example.loancalcandroid.ui.common.LoanOutlinedTextField
 import androidx.compose.material3.RadioButton
 import androidx.compose.material3.Switch
 import androidx.compose.material3.Text
@@ -27,8 +26,12 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.example.loancalcandroid.R
+import com.example.loancalcandroid.review.RequestRuStoreReviewEffect
 import com.example.loancalcandroid.ui.common.DatePickerField
 import com.example.loancalcandroid.ui.common.LoanCalcScaffold
+import com.example.loancalcandroid.ui.common.LoanDecimalOutlinedTextField
+import com.example.loancalcandroid.ui.common.LoanNumberOutlinedTextField
+import com.example.loancalcandroid.ui.common.LoanOutlinedTextField
 import com.example.loancalcandroid.ui.loanEditorViewModel
 import ru.kredit.calculator.data.model.LoanType
 
@@ -43,6 +46,8 @@ fun LoanEditorScreen(
         LoanEditorViewModel(app, id)
     }
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
+
+    RequestRuStoreReviewEffect(uiState.reviewRequestTrigger)
 
     LaunchedEffect(uiState.savedLoanId) {
         uiState.savedLoanId?.let { onSaved(it) }
@@ -98,7 +103,7 @@ fun LoanEditorScreen(
                 modifier = Modifier.fillMaxWidth(),
                 singleLine = true,
             )
-            LoanOutlinedTextField(
+            LoanDecimalOutlinedTextField(
                 value = uiState.amount,
                 onValueChange = viewModel::updateAmount,
                 label = { Text(stringResource(R.string.loan_editor_amount)) },
@@ -107,7 +112,7 @@ fun LoanEditorScreen(
                 isError = uiState.amountError != null,
                 supportingText = uiState.amountError?.let { { Text(it) } },
             )
-            LoanOutlinedTextField(
+            LoanDecimalOutlinedTextField(
                 value = uiState.rate,
                 onValueChange = viewModel::updateRate,
                 label = { Text(stringResource(R.string.loan_editor_rate)) },
@@ -116,7 +121,7 @@ fun LoanEditorScreen(
                 isError = uiState.rateError != null,
                 supportingText = uiState.rateError?.let { { Text(it) } },
             )
-            LoanOutlinedTextField(
+            LoanNumberOutlinedTextField(
                 value = uiState.term,
                 onValueChange = viewModel::updateTerm,
                 label = { Text(stringResource(R.string.loan_editor_term)) },
@@ -124,6 +129,10 @@ fun LoanEditorScreen(
                 singleLine = true,
                 isError = uiState.termError != null,
                 supportingText = uiState.termError?.let { { Text(it) } },
+            )
+            LoanTermPresetChips(
+                selectedTermMonths = uiState.term.trim().toIntOrNull(),
+                onTermMonthsSelected = { viewModel.updateTerm(it.toString()) },
             )
 
             Text(text = stringResource(R.string.loan_type), style = MaterialTheme.typography.titleSmall)

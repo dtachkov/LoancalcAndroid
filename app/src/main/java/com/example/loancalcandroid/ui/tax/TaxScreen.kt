@@ -7,11 +7,12 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
-import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Button
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.MaterialTheme
+import com.example.loancalcandroid.ui.common.LoanCalcScaffold
+import com.example.loancalcandroid.ui.common.LoanDecimalOutlinedTextField
 import com.example.loancalcandroid.ui.common.LoanOutlinedTextField
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -20,12 +21,11 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.example.loancalcandroid.R
+import com.example.loancalcandroid.review.RequestRuStoreReviewEffect
 import com.example.loancalcandroid.ui.common.FeatureResultTable
-import com.example.loancalcandroid.ui.common.LoanCalcScaffold
 import com.example.loancalcandroid.ui.loanViewModel
 import com.example.loancalcandroid.ui.theme.LoanTextSecondary
 
@@ -36,6 +36,8 @@ fun TaxScreen(
 ) {
     val viewModel: TaxViewModel = loanViewModel(loanId, ::TaxViewModel)
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
+
+    RequestRuStoreReviewEffect(uiState.reviewRequestTrigger)
 
     LoanCalcScaffold(
         title = stringResource(R.string.menu_tax),
@@ -69,25 +71,22 @@ fun TaxScreen(
                 label = { Text(stringResource(R.string.tax_loan_amount)) },
                 modifier = Modifier.fillMaxWidth(),
                 singleLine = true,
-                keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Decimal),
             )
-            LoanOutlinedTextField(
+            LoanDecimalOutlinedTextField(
                 value = uiState.objectPrice,
                 onValueChange = viewModel::updateObjectPrice,
                 label = { Text(stringResource(R.string.tax_object_price)) },
                 modifier = Modifier.fillMaxWidth(),
                 singleLine = true,
-                keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Decimal),
                 isError = uiState.objectPriceError != null,
                 supportingText = uiState.objectPriceError?.let { { Text(it) } },
             )
-            LoanOutlinedTextField(
+            LoanDecimalOutlinedTextField(
                 value = uiState.salary,
                 onValueChange = viewModel::updateSalary,
                 label = { Text(stringResource(R.string.tax_salary)) },
                 modifier = Modifier.fillMaxWidth(),
                 singleLine = true,
-                keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Decimal),
             )
 
             Button(

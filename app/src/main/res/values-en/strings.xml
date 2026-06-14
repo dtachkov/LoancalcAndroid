@@ -97,6 +97,10 @@
     <string name="loan_editor_amount">Loan Amount</string>
     <string name="loan_editor_rate">Rate per Year (%)</string>
     <string name="loan_editor_term">Term (months)</string>
+    <plurals name="loan_term_preset_years">
+        <item quantity="one">%d year</item>
+        <item quantity="other">%d years</item>
+    </plurals>
     <string name="loan_term">Term (months)</string>
     <string name="loan_type">Payment type</string>
     <string name="loan_type_annuity">annuity</string>

@@ -36,6 +36,7 @@ data class TaxUiState(
     val tableRows: List<TaxYearTableRow> = emptyList(),
     val objectPriceError: String? = null,
     val error: String? = null,
+    val reviewRequestTrigger: Int = 0,
 )
 
 class TaxViewModel(
@@ -88,6 +89,7 @@ class TaxViewModel(
                         interestTax = Formatters.money(taxResult.interestTax),
                         totalTax = Formatters.money(taxResult.totalReturnTax),
                         tableRows = buildTableRows(taxResult, salaryPerMonth),
+                        reviewRequestTrigger = it.reviewRequestTrigger + 1,
                     )
                 }
                 AnalyticsHelper.logEvent("CALC_RETURN_TAX")

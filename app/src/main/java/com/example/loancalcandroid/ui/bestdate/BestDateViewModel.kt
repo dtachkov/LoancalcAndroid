@@ -37,6 +37,7 @@ data class BestDateUiState(
     val amountError: String? = null,
     val dateError: String? = null,
     val error: String? = null,
+    val reviewRequestTrigger: Int = 0,
 )
 
 class BestDateViewModel(
@@ -108,6 +109,7 @@ class BestDateViewModel(
                         isCalculating = false,
                         rows = rows,
                         bestDate = best?.date,
+                        reviewRequestTrigger = it.reviewRequestTrigger + 1,
                     )
                 }
                 AnalyticsHelper.logEvent("CALC_BEST_DATE")

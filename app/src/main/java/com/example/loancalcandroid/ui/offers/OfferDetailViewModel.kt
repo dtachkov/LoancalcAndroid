@@ -38,6 +38,7 @@ data class OfferDetailUiState(
     val overpayText: String = "",
     val isSaving: Boolean = false,
     val savedMessage: String? = null,
+    val reviewRequestTrigger: Int = 0,
     val error: String? = null,
 )
 
@@ -97,6 +98,7 @@ class OfferDetailViewModel(
                     it.copy(
                         isSaving = false,
                         savedMessage = "Кредит сохранён в списке",
+                        reviewRequestTrigger = it.reviewRequestTrigger + 1,
                     )
                 }
             } catch (e: Exception) {

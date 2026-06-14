@@ -10,12 +10,16 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.items
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Refresh
 import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -50,6 +54,24 @@ fun OffersScreen(
     LoanCalcScaffold(
         title = stringResource(R.string.offers_screen),
         onBack = onBack,
+        actions = {
+            IconButton(
+                onClick = viewModel::refreshOffers,
+                enabled = !uiState.isRefreshing,
+            ) {
+                if (uiState.isRefreshing) {
+                    CircularProgressIndicator(
+                        modifier = Modifier.size(24.dp),
+                        strokeWidth = 2.dp,
+                    )
+                } else {
+                    Icon(
+                        imageVector = Icons.Filled.Refresh,
+                        contentDescription = stringResource(R.string.offers_refresh),
+                    )
+                }
+            }
+        },
     ) { innerPadding ->
         Column(
             modifier = Modifier
@@ -57,19 +79,6 @@ fun OffersScreen(
                 .padding(innerPadding)
                 .padding(horizontal = 8.dp, vertical = 8.dp),
         ) {
-            OutlinedButton(
-                onClick = viewModel::refreshOffers,
-                enabled = !uiState.isRefreshing,
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(horizontal = 8.dp),
-            ) {
-                if (uiState.isRefreshing) {
-                    CircularProgressIndicator(modifier = Modifier.padding(end = 8.dp))
-                }
-                Text(stringResource(R.string.offers_refresh))
-            }
-
             uiState.refreshError?.let {
                 Text(
                     text = it,

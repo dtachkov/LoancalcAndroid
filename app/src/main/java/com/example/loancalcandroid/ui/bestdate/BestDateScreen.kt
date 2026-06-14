@@ -8,13 +8,11 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
-import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Button
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedButton
-import com.example.loancalcandroid.ui.common.LoanOutlinedTextField
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -23,16 +21,17 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.example.loancalcandroid.LoanCalcApplication
 import com.example.loancalcandroid.R
+import com.example.loancalcandroid.review.RequestRuStoreReviewEffect
 import com.example.loancalcandroid.ui.common.DatePickerField
 import com.example.loancalcandroid.ui.common.FeatureCalculationProgress
 import com.example.loancalcandroid.ui.common.FeatureResultTable
 import com.example.loancalcandroid.ui.common.FeatureTypeSegmentedControl
 import com.example.loancalcandroid.ui.common.LoanCalcScaffold
+import com.example.loancalcandroid.ui.common.LoanDecimalOutlinedTextField
 import com.example.loancalcandroid.ui.loanViewModel
 import com.example.loancalcandroid.ui.theme.LoanTextSecondary
 import com.example.loancalcandroid.util.Formatters
@@ -48,6 +47,8 @@ fun BestDateScreen(
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
     val licenseManager = (LocalContext.current.applicationContext as LoanCalcApplication).licenseManager
     val isLicensed by licenseManager.isLicensed.collectAsStateWithLifecycle()
+
+    RequestRuStoreReviewEffect(uiState.reviewRequestTrigger)
 
     LoanCalcScaffold(
         title = stringResource(R.string.menu_best_date),
@@ -80,13 +81,12 @@ fun BestDateScreen(
                 color = LoanTextSecondary,
             )
 
-            LoanOutlinedTextField(
+            LoanDecimalOutlinedTextField(
                 value = uiState.amount,
                 onValueChange = viewModel::updateAmount,
                 label = { Text(stringResource(R.string.extra_payment_amount)) },
                 modifier = Modifier.fillMaxWidth(),
                 singleLine = true,
-                keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Decimal),
                 isError = uiState.amountError != null,
                 supportingText = uiState.amountError?.let { { Text(it) } },
             )

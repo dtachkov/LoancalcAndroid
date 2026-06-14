@@ -9,7 +9,6 @@ import com.example.loancalcandroid.analytics.AnalyticsHelper
 import com.example.loancalcandroid.billing.RuStoreLicenseManager
 import com.example.loancalcandroid.notification.NotificationScheduler
 import com.example.loancalcandroid.notification.PaymentNotificationHelper
-import com.example.loancalcandroid.review.ReviewRequester
 import com.example.loancalcandroid.widget.LoanWidgetProvider
 import com.example.loancalcandroid.widget.WidgetUpdateCoordinator
 import com.example.loancalcandroid.widget.WidgetUpdater
@@ -41,7 +40,6 @@ class LoanCalcApplication : Application() {
             context = this,
             buildType = BuildConfig.BUILD_TYPE,
         )
-        ReviewRequester.onAppStart()
         licenseManager = RuStoreLicenseManager(this)
         registerActivityLifecycleCallbacks(ActivityTracker())
         applicationScope.launch {

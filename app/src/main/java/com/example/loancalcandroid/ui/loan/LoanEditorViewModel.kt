@@ -41,6 +41,7 @@ data class LoanEditorUiState(
     val dateError: String? = null,
     val saveError: String? = null,
     val savedLoanId: Long? = null,
+    val reviewRequestTrigger: Int = 0,
 )
 
 class LoanEditorViewModel(
@@ -100,7 +101,13 @@ class LoanEditorViewModel(
                 }
                 val saved = loanRepository.saveLoan(loan.copy(monthlyPayment = monthlyPayment))
                 AnalyticsHelper.logCalculation(loan.amount, "LoanEditorViewModel")
-                _uiState.update { it.copy(isSaving = false, savedLoanId = saved.id) }
+                _uiState.update {
+                    it.copy(
+                        isSaving = false,
+                        savedLoanId = saved.id,
+                        reviewRequestTrigger = if (!state.isEditMode) it.reviewRequestTrigger + 1 else it.reviewRequestTrigger,
+                    )
+                }
             } catch (e: Exception) {
                 _uiState.update {
                     it.copy(isSaving = false, saveError = e.message ?: "Ошибка сохранения")
