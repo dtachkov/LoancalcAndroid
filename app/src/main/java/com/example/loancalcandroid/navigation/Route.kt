@@ -33,6 +33,12 @@ object Route {
     const val ARG_HELP_TOPIC = "topic"
 
     const val HELP_TOPIC_SCHEDULE = "schedule"
+    const val HELP_TOPIC_EXTRA_TYPES = "extra_types"
+    const val HELP_TOPIC_APP = "app"
+    const val HELP_TOPIC_VOTE = "vote"
+
+    const val URL_HELP_APP = "https://mobile-testing.ru/help_kredit_calculator/"
+    const val URL_VOTE = "https://mobile-testing.ru/new_features_loancalc/"
 
     fun editLoan(loanId: Long) = "loans/$loanId/edit"
     fun schedule(loanId: Long) = "loans/$loanId/schedule"

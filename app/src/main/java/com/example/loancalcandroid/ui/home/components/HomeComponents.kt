@@ -87,6 +87,8 @@ fun HomeTopBar(
 @Composable
 fun LoanGradientCard(
     modifier: Modifier = Modifier,
+    gradientStart: Color = LoanBlueStart,
+    gradientEnd: Color = LoanBlueEnd,
     content: @Composable () -> Unit,
 ) {
     Box(
@@ -96,7 +98,7 @@ fun LoanGradientCard(
             .clip(RoundedCornerShape(20.dp))
             .background(
                 brush = Brush.linearGradient(
-                    colors = listOf(LoanBlueStart, LoanBlueEnd),
+                    colors = listOf(gradientStart, gradientEnd),
                 ),
             )
             .padding(20.dp),

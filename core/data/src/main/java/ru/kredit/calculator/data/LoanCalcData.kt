@@ -7,6 +7,7 @@ import ru.kredit.calculator.data.calculation.LoanCalculator
 import ru.kredit.calculator.data.network.OffersApiFactory
 import ru.kredit.calculator.data.preferences.ChestPreferences
 import ru.kredit.calculator.data.preferences.SettingsPreferences
+import ru.kredit.calculator.data.preferences.ShownNotificationsPreferences
 import ru.kredit.calculator.data.repository.ExtraRepository
 import ru.kredit.calculator.data.repository.ImportExportRepository
 import ru.kredit.calculator.data.repository.LoanRepository
@@ -21,6 +22,7 @@ class LoanCalcData private constructor(
     val importExportRepository: ImportExportRepository,
     val settingsPreferences: SettingsPreferences,
     val chestPreferences: ChestPreferences,
+    val shownNotificationsPreferences: ShownNotificationsPreferences,
     val loanCalculator: LoanCalculator,
     val featureCalculators: FeatureCalculators,
 ) {
@@ -74,6 +76,7 @@ class LoanCalcData private constructor(
                 importExportRepository = importExportRepository,
                 settingsPreferences = SettingsPreferences(context),
                 chestPreferences = ChestPreferences(context, buildType),
+                shownNotificationsPreferences = ShownNotificationsPreferences(context),
                 loanCalculator = loanCalculator,
                 featureCalculators = FeatureCalculators(loanCalculator),
             )

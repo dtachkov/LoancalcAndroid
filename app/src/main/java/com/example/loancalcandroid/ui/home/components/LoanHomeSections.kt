@@ -43,6 +43,7 @@ import com.example.loancalcandroid.ui.home.model.AllLoansSummaryUiModel
 import com.example.loancalcandroid.ui.home.model.LoanCardUiModel
 import com.example.loancalcandroid.ui.home.model.LoanDetailsUiModel
 import com.example.loancalcandroid.ui.theme.LoanBlueDark
+import com.example.loancalcandroid.ui.theme.LoanCardDayColors
 import com.example.loancalcandroid.ui.theme.LoanCardSurface
 import com.example.loancalcandroid.ui.theme.LoanGreen
 import com.example.loancalcandroid.ui.theme.LoanRed
@@ -137,7 +138,12 @@ private fun SingleLoanCard(
     card: LoanCardUiModel,
     onClick: () -> Unit,
 ) {
-    LoanGradientCard(modifier = Modifier.clickable(onClick = onClick)) {
+    val (gradientStart, gradientEnd) = LoanCardDayColors.gradientForDay(card.firstPaymentDay)
+    LoanGradientCard(
+        modifier = Modifier.clickable(onClick = onClick),
+        gradientStart = gradientStart,
+        gradientEnd = gradientEnd,
+    ) {
         Column(verticalArrangement = Arrangement.SpaceBetween, modifier = Modifier.fillMaxHeight()) {
             Text(
                 text = card.title,

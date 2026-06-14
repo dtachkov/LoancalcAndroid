@@ -1,6 +1,8 @@
 package com.example.loancalcandroid
 
 import android.app.Application
+import com.example.loancalcandroid.notification.NotificationScheduler
+import com.example.loancalcandroid.notification.PaymentNotificationHelper
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob
@@ -22,6 +24,8 @@ class LoanCalcApplication : Application() {
         applicationScope.launch {
             data.offerRepository.refreshOffers(data.settingsPreferences.getLanguageCode())
         }
+        PaymentNotificationHelper.ensureChannel(this)
+        NotificationScheduler.applySettings(this)
     }
 
     override fun getDatabasePath(name: String): File {

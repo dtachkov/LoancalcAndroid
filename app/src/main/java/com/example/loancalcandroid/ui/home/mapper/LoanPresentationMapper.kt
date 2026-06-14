@@ -8,6 +8,7 @@ import ru.kredit.calculator.data.calculation.LoanCalculationResult
 import ru.kredit.calculator.data.model.Extra
 import ru.kredit.calculator.data.model.ExtraType
 import ru.kredit.calculator.data.model.Loan
+import java.util.Calendar
 import java.util.Date
 import kotlin.math.max
 
@@ -24,6 +25,7 @@ object LoanPresentationMapper {
             issueDate = Formatters.date(loan.dateOfIssue ?: loan.firstPaymentDate),
             monthsPaid = monthsPaid.coerceAtMost(loan.term),
             termMonths = loan.term,
+            firstPaymentDay = dayOfMonth(loan.firstPaymentDate),
         )
     }
 
@@ -97,6 +99,11 @@ object LoanPresentationMapper {
         if (monthlyRate <= 0f) return loan.amount / max(loan.term, 1)
         val factor = Math.pow((1 + monthlyRate).toDouble(), loan.term.toDouble()).toFloat()
         return loan.amount * monthlyRate * factor / (factor - 1f)
+    }
+
+    private fun dayOfMonth(date: Date?): Int {
+        if (date == null) return 1
+        return Calendar.getInstance().apply { time = date }.get(Calendar.DAY_OF_MONTH)
     }
 
     private fun estimateMonthsPaid(loan: Loan): Int {

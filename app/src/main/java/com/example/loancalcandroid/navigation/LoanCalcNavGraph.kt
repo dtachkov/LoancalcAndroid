@@ -21,14 +21,16 @@ import androidx.navigation.navArgument
 import com.example.loancalcandroid.R
 import com.example.loancalcandroid.ui.bestdate.BestDateScreen
 import com.example.loancalcandroid.ui.common.FeaturePlaceholderScreen
-import com.example.loancalcandroid.ui.common.SettingsScreen
 import com.example.loancalcandroid.ui.compare.CompareScreen
 import com.example.loancalcandroid.ui.extras.ExtraCategory
 import com.example.loancalcandroid.ui.extras.ExtraFormPrefill
 import com.example.loancalcandroid.ui.extras.ExtraFormScreen
 import com.example.loancalcandroid.ui.extras.ExtrasTabsScreen
 import com.example.loancalcandroid.ui.forecast.ForecastScreen
+import com.example.loancalcandroid.ui.help.ExtraTypesHelpScreen
 import com.example.loancalcandroid.ui.help.ScheduleHelpScreen
+import com.example.loancalcandroid.ui.help.WebViewScreen
+import com.example.loancalcandroid.ui.settings.SettingsScreen
 import com.example.loancalcandroid.ui.home.HomeScreen
 import com.example.loancalcandroid.ui.home.HomeViewModel
 import com.example.loancalcandroid.ui.loan.LoanEditorScreen
@@ -45,7 +47,18 @@ fun LoanCalcNavGraph(
     modifier: Modifier = Modifier,
     navController: NavHostController = rememberNavController(),
     homeViewModel: HomeViewModel = viewModel(),
+    pendingScheduleLoanId: Long? = null,
+    onPendingScheduleHandled: () -> Unit = {},
 ) {
+    LaunchedEffect(pendingScheduleLoanId) {
+        val loanId = pendingScheduleLoanId ?: return@LaunchedEffect
+        homeViewModel.selectLoan(loanId)
+        navController.navigate(Route.schedule(loanId)) {
+            launchSingleTop = true
+        }
+        onPendingScheduleHandled()
+    }
+
     NavHost(
         navController = navController,
         startDestination = Route.HOME,
@@ -72,6 +85,9 @@ fun LoanCalcNavGraph(
             SettingsScreen(
                 onBack = { navController.popBackStack() },
                 onOffersClick = { navController.navigate(Route.OFFERS) },
+                onHelpClick = { navController.navigate(Route.helpTopic(Route.HELP_TOPIC_APP)) },
+                onVoteClick = { navController.navigate(Route.helpTopic(Route.HELP_TOPIC_VOTE)) },
+                onExtraTypesHelpClick = { navController.navigate(Route.helpTopic(Route.HELP_TOPIC_EXTRA_TYPES)) },
             )
         }
 
@@ -158,6 +174,17 @@ fun LoanCalcNavGraph(
         ) { backStackEntry ->
             when (backStackEntry.arguments?.getString(Route.ARG_HELP_TOPIC)) {
                 Route.HELP_TOPIC_SCHEDULE -> ScheduleHelpScreen(onBack = { navController.popBackStack() })
+                Route.HELP_TOPIC_EXTRA_TYPES -> ExtraTypesHelpScreen(onBack = { navController.popBackStack() })
+                Route.HELP_TOPIC_APP -> WebViewScreen(
+                    title = stringResource(R.string.label_help_app),
+                    url = Route.URL_HELP_APP,
+                    onBack = { navController.popBackStack() },
+                )
+                Route.HELP_TOPIC_VOTE -> WebViewScreen(
+                    title = stringResource(R.string.label_new_features),
+                    url = Route.URL_VOTE,
+                    onBack = { navController.popBackStack() },
+                )
                 else -> FeaturePlaceholderScreen(
                     title = stringResource(R.string.help_title),
                     loanId = null,
@@ -230,6 +257,9 @@ fun LoanCalcNavGraph(
                     }
                     navController.popBackStack()
                 },
+                onExtraTypesHelpClick = {
+                    navController.navigate(Route.helpTopic(Route.HELP_TOPIC_EXTRA_TYPES))
+                },
             )
         }
 
@@ -249,6 +279,9 @@ fun LoanCalcNavGraph(
                 viewModelStoreOwner = backStackEntry,
                 onBack = { navController.popBackStack() },
                 onSaved = { navController.popBackStack() },
+                onExtraTypesHelpClick = {
+                    navController.navigate(Route.helpTopic(Route.HELP_TOPIC_EXTRA_TYPES))
+                },
             )
         }
 

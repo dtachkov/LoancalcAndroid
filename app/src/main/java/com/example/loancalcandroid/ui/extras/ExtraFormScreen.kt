@@ -63,6 +63,7 @@ fun ExtraFormScreen(
     viewModelStoreOwner: ViewModelStoreOwner,
     onBack: () -> Unit,
     onSaved: () -> Unit,
+    onExtraTypesHelpClick: () -> Unit = {},
 ) {
     val viewModel: ExtraFormViewModel = extraFormViewModel(viewModelStoreOwner, loanId, extraId, category, prefill) { app, handle, eId, cat, pre ->
         ExtraFormViewModel(app, handle, eId, cat, pre)
@@ -160,7 +161,10 @@ fun ExtraFormScreen(
             }
 
             Spacer(modifier = Modifier.padding(top = 4.dp))
-            ExtraRulesSection(type = uiState.selectedType)
+            ExtraRulesSection(
+                type = uiState.selectedType,
+                onOpenFullHelp = onExtraTypesHelpClick,
+            )
         }
     }
 }
@@ -207,7 +211,10 @@ private fun ExtraTypeDropdown(
 }
 
 @Composable
-private fun ExtraRulesSection(type: ExtraType) {
+private fun ExtraRulesSection(
+    type: ExtraType,
+    onOpenFullHelp: () -> Unit,
+) {
     var expanded by remember { mutableStateOf(false) }
 
     Column(modifier = Modifier.fillMaxWidth()) {
@@ -232,12 +239,16 @@ private fun ExtraRulesSection(type: ExtraType) {
             )
         }
         AnimatedVisibility(visible = expanded) {
-            Text(
-                text = ExtraTypeUtils.description(type),
-                style = MaterialTheme.typography.bodyMedium,
-                color = LoanTextSecondary,
-                modifier = Modifier.padding(horizontal = 8.dp, vertical = 12.dp),
-            )
+            Column(modifier = Modifier.padding(horizontal = 8.dp, vertical = 12.dp)) {
+                Text(
+                    text = ExtraTypeUtils.description(type),
+                    style = MaterialTheme.typography.bodyMedium,
+                    color = LoanTextSecondary,
+                )
+                TextButton(onClick = onOpenFullHelp) {
+                    Text(stringResource(R.string.label_extra_types_help))
+                }
+            }
         }
     }
 }

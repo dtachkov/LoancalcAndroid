@@ -176,10 +176,12 @@ class HomeViewModel(
             val loanIndex = loans.indexOfFirst { it.id == previousSelectedId }
             if (loanIndex >= 0) return loanIndex + 1
         }
-        val lastLoanId = chestPreferences.getLastCalculatedLoanId()
-        if (lastLoanId > 0) {
-            val loanIndex = loans.indexOfFirst { it.id == lastLoanId }
-            if (loanIndex >= 0) return loanIndex + 1
+        if (data.settingsPreferences.isLoadLastLoanAtStart()) {
+            val lastLoanId = chestPreferences.getLastCalculatedLoanId()
+            if (lastLoanId > 0) {
+                val loanIndex = loans.indexOfFirst { it.id == lastLoanId }
+                if (loanIndex >= 0) return loanIndex + 1
+            }
         }
         return previousPagerIndex.coerceIn(0, loans.size)
     }

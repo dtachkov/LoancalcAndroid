@@ -8,6 +8,7 @@ data class LoanCardUiModel(
     val issueDate: String,
     val monthsPaid: Int,
     val termMonths: Int,
+    val firstPaymentDay: Int,
 )
 
 data class AllLoansSummaryUiModel(
