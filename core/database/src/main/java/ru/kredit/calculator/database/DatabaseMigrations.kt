@@ -9,16 +9,17 @@ import java.util.Locale
 object DatabaseMigrations {
     private val dateFormat = SimpleDateFormat("yyyy-MM-dd", Locale.US)
 
-    val ALL: Array<Migration> = arrayOf(
-        MIGRATION_1_2,
-        MIGRATION_2_3,
-        MIGRATION_3_4,
-        MIGRATION_4_5,
-        MIGRATION_5_6,
-        MIGRATION_6_7,
-    )
+    val ALL: Array<Migration>
+        get() = arrayOf(
+            migration1to2(),
+            migration2to3(),
+            migration3to4(),
+            migration4to5(),
+            migration5to6(),
+            migration6to7(),
+        )
 
-    private val MIGRATION_1_2 = Migration(1, 2) { database ->
+    private fun migration1to2(): Migration = Migration(1, 2) { database ->
         val today = dateFormat.format(Date())
         database.execSQL(
             "ALTER TABLE ${DatabaseContract.LoanColumns.TABLE_NAME} " +
@@ -26,7 +27,7 @@ object DatabaseMigrations {
         )
     }
 
-    private val MIGRATION_2_3 = Migration(2, 3) { database ->
+    private fun migration2to3(): Migration = Migration(2, 3) { database ->
         database.execSQL(
             "ALTER TABLE ${DatabaseContract.LoanColumns.TABLE_NAME} " +
                 "ADD COLUMN ${DatabaseContract.LoanColumns.APPLY_EXTRAS_IMMEDIATELY} INTEGER DEFAULT 0"
@@ -37,21 +38,21 @@ object DatabaseMigrations {
         )
     }
 
-    private val MIGRATION_3_4 = Migration(3, 4) { database ->
+    private fun migration3to4(): Migration = Migration(3, 4) { database ->
         database.execSQL(
             "ALTER TABLE ${DatabaseContract.LoanColumns.TABLE_NAME} " +
                 "ADD COLUMN ${DatabaseContract.LoanColumns.IGNORE_PASSED_PERIODS_AFTER_RATE_CHANGE} INTEGER DEFAULT 0"
         )
     }
 
-    private val MIGRATION_4_5 = Migration(4, 5) { database ->
+    private fun migration4to5(): Migration = Migration(4, 5) { database ->
         database.execSQL(
             "ALTER TABLE ${DatabaseContract.LoanColumns.TABLE_NAME} " +
                 "ADD COLUMN ${DatabaseContract.LoanColumns.EXTRA_DAY_IN_MONTH} INTEGER DEFAULT 0"
         )
     }
 
-    private val MIGRATION_5_6 = Migration(5, 6) { database ->
+    private fun migration5to6(): Migration = Migration(5, 6) { database ->
         database.execSQL(
             """
             CREATE TABLE ${DatabaseContract.OfferColumns.TABLE_NAME} (
@@ -73,7 +74,7 @@ object DatabaseMigrations {
         )
     }
 
-    private val MIGRATION_6_7 = Migration(6, 7) { database ->
+    private fun migration6to7(): Migration = Migration(6, 7) { database ->
         database.execSQL(
             "ALTER TABLE ${DatabaseContract.LoanColumns.TABLE_NAME} " +
                 "ADD COLUMN ${DatabaseContract.LoanColumns.IS_FORECAST_ACTIVE} INTEGER DEFAULT 0"

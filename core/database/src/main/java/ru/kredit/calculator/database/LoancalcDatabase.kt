@@ -45,10 +45,11 @@ abstract class LoancalcDatabase : RoomDatabase() {
         }
 
         private fun buildDatabase(context: Context): LoancalcDatabase {
+            val databaseFile = DatabasePathResolver.resolveAndMigrate(context.applicationContext)
             return Room.databaseBuilder(
                 context.applicationContext,
                 LoancalcDatabase::class.java,
-                DatabaseContract.DATABASE_NAME,
+                databaseFile.absolutePath,
             )
                 .addMigrations(*DatabaseMigrations.ALL)
                 .build()

@@ -9,17 +9,36 @@ android {
     compileSdk = 35
 
     defaultConfig {
-        applicationId = "com.example.loancalcandroid"
+        applicationId = "ru.kredit.calculator"
         minSdk = 31
         targetSdk = 35
-        versionCode = 1
-        versionName = "1.0"
+        versionCode = 54
+        versionName = "2.3"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }
 
+    signingConfigs {
+        getByName("debug") {
+            storeFile = file("../keystore/keystore_1.jks")
+            storePassword = "loan_1983"
+            keyAlias = "calc"
+            keyPassword = "loan_1983"
+        }
+        create("release") {
+            storeFile = file("../keystore/keystore_1.jks")
+            storePassword = "loan_1983"
+            keyAlias = "calc"
+            keyPassword = "loan_1983"
+        }
+    }
+
     buildTypes {
+        debug {
+            signingConfig = signingConfigs.getByName("debug")
+        }
         release {
+            signingConfig = signingConfigs.getByName("release")
             isMinifyEnabled = false
             proguardFiles(
                 getDefaultProguardFile("proguard-android-optimize.txt"),
@@ -36,11 +55,13 @@ android {
     }
     buildFeatures {
         compose = true
+        buildConfig = true
     }
 }
 
 dependencies {
-
+    implementation(project(":core:data"))
+    implementation(project(":core:database"))
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.lifecycle.runtime.ktx)
     implementation(libs.androidx.activity.compose)
