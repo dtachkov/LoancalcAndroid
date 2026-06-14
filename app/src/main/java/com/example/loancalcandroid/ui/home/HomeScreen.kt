@@ -22,6 +22,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.example.loancalcandroid.R
+import com.example.loancalcandroid.ui.analytics.AllLoansAnalyticsSection
 import com.example.loancalcandroid.ui.home.components.AllLoansMenuSection
 import com.example.loancalcandroid.ui.home.components.AllLoansPaymentsSection
 import com.example.loancalcandroid.ui.home.components.DebtProgressSection
@@ -54,7 +55,6 @@ fun HomeScreen(
     val selectedLoanId = uiState.selectedLoanId
     val details = uiState.loanDetails
     val globalFeatureLoanId = viewModel.globalFeatureLoanId()
-
     if (showDeleteDialog && details != null) {
         AlertDialog(
             onDismissRequest = { showDeleteDialog = false },
@@ -125,7 +125,17 @@ fun HomeScreen(
                         },
                         onSumByPaymentClick = onSumByPaymentClick,
                     )
-                    Spacer(modifier = Modifier.height(24.dp))
+                    Spacer(modifier = Modifier.height(16.dp))
+                }
+                if ((uiState.allLoansSummary?.loansCount ?: 0) > 0) {
+                    item {
+                        AllLoansAnalyticsSection()
+                        Spacer(modifier = Modifier.height(24.dp))
+                    }
+                } else {
+                    item {
+                        Spacer(modifier = Modifier.height(24.dp))
+                    }
                 }
             } else if (selectedLoanId != null && details != null) {
                 item {

@@ -10,6 +10,8 @@
     <string name="all_loans_payments_for_month">Сумма за %1$s</string>
     <string name="menu_all_loans_compare">Какой гасить</string>
     <string name="menu_all_loans_compare_hint">При досрочном погашении — какой кредит выгоднее</string>
+    <string name="menu_all_loans_analytics">Аналитика</string>
+    <string name="menu_all_loans_analytics_hint">Диаграммы и графики по всем кредитам</string>
     <string name="menu_all_loans_sum_by_payment">Сумма по платежу</string>
     <string name="menu_all_loans_sum_by_payment_hint">Сколько можно взять в кредит при таком платеже</string>
     <string name="sum_by_payment">Сумма по платежу</string>

@@ -10,6 +10,8 @@
     <string name="all_loans_payments_for_month">Сумма за %1$s</string>
     <string name="menu_all_loans_compare">Какой гасить</string>
     <string name="menu_all_loans_compare_hint">При досрочном погашении — какой кредит выгоднее</string>
+    <string name="menu_all_loans_analytics">Аналитика</string>
+    <string name="menu_all_loans_analytics_hint">Диаграммы и графики по всем кредитам</string>
     <string name="menu_all_loans_sum_by_payment">Сумма по платежу</string>
     <string name="menu_all_loans_sum_by_payment_hint">Сколько можно взять в кредит при таком платеже</string>
     <string name="sum_by_payment">Сумма по платежу</string>
@@ -313,4 +315,25 @@
     <string name="support_log_chooser_title">Лог работы платежной системы…</string>
     <string name="menu_item_premium">Получить премиум</string>
     <string name="widget_label_license_required">Доступно после покупки</string>
+    <string name="analytics_screen_title">Все кредиты</string>
+    <string name="analytics_tab_analytics">Аналитика</string>
+    <string name="analytics_tab_compare">Какой погашать?</string>
+    <string name="analytics_debt_donut_title">Диаграмма текущего долга по кредитам</string>
+    <string name="analytics_remaining_debt">Остаток долга</string>
+    <string name="analytics_you_owe">Вы должны банкам</string>
+    <string name="analytics_loans_interest_title">Сумма всех кредитов и предполагаемые проценты</string>
+    <string name="analytics_loans_interest_footer">Сумма всех кредитов и предполагаемые проценты</string>
+    <string name="analytics_total_loans_amount">Сумма всех кредитов</string>
+    <string name="analytics_total_interest_accrued">Будет начислено процентов</string>
+    <string name="analytics_timeline_title">Выплачиваемый долг и начисленные проценты</string>
+    <string name="analytics_timeline_footer">Сумма всех кредитов и предполагаемые проценты</string>
+    <string name="analytics_paid_interest">Выплаченные проценты</string>
+    <string name="analytics_repayment_progress_title">Прогресс выплаты кредитов</string>
+    <string name="analytics_debt_paid">Выплачено долга</string>
+    <string name="analytics_interest_paid">Выплачено процентов</string>
+    <string name="analytics_remaining_to_pay">Осталось выплатить</string>
+    <string name="analytics_yearly_load_title">Долговая нагрузка по годам</string>
+    <string name="analytics_yearly_load_footer">Диаграмма долговой нагрузки по годам</string>
+    <string name="analytics_principal_repayment">Погашение тела кредита</string>
+    <string name="analytics_interest_repayment">Погашение процентов</string>
 </resources>

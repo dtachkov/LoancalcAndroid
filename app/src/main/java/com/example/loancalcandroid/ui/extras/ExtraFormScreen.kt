@@ -48,8 +48,6 @@ import androidx.lifecycle.ViewModelStoreOwner
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.example.loancalcandroid.R
 import com.example.loancalcandroid.ui.common.FeatureDateRow
-import com.example.loancalcandroid.ui.common.FeatureInputRow
-import com.example.loancalcandroid.ui.common.FeatureMoneyInputRow
 import com.example.loancalcandroid.ui.common.LoanCalcScaffold
 import com.example.loancalcandroid.ui.common.LoanOutlinedTextField
 import com.example.loancalcandroid.ui.extraFormViewModel
@@ -151,22 +149,26 @@ fun ExtraFormScreen(
                 Text(text = error, color = MaterialTheme.colorScheme.error)
             }
 
-            if (uiState.selectedType == ExtraType.CHANGE_RATE) {
-                FeatureInputRow(
-                    label = stringResource(R.string.extra_payment_rate),
-                    value = uiState.amount,
-                    onValueChange = viewModel::updateAmount,
-                    keyboardType = KeyboardType.Decimal,
-                    error = uiState.amountError,
-                )
-            } else {
-                FeatureMoneyInputRow(
-                    label = stringResource(R.string.extra_payment_amount),
-                    value = uiState.amount,
-                    onValueChange = viewModel::updateAmount,
-                    error = uiState.amountError,
-                )
-            }
+            LoanOutlinedTextField(
+                value = uiState.amount,
+                onValueChange = viewModel::updateAmount,
+                label = {
+                    Text(
+                        stringResource(
+                            if (uiState.selectedType == ExtraType.CHANGE_RATE) {
+                                R.string.extra_payment_rate
+                            } else {
+                                R.string.extra_payment_amount
+                            },
+                        ),
+                    )
+                },
+                modifier = Modifier.fillMaxWidth(),
+                singleLine = true,
+                keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Decimal),
+                isError = uiState.amountError != null,
+                supportingText = uiState.amountError?.let { { Text(it) } },
+            )
 
             if (uiState.showInterestBreakdown) {
                 ExtraBreakdownRow(

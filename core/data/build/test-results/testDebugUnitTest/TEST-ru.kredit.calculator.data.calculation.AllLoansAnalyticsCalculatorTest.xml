@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuite name="ru.kredit.calculator.data.calculation.AllLoansAnalyticsCalculatorTest" tests="2" skipped="0" failures="0" errors="0" timestamp="2026-06-14T14:30:29" hostname="Mac-mini-Tackov.local" time="0.093">
+  <properties/>
+  <testcase name="timeline_smallLoan_matchesUserScale" classname="ru.kredit.calculator.data.calculation.AllLoansAnalyticsCalculatorTest" time="0.075"/>
+  <testcase name="timeline_debtDecreasesAndInterestGrows" classname="ru.kredit.calculator.data.calculation.AllLoansAnalyticsCalculatorTest" time="0.017"/>
+  <system-out><![CDATA[Timeline size: 121
+First: debt=11795.65370097834, interest=120.81336986301369
+Last: debt=0.0, interest=8486.443122636632
+Mid: debt=7479.848335655511, interest=6023.489268699277
+]]></system-out>
+  <system-err><![CDATA[]]></system-err>
+</testsuite>

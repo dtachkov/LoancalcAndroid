@@ -85,6 +85,8 @@ dependencies {
     implementation(libs.rustore.review)
     implementation(libs.rustore.billingclient)
     implementation(libs.appmetrica.analytics)
+    implementation(libs.vico.compose)
+    implementation(libs.vico.compose.m3)
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)

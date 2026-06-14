@@ -10,6 +10,8 @@
     <string name="all_loans_payments_for_month">Amount for %1$s</string>
     <string name="menu_all_loans_compare">Best for extras</string>
     <string name="menu_all_loans_compare_hint">Savings from early repayment are valid on the date of the last payment on the loan</string>
+    <string name="menu_all_loans_analytics">Analytics</string>
+    <string name="menu_all_loans_analytics_hint">Charts and diagrams for all loans</string>
     <string name="menu_all_loans_sum_by_payment">Sum by payment</string>
     <string name="menu_all_loans_sum_by_payment_hint">Payment by sum</string>
     <string name="sum_by_payment">Sum by payment</string>
