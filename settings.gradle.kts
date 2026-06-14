@@ -21,5 +21,6 @@ dependencyResolutionManagement {
 
 rootProject.name = "LoanCalcAndroid"
 include(":app")
+include(":calculation")
 include(":core:database")
 include(":core:data")

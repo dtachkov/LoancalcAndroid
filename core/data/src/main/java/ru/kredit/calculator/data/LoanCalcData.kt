@@ -2,6 +2,7 @@ package ru.kredit.calculator.data
 
 import android.content.Context
 import kotlinx.coroutines.Dispatchers
+import ru.kredit.calculator.data.calculation.LoanCalculator
 import ru.kredit.calculator.data.preferences.ChestPreferences
 import ru.kredit.calculator.data.preferences.SettingsPreferences
 import ru.kredit.calculator.data.repository.ExtraRepository
@@ -18,6 +19,7 @@ class LoanCalcData private constructor(
     val importExportRepository: ImportExportRepository,
     val settingsPreferences: SettingsPreferences,
     val chestPreferences: ChestPreferences,
+    val loanCalculator: LoanCalculator,
 ) {
     companion object {
         @Volatile
@@ -66,6 +68,7 @@ class LoanCalcData private constructor(
                 importExportRepository = importExportRepository,
                 settingsPreferences = SettingsPreferences(context),
                 chestPreferences = ChestPreferences(context, buildType),
+                loanCalculator = LoanCalculator(),
             )
         }
     }

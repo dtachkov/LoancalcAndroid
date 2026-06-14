@@ -1,0 +1,16 @@
+{
+    "description": "400 месяцев под 55%",
+    "loan": {
+        "start_date": "2016-08-07",
+        "extras": [],
+        "issue_date": "2016-07-07",
+        "is_first_payment_interest_only": false,
+        "amount": 100000,
+        "rate": 55,
+        "apply_extras_immediately": false,
+        "process_extras_by_balance_like_sberbank": false,
+        "term": 400,
+        "type": 0,
+        "payments": [ ]
+    }
+}

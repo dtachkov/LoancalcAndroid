@@ -16,8 +16,13 @@ import com.example.loancalcandroid.R
 import com.example.loancalcandroid.ui.common.AllLoansScreen
 import com.example.loancalcandroid.ui.common.FeaturePlaceholderScreen
 import com.example.loancalcandroid.ui.common.SettingsScreen
+import com.example.loancalcandroid.ui.extras.ExtraFormScreen
+import com.example.loancalcandroid.ui.extras.ExtrasListScreen
 import com.example.loancalcandroid.ui.home.HomeScreen
 import com.example.loancalcandroid.ui.home.HomeViewModel
+import com.example.loancalcandroid.ui.loan.LoanEditorScreen
+import com.example.loancalcandroid.ui.requisites.RequisitesScreen
+import com.example.loancalcandroid.ui.schedule.ScheduleScreen
 
 @Composable
 fun LoanCalcNavGraph(
@@ -64,12 +69,90 @@ fun LoanCalcNavGraph(
             )
         }
 
-        loanFeatureRoute(Route.ADD_LOAN, R.string.add_loan, navController)
-        loanFeatureRoute(Route.EDIT_LOAN, R.string.action_edit_loan, navController, withLoanId = true)
-        loanFeatureRoute(Route.SCHEDULE, R.string.quick_schedule, navController, withLoanId = true)
-        loanFeatureRoute(Route.REQUISITES, R.string.quick_requisites, navController, withLoanId = true)
-        loanFeatureRoute(Route.EXTRAS_LIST, R.string.menu_extras_list, navController, withLoanId = true)
-        loanFeatureRoute(Route.EXTRA_FORM, R.string.quick_early_payment, navController, withLoanId = true)
+        composable(Route.ADD_LOAN) {
+            LoanEditorScreen(
+                loanId = null,
+                onBack = { navController.popBackStack() },
+                onSaved = { loanId ->
+                    homeViewModel.selectLoan(loanId)
+                    navController.popBackStack()
+                },
+            )
+        }
+
+        composable(
+            route = Route.EDIT_LOAN,
+            arguments = listOf(navArgument(Route.ARG_LOAN_ID) { type = NavType.LongType }),
+        ) { backStackEntry ->
+            val loanId = backStackEntry.arguments?.getLong(Route.ARG_LOAN_ID) ?: return@composable
+            LoanEditorScreen(
+                loanId = loanId,
+                onBack = { navController.popBackStack() },
+                onSaved = {
+                    navController.popBackStack()
+                },
+            )
+        }
+
+        composable(
+            route = Route.SCHEDULE,
+            arguments = listOf(navArgument(Route.ARG_LOAN_ID) { type = NavType.LongType }),
+        ) { backStackEntry ->
+            val loanId = backStackEntry.arguments?.getLong(Route.ARG_LOAN_ID) ?: return@composable
+            ScheduleScreen(loanId = loanId, onBack = { navController.popBackStack() })
+        }
+
+        composable(
+            route = Route.REQUISITES,
+            arguments = listOf(navArgument(Route.ARG_LOAN_ID) { type = NavType.LongType }),
+        ) { backStackEntry ->
+            val loanId = backStackEntry.arguments?.getLong(Route.ARG_LOAN_ID) ?: return@composable
+            RequisitesScreen(loanId = loanId, onBack = { navController.popBackStack() })
+        }
+
+        composable(
+            route = Route.EXTRAS_LIST,
+            arguments = listOf(navArgument(Route.ARG_LOAN_ID) { type = NavType.LongType }),
+        ) { backStackEntry ->
+            val loanId = backStackEntry.arguments?.getLong(Route.ARG_LOAN_ID) ?: return@composable
+            ExtrasListScreen(
+                loanId = loanId,
+                onBack = { navController.popBackStack() },
+                onAddExtra = { navController.navigate(Route.extraForm(loanId)) },
+                onEditExtra = { extraId -> navController.navigate(Route.editExtra(loanId, extraId)) },
+            )
+        }
+
+        composable(
+            route = Route.EXTRA_FORM,
+            arguments = listOf(navArgument(Route.ARG_LOAN_ID) { type = NavType.LongType }),
+        ) { backStackEntry ->
+            val loanId = backStackEntry.arguments?.getLong(Route.ARG_LOAN_ID) ?: return@composable
+            ExtraFormScreen(
+                loanId = loanId,
+                extraId = null,
+                onBack = { navController.popBackStack() },
+                onSaved = { navController.popBackStack() },
+            )
+        }
+
+        composable(
+            route = Route.EDIT_EXTRA,
+            arguments = listOf(
+                navArgument(Route.ARG_LOAN_ID) { type = NavType.LongType },
+                navArgument(Route.ARG_EXTRA_ID) { type = NavType.LongType },
+            ),
+        ) { backStackEntry ->
+            val loanId = backStackEntry.arguments?.getLong(Route.ARG_LOAN_ID) ?: return@composable
+            val extraId = backStackEntry.arguments?.getLong(Route.ARG_EXTRA_ID) ?: return@composable
+            ExtraFormScreen(
+                loanId = loanId,
+                extraId = extraId,
+                onBack = { navController.popBackStack() },
+                onSaved = { navController.popBackStack() },
+            )
+        }
+
         loanFeatureRoute(Route.FORECAST, R.string.menu_forecast, navController, withLoanId = true)
         loanFeatureRoute(Route.BEST_DATE, R.string.menu_best_date, navController, withLoanId = true)
         loanFeatureRoute(Route.TAX, R.string.menu_tax, navController, withLoanId = true)

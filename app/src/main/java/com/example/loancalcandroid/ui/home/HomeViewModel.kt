@@ -7,12 +7,15 @@ import com.example.loancalcandroid.ui.home.mapper.LoanPresentationMapper
 import com.example.loancalcandroid.ui.home.model.AllLoansSummaryUiModel
 import com.example.loancalcandroid.ui.home.model.LoanCardUiModel
 import com.example.loancalcandroid.ui.home.model.LoanDetailsUiModel
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import ru.kredit.calculator.data.LoanCalcData
+import ru.kredit.calculator.data.calculation.LoanCalculationResult
 import ru.kredit.calculator.data.model.Loan
 
 data class HomeUiState(
@@ -28,9 +31,11 @@ data class HomeUiState(
 class HomeViewModel(
     application: Application,
 ) : AndroidViewModel(application) {
-    private val loanRepository = LoanCalcData.get().loanRepository
-    private val extraRepository = LoanCalcData.get().extraRepository
-    private val chestPreferences = LoanCalcData.get().chestPreferences
+    private val data = LoanCalcData.get()
+    private val loanRepository = data.loanRepository
+    private val extraRepository = data.extraRepository
+    private val chestPreferences = data.chestPreferences
+    private val loanCalculator = data.loanCalculator
 
     private val _uiState = MutableStateFlow(HomeUiState())
     val uiState: StateFlow<HomeUiState> = _uiState.asStateFlow()
@@ -38,8 +43,11 @@ class HomeViewModel(
     init {
         viewModelScope.launch {
             loanRepository.observeLoans().collect { loans ->
-                val cards = loans.map(LoanPresentationMapper::toCard)
-                val summary = LoanPresentationMapper.toAllLoansSummary(loans)
+                val calculations = calculateLoans(loans)
+                val cards = loans.map { loan ->
+                    LoanPresentationMapper.toCard(loan, calculations[loan.id])
+                }
+                val summary = LoanPresentationMapper.toAllLoansSummary(loans, calculations)
                 val current = _uiState.value
                 val pagerIndex = resolvePagerIndex(
                     loans = loans,
@@ -58,7 +66,7 @@ class HomeViewModel(
                         isLoading = false,
                     )
                 }
-                loadLoanDetails(selectedId)
+                loadLoanDetails(selectedId, calculations)
             }
         }
     }
@@ -73,7 +81,10 @@ class HomeViewModel(
             )
         }
         selectedId?.let { chestPreferences.setLastCalculatedLoanId(it) }
-        loadLoanDetails(selectedId)
+        viewModelScope.launch {
+            val calculations = calculateLoans(loans)
+            loadLoanDetails(selectedId, calculations)
+        }
     }
 
     fun selectLoan(loanId: Long) {
@@ -111,16 +122,43 @@ class HomeViewModel(
         }
     }
 
-    private fun loadLoanDetails(loanId: Long?) {
+    private suspend fun calculateLoans(loans: List<Loan>): Map<Long, LoanCalculationResult> {
+        val extrasByLoan = buildMap {
+            for (loan in loans) {
+                if (!loan.validate()) continue
+                put(loan.id, extraRepository.getExtras(loan.id))
+            }
+        }
+        return withContext(Dispatchers.Default) {
+            buildMap {
+                for (loan in loans) {
+                    if (!loan.validate()) continue
+                    runCatching {
+                        loanCalculator.calculate(loan, extrasByLoan[loan.id].orEmpty())
+                    }.onSuccess { put(loan.id, it) }
+                }
+            }
+        }
+    }
+
+    private fun loadLoanDetails(
+        loanId: Long?,
+        calculations: Map<Long, LoanCalculationResult>,
+    ) {
         if (loanId == null) {
             _uiState.update { it.copy(loanDetails = null) }
             return
         }
+        val loan = _uiState.value.loansRaw.firstOrNull { it.id == loanId }
+        val calculation = calculations[loanId]
+        if (loan == null || calculation == null) {
+            _uiState.update { it.copy(loanDetails = null) }
+            return
+        }
         viewModelScope.launch {
-            val loan = loanRepository.getLoan(loanId) ?: return@launch
             val extras = extraRepository.getExtras(loanId)
             _uiState.update {
-                it.copy(loanDetails = LoanPresentationMapper.toDetails(loan, extras))
+                it.copy(loanDetails = LoanPresentationMapper.toDetails(loan, extras, calculation))
             }
         }
     }

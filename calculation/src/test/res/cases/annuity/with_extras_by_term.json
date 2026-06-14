@@ -1,0 +1,281 @@
+{
+  "description": "Аннуитентный кредит с досрочными погашениями в уменьшение срока. 1 платеж - проценты",
+  "consider_days_off": true,
+  "loan": {
+    "type": 0,
+    "issue_date": "2014-09-15",
+    "start_date": "2014-10-20",
+    "amount": 300000.0,
+    "rate": 17.5,
+    "term": 60,
+    "is_first_payment_interest_only": true,
+    "apply_extras_immediately": true,
+    "process_extras_by_balance_like_sberbank": false,
+    "extras": [
+      {
+        "date": "2014-10-20",
+        "savings": 0.0,
+        "value": 18885.75,
+        "type": 3
+      },
+      {
+        "date": "2014-11-11",
+        "savings": 0.0,
+        "value": 17300.0,
+        "type": 3
+      },
+      {
+        "date": "2014-12-13",
+        "savings": 0.0,
+        "value": 17000.0,
+        "type": 3
+      },
+      {
+        "date": "2014-12-24",
+        "savings": 0.0,
+        "value": 17383.0,
+        "type": 3
+      },
+      {
+        "date": "2015-02-09",
+        "savings": 0.0,
+        "value": 32400.0,
+        "type": 3
+      },
+      {
+        "date": "2015-02-14",
+        "savings": 0.0,
+        "value": 40000.0,
+        "type": 3
+      },
+      {
+        "date": "2015-03-07",
+        "savings": 0.0,
+        "value": 72383.0625,
+        "type": 3
+      }
+    ],
+    "payments": [
+      {
+        "date": "2014-10-20",
+        "index": 0,
+        "end_balance": 300000.0,
+        "extras": 0.0,
+        "interest": 5034.246575342466,
+        "principal": 0.0,
+        "rate_extra": 0.0,
+        "total": 5034.246575342466
+      },
+      {
+        "date": "2014-10-20",
+        "index": 1,
+        "end_balance": 281114.25,
+        "extras": 18885.75,
+        "interest": 0.0,
+        "principal": 18885.75,
+        "rate_extra": 0.0,
+        "total": 18885.75
+      },
+      {
+        "date": "2014-11-11",
+        "index": 2,
+        "end_balance": 266779.42770547944,
+        "extras": 17300.0,
+        "interest": 2965.177705479453,
+        "principal": 14334.822294520547,
+        "rate_extra": 0.0,
+        "total": 17300.0
+      },
+      {
+        "date": "2014-11-20",
+        "index": 3,
+        "end_balance": 260313.66109074923,
+        "extras": 0.0,
+        "interest": 1151.171503112685,
+        "principal": 6465.766614730201,
+        "rate_extra": 0.0,
+        "total": 7616.938117842886
+      },
+      {
+        "date": "2014-12-13",
+        "index": 4,
+        "end_balance": 246184.24324387324,
+        "extras": 17000.0,
+        "interest": 2870.5821531240144,
+        "principal": 14129.417846875986,
+        "rate_extra": 0.0,
+        "total": 17000.0
+      },
+      {
+        "date": "2014-12-22",
+        "index": 5,
+        "end_balance": 239629.60699756214,
+        "extras": 0.0,
+        "interest": 1062.3018715317817,
+        "principal": 6554.636246311104,
+        "rate_extra": 0.0,
+        "total": 7616.938117842886
+      },
+      {
+        "date": "2014-12-24",
+        "index": 6,
+        "end_balance": 222476.38881249132,
+        "extras": 17383.0,
+        "interest": 229.78181492917065,
+        "principal": 17153.21818507083,
+        "rate_extra": 0.0,
+        "total": 17383.0
+      },
+      {
+        "date": "2015-01-20",
+        "index": 7,
+        "end_balance": 217739.45326215262,
+        "extras": 0.0,
+        "interest": 2880.002567504169,
+        "principal": 4736.935550338717,
+        "rate_extra": 0.0,
+        "total": 7616.938117842886
+      },
+      {
+        "date": "2015-02-09",
+        "index": 8,
+        "end_balance": 187427.3658276801,
+        "extras": 32400.0,
+        "interest": 2087.912565527491,
+        "principal": 30312.08743447251,
+        "rate_extra": 0.0,
+        "total": 32400.0
+      },
+      {
+        "date": "2015-02-14",
+        "index": 9,
+        "end_balance": 147876.6780060341,
+        "extras": 40000.0,
+        "interest": 449.3121783540264,
+        "principal": 39550.68782164597,
+        "rate_extra": 0.0,
+        "total": 40000.0
+      },
+      {
+        "date": "2015-02-20",
+        "index": 10,
+        "end_balance": 140685.13855094832,
+        "extras": 0.0,
+        "interest": 425.3986627570845,
+        "principal": 7191.539455085801,
+        "rate_extra": 0.0,
+        "total": 7616.938117842886
+      },
+      {
+        "date": "2015-03-07",
+        "index": 11,
+        "end_balance": 69313.85273230789,
+        "extras": 72383.0625,
+        "interest": 1011.7766813595663,
+        "principal": 71371.28581864043,
+        "rate_extra": 0.0,
+        "total": 72383.0625
+      },
+      {
+        "date": "2015-03-20",
+        "index": 12,
+        "end_balance": 62128.93931300199,
+        "extras": 0.0,
+        "interest": 432.0246985369875,
+        "principal": 7184.913419305898,
+        "rate_extra": 0.0,
+        "total": 7616.938117842886
+      },
+      {
+        "date": "2015-04-20",
+        "index": 13,
+        "end_balance": 55435.424471249615,
+        "extras": 0.0,
+        "interest": 923.423276090509,
+        "principal": 6693.514841752377,
+        "rate_extra": 0.0,
+        "total": 7616.938117842886
+      },
+      {
+        "date": "2015-05-20",
+        "index": 14,
+        "end_balance": 48615.84519854114,
+        "extras": 0.0,
+        "interest": 797.3588451344123,
+        "principal": 6819.579272708474,
+        "rate_extra": 0.0,
+        "total": 7616.938117842886
+      },
+      {
+        "date": "2015-06-22",
+        "index": 15,
+        "end_balance": 41768.102987606675,
+        "extras": 0.0,
+        "interest": 769.195906908425,
+        "principal": 6847.742210934461,
+        "rate_extra": 0.0,
+        "total": 7616.938117842886
+      },
+      {
+        "date": "2015-07-20",
+        "index": 16,
+        "end_balance": 34711.88734822755,
+        "extras": 0.0,
+        "interest": 560.7224784637609,
+        "principal": 7056.215639379125,
+        "rate_extra": 0.0,
+        "total": 7616.938117842886
+      },
+      {
+        "date": "2015-08-20",
+        "index": 17,
+        "end_balance": 27610.87248754668,
+        "extras": 0.0,
+        "interest": 515.9232571620122,
+        "principal": 7101.014860680873,
+        "rate_extra": 0.0,
+        "total": 7616.938117842886
+      },
+      {
+        "date": "2015-09-21",
+        "index": 18,
+        "end_balance": 20417.553235266154,
+        "extras": 0.0,
+        "interest": 423.61886556236,
+        "principal": 7193.319252280526,
+        "rate_extra": 0.0,
+        "total": 7616.938117842886
+      },
+      {
+        "date": "2015-10-20",
+        "index": 19,
+        "end_balance": 13084.503015146489,
+        "extras": 0.0,
+        "interest": 283.8878977232212,
+        "principal": 7333.050220119664,
+        "rate_extra": 0.0,
+        "total": 7616.938117842886
+      },
+      {
+        "date": "2015-11-20",
+        "index": 20,
+        "end_balance": 5662.040044857493,
+        "extras": 0.0,
+        "interest": 194.47514755388963,
+        "principal": 7422.462970288996,
+        "rate_extra": 0.0,
+        "total": 7616.938117842886
+      },
+      {
+        "date": "2015-12-21",
+        "index": 21,
+        "end_balance": 0.0,
+        "extras": 0.0,
+        "interest": 84.1549787489093,
+        "principal": 5662.040044857493,
+        "rate_extra": 0.0,
+        "total": 5746.195023606402
+      }
+    ]
+  }
+}

@@ -1,0 +1,94 @@
+{
+  "description": "Аннуитентный кредит с досрочками по сроку. Очередной платеж после досрочки - только проценты",
+  "loan": {
+    "type": 0,
+    "start_date": "2015-08-02",
+    "issue_date": "2015-07-02",
+    "amount": 100000.0,
+    "rate": 20.0,
+    "apply_extras_immediately": true,
+    "is_first_payment_interest_only": false,
+    "process_extras_by_balance_like_sberbank": true,
+    "term": 5,
+    "extras": [
+      {
+        "date": "2015-09-12",
+        "savings": 0.0,
+        "value": 20000.0,
+        "type": 3
+      }
+    ],
+    "payments": [
+      {
+        "date": "2015-08-02",
+        "index": 0,
+        "end_balance": 80687.6119067907,
+        "extras": 0.0,
+        "interest": 1698.6301369863013,
+        "principal": 19312.388093209294,
+        "rate_extra": 0.0,
+        "total": 21011.018230195597
+      },
+      {
+        "date": "2015-09-02",
+        "index": 1,
+        "end_balance": 61047.1777692584,
+        "extras": 0.0,
+        "interest": 1370.584092663294,
+        "principal": 19640.434137532302,
+        "rate_extra": 0.0,
+        "total": 21011.018230195597
+      },
+      {
+        "date": "2015-09-12",
+        "index": 2,
+        "end_balance": 41381.68285292557,
+        "extras": 20000.0,
+        "interest": 334.50508366716895,
+        "principal": 19665.49491633283,
+        "rate_extra": 0.0,
+        "total": 20000.0
+      },
+      {
+        "date": "2015-10-02",
+        "index": 3,
+        "end_balance": 41381.68285292557,
+        "extras": 0.0,
+        "interest": 453.49789427863647,
+        "principal": 0.0,
+        "rate_extra": 0.0,
+        "total": 453.49789427863647
+      },
+      {
+        "date": "2015-11-02",
+        "index": 4,
+        "end_balance": 21073.586358861863,
+        "extras": 0.0,
+        "interest": 702.92173613,
+        "principal": 20308.0964940656,
+        "rate_extra": 0.0,
+        "total": 21011.018230195597
+      },
+      {
+        "date": "2015-12-02",
+        "index": 5,
+        "end_balance": 408.9832468941313,
+        "extras": 0.0,
+        "interest": 346.4151182278663,
+        "principal": 20664.603111967732,
+        "rate_extra": 0.0,
+        "total": 21011.018230195597
+      },
+      {
+        "date": "2016-01-02",
+        "index": 6,
+        "end_balance": 0.0,
+        "extras": 0.0,
+        "interest": 6.945888094568495,
+        "principal": 408.9832468941313,
+        "rate_extra": 0.0,
+        "total": 415.9291349886998
+      }
+    ]
+  }
+}

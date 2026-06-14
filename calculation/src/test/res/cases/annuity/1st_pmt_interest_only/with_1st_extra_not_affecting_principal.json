@@ -1,0 +1,74 @@
+{
+  "description": "Аннуитентный кредит с первым платежом - проценты. Первый досрочный приходится на чисто-процентный период, и НЕ превышает сумму процентов",
+  "loan": {
+    "start_date": "2015-08-13",
+    "issue_date": "2015-07-21",
+    "is_first_payment_interest_only": true,
+    "amount": 100000.0,
+    "rate": 20.0,
+    "apply_extras_immediately": true,
+    "process_extras_by_balance_like_sberbank": false,
+    "term": 4,
+    "type": 0,
+    "extras": [
+      {
+        "date": "2015-08-07",
+        "savings": 0.0,
+        "value": 800.0,
+        "type": 1
+      }
+    ],
+    "payments": [
+      {
+        "date": "2015-08-07",
+        "index": 0,
+        "extras": 800.0,
+        "end_balance": 100000.0,
+        "interest": 800.0,
+        "principal": 0.0,
+        "rate_extra": 0.0,
+        "total": 800.0
+      },
+      {
+        "date": "2015-08-13",
+        "index": 1,
+        "extras": 0.0,
+        "end_balance": 100000.0,
+        "interest": 460.2739726027398,
+        "principal": 0.0,
+        "rate_extra": 0.0,
+        "total": 460.2739726027398
+      },
+      {
+        "date": "2015-09-13",
+        "index": 2,
+        "extras": 0.0,
+        "end_balance": 67248.06400761116,
+        "interest": 1698.6301369863013,
+        "principal": 32751.93599238884,
+        "rate_extra": 0.0,
+        "total": 34450.56612937514
+      },
+      {
+        "date": "2015-10-13",
+        "index": 3,
+        "extras": 0.0,
+        "end_balance": 33902.9455057584,
+        "interest": 1105.4476275223751,
+        "principal": 33345.11850185276,
+        "rate_extra": 0.0,
+        "total": 34450.56612937514
+      },
+      {
+        "date": "2015-11-13",
+        "index": 4,
+        "extras": 0.0,
+        "end_balance": 0.0,
+        "interest": 575.885649686855,
+        "principal": 33902.9455057584,
+        "rate_extra": 0.0,
+        "total": 34478.83115544525
+      }
+    ]
+  }
+}

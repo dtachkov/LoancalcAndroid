@@ -8,7 +8,7 @@ android {
     compileSdk = 35
 
     defaultConfig {
-        minSdk = 31
+        minSdk = 30
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }
 
@@ -23,6 +23,7 @@ android {
 }
 
 dependencies {
+    implementation(project(":calculation"))
     implementation(project(":core:database"))
     implementation(libs.androidx.core.ktx)
     implementation(libs.kotlinx.coroutines.core)

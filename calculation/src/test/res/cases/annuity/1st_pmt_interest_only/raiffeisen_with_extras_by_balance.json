@@ -1,0 +1,1241 @@
+{
+  "description": "Аннуитентный кредит Райффайзен с разными типами досрочных погашений. Первый платеж - только проценты",
+  "consider_days_off": true,
+  "loan": {
+    "start_date": "2012-12-18",
+    "issue_date": "2012-11-29",
+    "is_first_payment_interest_only": true,
+    "amount": 1800000.0,
+    "rate": 13.5,
+    "apply_extras_immediately": true,
+    "is_raiffeisen": true,
+    "process_extras_by_balance_like_sberbank": false,
+    "term": 120,
+    "type": 0,
+    "ignore_passed_periods_after_rate_change": true,
+    "extras": [
+      {
+        "date": "2014-09-18",
+        "value": 60000,
+        "type": 1
+      },
+      {
+        "date": "2014-10-20",
+        "value": 90000,
+        "type": 1
+      },
+      {
+        "date": "2014-11-19",
+        "value": 60000.0,
+        "type": 1
+      },
+      {
+        "date": "2015-02-18",
+        "value": 120000,
+        "type": 1
+      },
+      {
+        "date": "2015-03-18",
+        "value": 60000,
+        "type": 1
+      },
+      {
+        "date": "2015-05-18",
+        "value": 60000,
+        "type": 1
+      },
+      {
+        "date": "2015-06-18",
+        "value": 60000,
+        "type": 1
+      },
+      {
+        "date": "2015-07-20",
+        "value": 60000,
+        "type": 1
+      },
+      {
+        "date": "2015-09-19",
+        "value": 90000,
+        "type": 1
+      },
+      {
+        "date": "2015-10-19",
+        "value": 60000,
+        "type": 1
+      }
+    ],
+    "payments": [
+      {
+        "index": 0,
+        "date": "2012-12-18",
+        "interest": 12614.75,
+        "principal": 0,
+        "total": 12614.75,
+        "end_balance": 1800000,
+        "extras": 0
+      },
+      {
+        "index": 1,
+        "date": "2013-01-18",
+        "interest": 20612.89,
+        "principal": 6905.94,
+        "total": 27518.83,
+        "end_balance": 1793094.06,
+        "extras": 0
+      },
+      {
+        "index": 2,
+        "date": "2013-02-18",
+        "interest": 20559.17,
+        "principal": 6959.66,
+        "total": 27518.83,
+        "end_balance": 1786134.4,
+        "extras": 0
+      },
+      {
+        "index": 3,
+        "date": "2013-03-18",
+        "interest": 18497.5,
+        "principal": 9021.33,
+        "total": 27518.83,
+        "end_balance": 1777113.07,
+        "extras": 0
+      },
+      {
+        "index": 4,
+        "date": "2013-04-18",
+        "interest": 20375.94,
+        "principal": 7142.89,
+        "total": 27518.83,
+        "end_balance": 1769970.18,
+        "extras": 0
+      },
+      {
+        "index": 5,
+        "date": "2013-05-18",
+        "interest": 19639.4,
+        "principal": 7879.43,
+        "total": 27518.83,
+        "end_balance": 1762090.75,
+        "extras": 0
+      },
+      {
+        "index": 6,
+        "date": "2013-06-18",
+        "interest": 20203.7,
+        "principal": 7315.13,
+        "total": 27518.83,
+        "end_balance": 1754775.62,
+        "extras": 0
+      },
+      {
+        "index": 7,
+        "date": "2013-07-18",
+        "interest": 19470.8,
+        "principal": 8048.03,
+        "total": 27518.83,
+        "end_balance": 1746727.59,
+        "extras": 0
+      },
+      {
+        "index": 8,
+        "date": "2013-08-19",
+        "interest": 20673.6,
+        "principal": 6845.23,
+        "total": 27518.83,
+        "end_balance": 1739882.36,
+        "extras": 0
+      },
+      {
+        "index": 9,
+        "date": "2013-09-18",
+        "interest": 19305.54,
+        "principal": 8213.29,
+        "total": 27518.83,
+        "end_balance": 1731669.07,
+        "extras": 0
+      },
+      {
+        "index": 10,
+        "date": "2013-10-18",
+        "interest": 19214.41,
+        "principal": 8304.42,
+        "total": 27518.83,
+        "end_balance": 1723364.65,
+        "extras": 0
+      },
+      {
+        "index": 11,
+        "date": "2013-11-18",
+        "interest": 19759.67,
+        "principal": 7759.16,
+        "total": 27518.83,
+        "end_balance": 1715605.49,
+        "extras": 0
+      },
+      {
+        "index": 12,
+        "date": "2013-12-18",
+        "interest": 19036.17,
+        "principal": 8482.66,
+        "total": 27518.83,
+        "end_balance": 1707122.83,
+        "extras": 0
+      },
+      {
+        "index": 13,
+        "date": "2014-01-18",
+        "interest": 19573.45,
+        "principal": 7945.38,
+        "total": 27518.83,
+        "end_balance": 1699177.45,
+        "extras": 0
+      },
+      {
+        "index": 14,
+        "date": "2014-02-18",
+        "interest": 19482.35,
+        "principal": 8036.48,
+        "total": 27518.83,
+        "end_balance": 1691140.97,
+        "extras": 0
+      },
+      {
+        "index": 15,
+        "date": "2014-03-18",
+        "interest": 17513.73,
+        "principal": 10005.1,
+        "total": 27518.83,
+        "end_balance": 1681135.87,
+        "extras": 0
+      },
+      {
+        "index": 16,
+        "date": "2014-04-18",
+        "interest": 19275.49,
+        "principal": 8243.34,
+        "total": 27518.83,
+        "end_balance": 1672892.53,
+        "extras": 0
+      },
+      {
+        "index": 17,
+        "date": "2014-05-19",
+        "interest": 19180.97,
+        "principal": 8337.86,
+        "total": 27518.83,
+        "end_balance": 1664554.67,
+        "extras": 0
+      },
+      {
+        "index": 18,
+        "date": "2014-06-18",
+        "interest": 18469.72,
+        "principal": 9049.11,
+        "total": 27518.83,
+        "end_balance": 1655505.56,
+        "extras": 0
+      },
+      {
+        "index": 19,
+        "date": "2014-07-18",
+        "interest": 18369.31,
+        "principal": 9149.52,
+        "total": 27518.83,
+        "end_balance": 1646356.04,
+        "extras": 0
+      },
+      {
+        "index": 20,
+        "date": "2014-08-18",
+        "interest": 18876.71,
+        "principal": 8642.12,
+        "total": 27518.83,
+        "end_balance": 1637713.92,
+        "extras": 0
+      },
+      {
+        "index": 21,
+        "date": "2014-09-18",
+        "interest": 18777.62,
+        "principal": 8741.21,
+        "total": 27518.83,
+        "end_balance": 1628972.71,
+        "extras": 0
+      },
+      {
+        "index": 22,
+        "date": "2014-09-18",
+        "interest": 0,
+        "principal": 60000,
+        "total": 60000,
+        "end_balance": 1568972.71,
+        "extras": 60000
+      },
+      {
+        "index": 23,
+        "date": "2014-10-18",
+        "interest": 17409.15,
+        "principal": 9097.36,
+        "total": 26506.51,
+        "end_balance": 1559875.35,
+        "extras": 0
+      },
+      {
+        "index": 24,
+        "date": "2014-10-20",
+        "interest": 0,
+        "principal": 90000,
+        "total": 90000,
+        "end_balance": 1469875.35,
+        "extras": 90000
+      },
+      {
+        "index": 25,
+        "date": "2014-11-18",
+        "interest": 16919.8,
+        "principal": 8053.49,
+        "total": 24973.29,
+        "end_balance": 1461821.86,
+        "extras": 0
+      },
+      {
+        "index": 26,
+        "date": "2014-11-19",
+        "interest": 0,
+        "principal": 60000,
+        "total": 60000,
+        "end_balance": 1401821.86,
+        "extras": 60000
+      },
+      {
+        "index": 27,
+        "date": "2014-12-18",
+        "interest": 15576.65,
+        "principal": 8377.91,
+        "total": 23954.56,
+        "end_balance": 1393443.95,
+        "extras": 0
+      },
+      {
+        "index": 28,
+        "date": "2015-01-19",
+        "interest": 16492.27,
+        "principal": 7462.29,
+        "total": 23954.56,
+        "end_balance": 1385981.66,
+        "extras": 0
+      },
+      {
+        "index": 29,
+        "date": "2015-02-18",
+        "interest": 15378.7,
+        "principal": 8575.86,
+        "total": 23954.56,
+        "end_balance": 1377405.8,
+        "extras": 0
+      },
+      {
+        "index": 30,
+        "date": "2015-02-18",
+        "interest": 0,
+        "principal": 120000,
+        "total": 120000,
+        "end_balance": 1257405.8,
+        "extras": 120000
+      },
+      {
+        "index": 31,
+        "date": "2015-03-18",
+        "interest": 13021.9,
+        "principal": 8852.3,
+        "total": 21874.2,
+        "end_balance": 1248553.5,
+        "extras": 0
+      },
+      {
+        "index": 32,
+        "date": "2015-03-18",
+        "interest": 0,
+        "principal": 60000,
+        "total": 60000,
+        "end_balance": 1188553.5,
+        "extras": 60000
+      },
+      {
+        "index": 33,
+        "date": "2015-04-18",
+        "interest": 13627.66,
+        "principal": 7176.63,
+        "total": 20804.29,
+        "end_balance": 1181376.87,
+        "extras": 0
+      },
+      {
+        "index": 34,
+        "date": "2015-05-18",
+        "interest": 13108.43,
+        "principal": 7695.86,
+        "total": 20804.29,
+        "end_balance": 1173681.01,
+        "extras": 0
+      },
+      {
+        "index": 35,
+        "date": "2015-05-18",
+        "interest": 0,
+        "principal": 60000,
+        "total": 60000,
+        "end_balance": 1113681.01,
+        "extras": 60000
+      },
+      {
+        "index": 36,
+        "date": "2015-06-18",
+        "interest": 12769.19,
+        "principal": 6972.86,
+        "total": 19742.05,
+        "end_balance": 1106708.15,
+        "extras": 0
+      },
+      {
+        "index": 37,
+        "date": "2015-06-18",
+        "interest": 0,
+        "principal": 60000,
+        "total": 60000,
+        "end_balance": 1046708.15,
+        "extras": 60000
+      },
+      {
+        "index": 38,
+        "date": "2015-07-18",
+        "interest": 11614.16,
+        "principal": 7061.63,
+        "total": 18675.79,
+        "end_balance": 1039646.52,
+        "extras": 0
+      },
+      {
+        "index": 39,
+        "date": "2015-07-20",
+        "interest": 0,
+        "principal": 60000,
+        "total": 60000,
+        "end_balance": 979646.52,
+        "extras": 60000
+      },
+      {
+        "index": 40,
+        "date": "2015-08-18",
+        "interest": 11276.77,
+        "principal": 6318.48,
+        "total": 17595.25,
+        "end_balance": 973328.04,
+        "extras": 0
+      },
+      {
+        "index": 41,
+        "date": "2015-09-18",
+        "interest": 11159.94,
+        "principal": 6435.31,
+        "total": 17595.25,
+        "end_balance": 966892.73,
+        "extras": 0
+      },
+      {
+        "index": 42,
+        "date": "2015-09-19",
+        "interest": 0,
+        "principal": 90000,
+        "total": 90000,
+        "end_balance": 876892.73,
+        "extras": 90000
+      },
+      {
+        "index": 43,
+        "date": "2015-10-19",
+        "interest": 10087.53,
+        "principal": 5877.65,
+        "total": 15965.18,
+        "end_balance": 871015.08,
+        "extras": 0
+      },
+      {
+        "index": 44,
+        "date": "2015-10-19",
+        "interest": 0,
+        "principal": 60000,
+        "total": 60000,
+        "end_balance": 811015.08,
+        "extras": 60000
+      },
+      {
+        "index": 45,
+        "date": "2015-11-18",
+        "interest": 8998.93,
+        "principal": 5870.29,
+        "total": 14869.22,
+        "end_balance": 805144.79,
+        "extras": 0
+      },
+      {
+        "index": 46,
+        "date": "2015-12-18",
+        "interest": 8933.8,
+        "principal": 5935.42,
+        "total": 14869.22,
+        "end_balance": 799209.37,
+        "extras": 0
+      },
+      {
+        "index": 47,
+        "date": "2016-01-18",
+        "interest": 9149.81,
+        "principal": 5719.41,
+        "total": 14869.22,
+        "end_balance": 793489.96,
+        "extras": 0
+      },
+      {
+        "index": 48,
+        "date": "2016-02-18",
+        "interest": 9073.1,
+        "principal": 5796.12,
+        "total": 14869.22,
+        "end_balance": 787693.84,
+        "extras": 0
+      },
+      {
+        "index": 49,
+        "date": "2016-03-18",
+        "interest": 8425.74,
+        "principal": 6443.48,
+        "total": 14869.22,
+        "end_balance": 781250.36,
+        "extras": 0
+      },
+      {
+        "index": 50,
+        "date": "2016-04-18",
+        "interest": 8933.15,
+        "principal": 5936.07,
+        "total": 14869.22,
+        "end_balance": 775314.29,
+        "extras": 0
+      },
+      {
+        "index": 51,
+        "date": "2016-05-18",
+        "interest": 8579.3,
+        "principal": 6289.92,
+        "total": 14869.22,
+        "end_balance": 769024.37,
+        "extras": 0
+      },
+      {
+        "index": 52,
+        "date": "2016-06-18",
+        "interest": 8793.35,
+        "principal": 6075.87,
+        "total": 14869.22,
+        "end_balance": 762948.5,
+        "extras": 0
+      },
+      {
+        "index": 53,
+        "date": "2016-07-18",
+        "interest": 8442.46,
+        "principal": 6426.76,
+        "total": 14869.22,
+        "end_balance": 756521.74,
+        "extras": 0
+      },
+      {
+        "index": 54,
+        "date": "2016-08-18",
+        "interest": 8650.39,
+        "principal": 6218.83,
+        "total": 14869.22,
+        "end_balance": 750302.91,
+        "extras": 0
+      },
+      {
+        "index": 55,
+        "date": "2016-09-19",
+        "interest": 8856.03,
+        "principal": 6013.19,
+        "total": 14869.22,
+        "end_balance": 744289.72,
+        "extras": 0
+      },
+      {
+        "index": 56,
+        "date": "2016-10-18",
+        "interest": 7961.46,
+        "principal": 6907.76,
+        "total": 14869.22,
+        "end_balance": 737381.96,
+        "extras": 0
+      },
+      {
+        "index": 57,
+        "date": "2016-11-18",
+        "interest": 8431.54,
+        "principal": 6437.68,
+        "total": 14869.22,
+        "end_balance": 730944.28,
+        "extras": 0
+      },
+      {
+        "index": 58,
+        "date": "2016-12-19",
+        "interest": 8357.93,
+        "principal": 6511.29,
+        "total": 14869.22,
+        "end_balance": 724432.99,
+        "extras": 0
+      },
+      {
+        "index": 59,
+        "date": "2017-01-18",
+        "interest": 8027.98,
+        "principal": 6841.24,
+        "total": 14869.22,
+        "end_balance": 717591.75,
+        "extras": 0
+      },
+      {
+        "index": 60,
+        "date": "2017-02-18",
+        "interest": 8227.73,
+        "principal": 6641.49,
+        "total": 14869.22,
+        "end_balance": 710950.26,
+        "extras": 0
+      },
+      {
+        "index": 61,
+        "date": "2017-03-18",
+        "interest": 7362.72,
+        "principal": 7506.5,
+        "total": 14869.22,
+        "end_balance": 703443.76,
+        "extras": 0
+      },
+      {
+        "index": 62,
+        "date": "2017-04-18",
+        "interest": 8065.51,
+        "principal": 6803.71,
+        "total": 14869.22,
+        "end_balance": 696640.05,
+        "extras": 0
+      },
+      {
+        "index": 63,
+        "date": "2017-05-18",
+        "interest": 7729.84,
+        "principal": 7139.38,
+        "total": 14869.22,
+        "end_balance": 689500.67,
+        "extras": 0
+      },
+      {
+        "index": 64,
+        "date": "2017-06-19",
+        "interest": 8160.67,
+        "principal": 6708.55,
+        "total": 14869.22,
+        "end_balance": 682792.12,
+        "extras": 0
+      },
+      {
+        "index": 65,
+        "date": "2017-07-18",
+        "interest": 7323.65,
+        "principal": 7545.57,
+        "total": 14869.22,
+        "end_balance": 675246.55,
+        "extras": 0
+      },
+      {
+        "index": 66,
+        "date": "2017-08-18",
+        "interest": 7742.21,
+        "principal": 7127.01,
+        "total": 14869.22,
+        "end_balance": 668119.54,
+        "extras": 0
+      },
+      {
+        "index": 67,
+        "date": "2017-09-18",
+        "interest": 7660.49,
+        "principal": 7208.73,
+        "total": 14869.22,
+        "end_balance": 660910.81,
+        "extras": 0
+      },
+      {
+        "index": 68,
+        "date": "2017-10-18",
+        "interest": 7333.39,
+        "principal": 7535.83,
+        "total": 14869.22,
+        "end_balance": 653374.98,
+        "extras": 0
+      },
+      {
+        "index": 69,
+        "date": "2017-11-18",
+        "interest": 7491.44,
+        "principal": 7377.78,
+        "total": 14869.22,
+        "end_balance": 645997.2,
+        "extras": 0
+      },
+      {
+        "index": 70,
+        "date": "2017-12-18",
+        "interest": 7167.91,
+        "principal": 7701.31,
+        "total": 14869.22,
+        "end_balance": 638295.89,
+        "extras": 0
+      },
+      {
+        "index": 71,
+        "date": "2018-01-18",
+        "interest": 7318.54,
+        "principal": 7550.68,
+        "total": 14869.22,
+        "end_balance": 630745.21,
+        "extras": 0
+      },
+      {
+        "index": 72,
+        "date": "2018-02-19",
+        "interest": 7465.26,
+        "principal": 7403.96,
+        "total": 14869.22,
+        "end_balance": 623341.25,
+        "extras": 0
+      },
+      {
+        "index": 73,
+        "date": "2018-03-19",
+        "interest": 6455.42,
+        "principal": 8413.8,
+        "total": 14869.22,
+        "end_balance": 614927.45,
+        "extras": 0
+      },
+      {
+        "index": 74,
+        "date": "2018-04-18",
+        "interest": 6823.17,
+        "principal": 8046.05,
+        "total": 14869.22,
+        "end_balance": 606881.4,
+        "extras": 0
+      },
+      {
+        "index": 75,
+        "date": "2018-05-18",
+        "interest": 6733.89,
+        "principal": 8135.33,
+        "total": 14869.22,
+        "end_balance": 598746.07,
+        "extras": 0
+      },
+      {
+        "index": 76,
+        "date": "2018-06-18",
+        "interest": 6865.07,
+        "principal": 8004.15,
+        "total": 14869.22,
+        "end_balance": 590741.92,
+        "extras": 0
+      },
+      {
+        "index": 77,
+        "date": "2018-07-18",
+        "interest": 6554.81,
+        "principal": 8314.41,
+        "total": 14869.22,
+        "end_balance": 582427.51,
+        "extras": 0
+      },
+      {
+        "index": 78,
+        "date": "2018-08-18",
+        "interest": 6677.97,
+        "principal": 8191.25,
+        "total": 14869.22,
+        "end_balance": 574236.26,
+        "extras": 0
+      },
+      {
+        "index": 79,
+        "date": "2018-09-18",
+        "interest": 6584.05,
+        "principal": 8285.17,
+        "total": 14869.22,
+        "end_balance": 565951.09,
+        "extras": 0
+      },
+      {
+        "index": 80,
+        "date": "2018-10-18",
+        "interest": 6279.73,
+        "principal": 8589.49,
+        "total": 14869.22,
+        "end_balance": 557361.6,
+        "extras": 0
+      },
+      {
+        "index": 81,
+        "date": "2018-11-19",
+        "interest": 6596.72,
+        "principal": 8272.5,
+        "total": 14869.22,
+        "end_balance": 549089.1,
+        "extras": 0
+      },
+      {
+        "index": 82,
+        "date": "2018-12-18",
+        "interest": 5889.54,
+        "principal": 8979.68,
+        "total": 14869.22,
+        "end_balance": 540109.42,
+        "extras": 0
+      },
+      {
+        "index": 83,
+        "date": "2019-01-18",
+        "interest": 6192.76,
+        "principal": 8676.46,
+        "total": 14869.22,
+        "end_balance": 531432.96,
+        "extras": 0
+      },
+      {
+        "index": 84,
+        "date": "2019-02-18",
+        "interest": 6093.28,
+        "principal": 8775.94,
+        "total": 14869.22,
+        "end_balance": 522657.02,
+        "extras": 0
+      },
+      {
+        "index": 85,
+        "date": "2019-03-18",
+        "interest": 5412.72,
+        "principal": 9456.5,
+        "total": 14869.22,
+        "end_balance": 513200.52,
+        "extras": 0
+      },
+      {
+        "index": 86,
+        "date": "2019-04-18",
+        "interest": 5884.23,
+        "principal": 8984.99,
+        "total": 14869.22,
+        "end_balance": 504215.53,
+        "extras": 0
+      },
+      {
+        "index": 87,
+        "date": "2019-05-18",
+        "interest": 5594.72,
+        "principal": 9274.5,
+        "total": 14869.22,
+        "end_balance": 494941.03,
+        "extras": 0
+      },
+      {
+        "index": 88,
+        "date": "2019-06-18",
+        "interest": 5674.87,
+        "principal": 9194.35,
+        "total": 14869.22,
+        "end_balance": 485746.68,
+        "extras": 0
+      },
+      {
+        "index": 89,
+        "date": "2019-07-18",
+        "interest": 5389.79,
+        "principal": 9479.43,
+        "total": 14869.22,
+        "end_balance": 476267.25,
+        "extras": 0
+      },
+      {
+        "index": 90,
+        "date": "2019-08-19",
+        "interest": 5636.92,
+        "principal": 9232.3,
+        "total": 14869.22,
+        "end_balance": 467034.95,
+        "extras": 0
+      },
+      {
+        "index": 91,
+        "date": "2019-09-18",
+        "interest": 5182.17,
+        "principal": 9687.05,
+        "total": 14869.22,
+        "end_balance": 457347.9,
+        "extras": 0
+      },
+      {
+        "index": 92,
+        "date": "2019-10-18",
+        "interest": 5074.68,
+        "principal": 9794.54,
+        "total": 14869.22,
+        "end_balance": 447553.36,
+        "extras": 0
+      },
+      {
+        "index": 93,
+        "date": "2019-11-18",
+        "interest": 5131.54,
+        "principal": 9737.68,
+        "total": 14869.22,
+        "end_balance": 437815.68,
+        "extras": 0
+      },
+      {
+        "index": 94,
+        "date": "2019-12-18",
+        "interest": 4857.95,
+        "principal": 10011.27,
+        "total": 14869.22,
+        "end_balance": 427804.41,
+        "extras": 0
+      },
+      {
+        "index": 95,
+        "date": "2020-01-18",
+        "interest": 4897.75,
+        "principal": 9971.47,
+        "total": 14869.22,
+        "end_balance": 417832.94,
+        "extras": 0
+      },
+      {
+        "index": 96,
+        "date": "2020-02-18",
+        "interest": 4777.68,
+        "principal": 10091.54,
+        "total": 14869.22,
+        "end_balance": 407741.4,
+        "extras": 0
+      },
+      {
+        "index": 97,
+        "date": "2020-03-18",
+        "interest": 4361.5,
+        "principal": 10507.72,
+        "total": 14869.22,
+        "end_balance": 397233.68,
+        "extras": 0
+      },
+      {
+        "index": 98,
+        "date": "2020-04-18",
+        "interest": 4542.14,
+        "principal": 10327.08,
+        "total": 14869.22,
+        "end_balance": 386906.6,
+        "extras": 0
+      },
+      {
+        "index": 99,
+        "date": "2020-05-18",
+        "interest": 4281.34,
+        "principal": 10587.88,
+        "total": 14869.22,
+        "end_balance": 376318.72,
+        "extras": 0
+      },
+      {
+        "index": 100,
+        "date": "2020-06-18",
+        "interest": 4302.99,
+        "principal": 10566.23,
+        "total": 14869.22,
+        "end_balance": 365752.49,
+        "extras": 0
+      },
+      {
+        "index": 101,
+        "date": "2020-07-18",
+        "interest": 4047.26,
+        "principal": 10821.96,
+        "total": 14869.22,
+        "end_balance": 354930.53,
+        "extras": 0
+      },
+      {
+        "index": 102,
+        "date": "2020-08-18",
+        "interest": 4058.43,
+        "principal": 10810.79,
+        "total": 14869.22,
+        "end_balance": 344119.74,
+        "extras": 0
+      },
+      {
+        "index": 103,
+        "date": "2020-09-18",
+        "interest": 3934.81,
+        "principal": 10934.41,
+        "total": 14869.22,
+        "end_balance": 333185.33,
+        "extras": 0
+      },
+      {
+        "index": 104,
+        "date": "2020-10-19",
+        "interest": 3809.78,
+        "principal": 11059.44,
+        "total": 14869.22,
+        "end_balance": 322125.89,
+        "extras": 0
+      },
+      {
+        "index": 105,
+        "date": "2020-11-18",
+        "interest": 3564.51,
+        "principal": 11304.71,
+        "total": 14869.22,
+        "end_balance": 310821.18,
+        "extras": 0
+      },
+      {
+        "index": 106,
+        "date": "2020-12-18",
+        "interest": 3439.41,
+        "principal": 11429.81,
+        "total": 14869.22,
+        "end_balance": 299391.37,
+        "extras": 0
+      },
+      {
+        "index": 107,
+        "date": "2021-01-18",
+        "interest": 3428.51,
+        "principal": 11440.71,
+        "total": 14869.22,
+        "end_balance": 287950.66,
+        "extras": 0
+      },
+      {
+        "index": 108,
+        "date": "2021-02-18",
+        "interest": 3301.57,
+        "principal": 11567.65,
+        "total": 14869.22,
+        "end_balance": 276383.01,
+        "extras": 0
+      },
+      {
+        "index": 109,
+        "date": "2021-03-18",
+        "interest": 2862.27,
+        "principal": 12006.95,
+        "total": 14869.22,
+        "end_balance": 264376.06,
+        "extras": 0
+      },
+      {
+        "index": 110,
+        "date": "2021-04-19",
+        "interest": 3129.05,
+        "principal": 11740.17,
+        "total": 14869.22,
+        "end_balance": 252635.89,
+        "extras": 0
+      },
+      {
+        "index": 111,
+        "date": "2021-05-18",
+        "interest": 2709.78,
+        "principal": 12159.44,
+        "total": 14869.22,
+        "end_balance": 240476.45,
+        "extras": 0
+      },
+      {
+        "index": 112,
+        "date": "2021-06-18",
+        "interest": 2757.24,
+        "principal": 12111.98,
+        "total": 14869.22,
+        "end_balance": 228364.47,
+        "extras": 0
+      },
+      {
+        "index": 113,
+        "date": "2021-07-19",
+        "interest": 2618.37,
+        "principal": 12250.85,
+        "total": 14869.22,
+        "end_balance": 216113.62,
+        "extras": 0
+      },
+      {
+        "index": 114,
+        "date": "2021-08-18",
+        "interest": 2397.97,
+        "principal": 12471.25,
+        "total": 14869.22,
+        "end_balance": 203642.37,
+        "extras": 0
+      },
+      {
+        "index": 115,
+        "date": "2021-09-18",
+        "interest": 2334.91,
+        "principal": 12534.31,
+        "total": 14869.22,
+        "end_balance": 191108.06,
+        "extras": 0
+      },
+      {
+        "index": 116,
+        "date": "2021-10-18",
+        "interest": 2120.51,
+        "principal": 12748.71,
+        "total": 14869.22,
+        "end_balance": 178359.35,
+        "extras": 0
+      },
+      {
+        "index": 117,
+        "date": "2021-11-18",
+        "interest": 2045.02,
+        "principal": 12824.2,
+        "total": 14869.22,
+        "end_balance": 165535.15,
+        "extras": 0
+      },
+      {
+        "index": 118,
+        "date": "2021-12-18",
+        "interest": 1836.76,
+        "principal": 13032.46,
+        "total": 14869.22,
+        "end_balance": 152502.69,
+        "extras": 0
+      },
+      {
+        "index": 119,
+        "date": "2022-01-18",
+        "interest": 1748.56,
+        "principal": 13120.66,
+        "total": 14869.22,
+        "end_balance": 139382.03,
+        "extras": 0
+      },
+      {
+        "index": 120,
+        "date": "2022-02-18",
+        "interest": 1598.12,
+        "principal": 13271.1,
+        "total": 14869.22,
+        "end_balance": 126110.93,
+        "extras": 0
+      },
+      {
+        "index": 121,
+        "date": "2022-03-18",
+        "interest": 1306.03,
+        "principal": 13563.19,
+        "total": 14869.22,
+        "end_balance": 112547.74,
+        "extras": 0
+      },
+      {
+        "index": 122,
+        "date": "2022-04-18",
+        "interest": 1290.44,
+        "principal": 13578.78,
+        "total": 14869.22,
+        "end_balance": 98968.96,
+        "extras": 0
+      },
+      {
+        "index": 123,
+        "date": "2022-05-18",
+        "interest": 1098.15,
+        "principal": 13771.07,
+        "total": 14869.22,
+        "end_balance": 85197.89,
+        "extras": 0
+      },
+      {
+        "index": 124,
+        "date": "2022-06-18",
+        "interest": 976.86,
+        "principal": 13892.36,
+        "total": 14869.22,
+        "end_balance": 71305.53,
+        "extras": 0
+      },
+      {
+        "index": 125,
+        "date": "2022-07-18",
+        "interest": 791.2,
+        "principal": 14078.02,
+        "total": 14869.22,
+        "end_balance": 57227.51,
+        "extras": 0
+      },
+      {
+        "index": 126,
+        "date": "2022-08-18",
+        "interest": 656.16,
+        "principal": 14213.06,
+        "total": 14869.22,
+        "end_balance": 43014.45,
+        "extras": 0
+      },
+      {
+        "index": 127,
+        "date": "2022-09-19",
+        "interest": 509.1,
+        "principal": 14360.12,
+        "total": 14869.22,
+        "end_balance": 28654.33,
+        "extras": 0
+      },
+      {
+        "index": 128,
+        "date": "2022-10-18",
+        "interest": 307.35,
+        "principal": 14561.87,
+        "total": 14869.22,
+        "end_balance": 14092.46,
+        "extras": 0
+      },
+      {
+        "index": 129,
+        "date": "2022-11-18",
+        "interest": 161.58,
+        "principal": 14092.46,
+        "total": 14254.04,
+        "end_balance": 0,
+        "extras": 0
+      }
+    ]
+  }
+}

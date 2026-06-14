@@ -10,7 +10,7 @@ android {
 
     defaultConfig {
         applicationId = "ru.kredit.calculator"
-        minSdk = 31
+        minSdk = 30
         targetSdk = 35
         versionCode = 54
         versionName = "2.3"
