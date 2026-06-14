@@ -3,7 +3,7 @@
     <string name="app_name">True LoanCalc</string>
     <string name="home_title">True LoanCalc</string>
     <string name="all_loans_card_title">Loans list</string>
-    <string name="all_loans_empty_message">You don\'t have any loans yet.\\nAdd a loan to start calculating</string>
+    <string name="all_loans_empty_message">You don\'t have any loans yet.\nAdd a loan to start calculating</string>
     <string name="all_loans_count">%1$d loans</string>
     <string name="all_loans_total_amount">Total loan amount:</string>
     <string name="all_loans_total_debt">Total debt:</string>

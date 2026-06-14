@@ -15,6 +15,7 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import com.example.loancalcandroid.LoanCalcApplication
 import com.example.loancalcandroid.notification.NotificationScheduler
+import com.example.loancalcandroid.support.DeveloperSupportUtil
 import ru.kredit.calculator.data.LoanCalcData
 import ru.kredit.calculator.data.repository.WebLoanImportError
 import ru.kredit.calculator.data.repository.WebLoanImportException
@@ -199,6 +200,42 @@ class SettingsViewModel(
 
     fun clearSnackbarMessage() {
         _uiState.update { it.copy(snackbarMessage = null) }
+    }
+
+    fun contactDeveloper(
+        context: Context,
+        noEmailAppMessage: String,
+    ) {
+        viewModelScope.launch {
+            _uiState.update { it.copy(isExporting = true, snackbarMessage = null) }
+            val result = runCatching {
+                withContext(Dispatchers.IO) {
+                    val loanIds = loanRepository.getLoans().map { it.id }
+                    val exportFile = File(context.cacheDir, "developer_support_export.lcj")
+                    if (loanIds.isNotEmpty()) {
+                        importExportRepository.exportToFile(exportFile, loanIds)
+                    } else {
+                        exportFile.delete()
+                    }
+                    exportFile.takeIf { it.exists() }
+                }
+            }
+            val exportFile = result.getOrNull()
+            val sent = DeveloperSupportUtil.sendDeveloperEmail(
+                context = context,
+                loansExportFile = exportFile,
+            )
+            _uiState.update {
+                it.copy(
+                    isExporting = false,
+                    snackbarMessage = when {
+                        result.isFailure -> result.exceptionOrNull()?.message.orEmpty()
+                        !sent -> noEmailAppMessage
+                        else -> null
+                    },
+                )
+            }
+        }
     }
 
     private fun resolveDisplayName(context: Context, uri: Uri): String {

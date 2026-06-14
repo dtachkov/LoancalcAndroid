@@ -3,7 +3,7 @@
     <string name="app_name">Кредитный калькулятор</string>
     <string name="home_title">Кредитный калькулятор</string>
     <string name="all_loans_card_title">Все кредиты</string>
-    <string name="all_loans_empty_message">У вас ещё нет кредитов.\\nДобавьте свой кредит, чтобы рассчитать</string>
+    <string name="all_loans_empty_message">У вас ещё нет кредитов.\nДобавьте свой кредит, чтобы рассчитать</string>
     <string name="all_loans_count">%1$d кредитов</string>
     <string name="all_loans_total_amount">Общая сумма</string>
     <string name="all_loans_total_debt">Общий долг</string>
@@ -319,6 +319,13 @@
     <string name="support_email" translatable="false">support@mobile-testing.ru</string>
     <string name="support_log_subject" translatable="false">Billing Log Report — Loan Calculator</string>
     <string name="support_log_chooser_title">Лог работы платежной системы…</string>
+    <string name="menu_item_contact_developer">Написать разработчику</string>
+    <string name="menu_item_contact_developer_hint">Отправить письмо с логом биллинга и экспортом кредитов</string>
+    <string name="developer_email_subject" translatable="false">Вопрос по кредитному калькулятору Rustore V%1$s</string>
+    <string name="developer_email_android_version">Версия Android: %1$s</string>
+    <string name="developer_email_billing_log_header">Лог биллинга:</string>
+    <string name="developer_email_chooser_title">Написать разработчику</string>
+    <string name="developer_email_no_app">Не найдено приложение для отправки email</string>
     <string name="menu_item_premium">Получить премиум</string>
     <string name="widget_label_license_required">Доступно после покупки</string>
     <string name="analytics_screen_title">Все кредиты</string>

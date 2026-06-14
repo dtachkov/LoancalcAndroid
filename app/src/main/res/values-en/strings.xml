@@ -3,7 +3,7 @@
     <string name="app_name">Loan Calculator</string>
     <string name="home_title">Loan Calculator</string>
     <string name="all_loans_card_title">All loans</string>
-    <string name="all_loans_empty_message">You don\'t have any loans yet.\\nAdd a loan to start calculating</string>
+    <string name="all_loans_empty_message">You don\'t have any loans yet.\nAdd a loan to start calculating</string>
     <string name="all_loans_count">%1$d loans</string>
     <string name="all_loans_total_amount">Total loan amount:</string>
     <string name="all_loans_total_debt">Total debt:</string>
@@ -292,6 +292,12 @@
     <string name="premium_exist">У вас уже есть</string>
     <string name="premium_title">Premium доступен</string>
     <string name="all_features_available">Вам доступны все возможности</string>
+    <string name="menu_item_contact_developer">Contact developer</string>
+    <string name="menu_item_contact_developer_hint">Send email with billing log and loans export</string>
+    <string name="developer_email_android_version">Android version: %1$s</string>
+    <string name="developer_email_billing_log_header">Billing log:</string>
+    <string name="developer_email_chooser_title">Contact developer</string>
+    <string name="developer_email_no_app">No email app found</string>
     <string name="menu_item_premium">Get Premium</string>
     <string name="widget_label_license_required">Payment required</string>
 </resources>

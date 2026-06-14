@@ -3,7 +3,7 @@
     <string name="app_name">Кредитный калькулятор</string>
     <string name="home_title">Кредитный калькулятор</string>
     <string name="all_loans_card_title">Все кредиты</string>
-    <string name="all_loans_empty_message">У вас ещё нет кредитов.\\nДобавьте свой кредит, чтобы рассчитать</string>
+    <string name="all_loans_empty_message">У вас ещё нет кредитов.\nДобавьте свой кредит, чтобы рассчитать</string>
     <string name="all_loans_count">%1$d кредитов</string>
     <string name="all_loans_total_amount">Общая сумма</string>
     <string name="all_loans_total_debt">Общий долг</string>
@@ -306,6 +306,12 @@
     <string name="feature_best_loan_description">Приложение покажет тот кредит, досрочное погашение которого наиболее выгодно</string>
     <string name="send_support">Отправить информацию в поддержку</string>
     <string name="support_log_chooser_title">Лог работы платежной системы…</string>
+    <string name="menu_item_contact_developer">Написать разработчику</string>
+    <string name="menu_item_contact_developer_hint">Отправить письмо с логом биллинга и экспортом кредитов</string>
+    <string name="developer_email_android_version">Версия Android: %1$s</string>
+    <string name="developer_email_billing_log_header">Лог биллинга:</string>
+    <string name="developer_email_chooser_title">Написать разработчику</string>
+    <string name="developer_email_no_app">Не найдено приложение для отправки email</string>
     <string name="menu_item_premium">Получить премиум</string>
     <string name="widget_label_license_required">Доступно после покупки</string>
 </resources>

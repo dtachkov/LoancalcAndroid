@@ -22,11 +22,14 @@ object BillingLogger {
         AnalyticsHelper.logEvent("BILLING_LOG", message)
     }
 
-    fun getLogAsString(): String {
-        val body = messages.joinToString("\n") { event ->
+    fun getBillingEventsLog(): String {
+        return messages.joinToString("\n") { event ->
             "[${DateFormat.format("yyyy-MM-dd HH:mm:ss", event.eventDate)}] ${event.message}"
         }.ifEmpty { "No billing events logged." }
-        return "$body\n${getDeviceInfo()}"
+    }
+
+    fun getLogAsString(): String {
+        return "${getBillingEventsLog()}\n${getDeviceInfo()}"
     }
 
     fun getDeviceInfo(): String {

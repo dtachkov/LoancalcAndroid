@@ -3,7 +3,7 @@
     <string name="app_name">KreditRechner</string>
     <string name="home_title">KreditRechner</string>
     <string name="all_loans_card_title">Kreditliste</string>
-    <string name="all_loans_empty_message">You don\'t have any loans yet.\\nAdd a loan to start calculating</string>
+    <string name="all_loans_empty_message">You don\'t have any loans yet.\nAdd a loan to start calculating</string>
     <string name="all_loans_count">%1$d loans</string>
     <string name="all_loans_total_amount">Kreditbetrag:</string>
     <string name="all_loans_total_debt">Total debt:</string>

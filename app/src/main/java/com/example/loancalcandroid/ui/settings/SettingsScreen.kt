@@ -282,6 +282,18 @@ fun SettingsScreen(
 
                 SettingsCard(modifier = Modifier.padding(top = 16.dp)) {
                     MenuNavigationRow(
+                        title = stringResource(R.string.menu_item_contact_developer),
+                        subtitle = stringResource(R.string.menu_item_contact_developer_hint),
+                        onClick = {
+                            if (!uiState.isImporting && !uiState.isExporting) {
+                                viewModel.contactDeveloper(
+                                    context = context,
+                                    noEmailAppMessage = context.getString(R.string.developer_email_no_app),
+                                )
+                            }
+                        },
+                    )
+                    MenuNavigationRow(
                         title = stringResource(R.string.menu_item_premium),
                         subtitle = if (uiState.isLicensed) {
                             stringResource(R.string.premium_title)
