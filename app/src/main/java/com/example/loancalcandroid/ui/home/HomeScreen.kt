@@ -8,6 +8,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
@@ -21,7 +22,6 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.example.loancalcandroid.R
-import com.example.loancalcandroid.ui.home.components.AllLoansOverviewSection
 import com.example.loancalcandroid.ui.home.components.DebtProgressSection
 import com.example.loancalcandroid.ui.home.components.HomeTopBar
 import com.example.loancalcandroid.ui.home.components.LoanActionsSection
@@ -35,7 +35,6 @@ import com.example.loancalcandroid.ui.home.components.StatsSection
 fun HomeScreen(
     viewModel: HomeViewModel,
     onSettingsClick: () -> Unit,
-    onAllLoansClick: () -> Unit,
     onAddLoanClick: () -> Unit,
     onEditLoanClick: (Long) -> Unit,
     onEarlyPaymentClick: (Long) -> Unit,
@@ -82,7 +81,6 @@ fun HomeScreen(
         topBar = {
             HomeTopBar(
                 onSettingsClick = onSettingsClick,
-                onAllLoansClick = onAllLoansClick,
                 onAddLoanClick = onAddLoanClick,
             )
         },
@@ -99,6 +97,7 @@ fun HomeScreen(
                     loanCards = uiState.loanCards,
                     pagerIndex = uiState.pagerIndex,
                     onPageChanged = viewModel::onPagerPageChanged,
+                    onLoanCardClick = onEditLoanClick,
                 )
                 Spacer(modifier = Modifier.height(20.dp))
             }
@@ -115,7 +114,7 @@ fun HomeScreen(
                 }
                 item {
                     DebtProgressSection(details = details)
-                    Spacer(modifier = Modifier.height(20.dp))
+                    Spacer(modifier = Modifier.height(16.dp))
                 }
                 item {
                     StatsSection(details = details)
@@ -140,13 +139,13 @@ fun HomeScreen(
                     )
                     Spacer(modifier = Modifier.height(24.dp))
                 }
-            } else {
+            } else if (uiState.loanCards.isNotEmpty()) {
                 item {
-                    AllLoansOverviewSection(
-                        summary = uiState.allLoansSummary,
-                        onOpenAllLoans = onAllLoansClick,
+                    Text(
+                        text = stringResource(R.string.select_loan_hint),
+                        style = MaterialTheme.typography.bodyLarge,
+                        modifier = Modifier.padding(vertical = 8.dp),
                     )
-                    Spacer(modifier = Modifier.height(24.dp))
                 }
             }
         }

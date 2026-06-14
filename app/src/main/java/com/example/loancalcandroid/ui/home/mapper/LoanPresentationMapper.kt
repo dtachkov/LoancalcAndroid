@@ -57,6 +57,7 @@ object LoanPresentationMapper {
     ): LoanDetailsUiModel {
         val paidPrincipal = calculation.alreadyPaidPrincipal
         val debt = calculation.owingAmount
+        val totalPrincipal = paidPrincipal + debt
         val interestPaid = calculation.alreadyPaidInterest
         val totalInterest = calculation.totalInterest
         val remaining = debt + max(0.0, totalInterest - interestPaid)
@@ -69,7 +70,7 @@ object LoanPresentationMapper {
             title = loan.title.orEmpty().ifBlank { "Кредит #${loan.id}" },
             paidAmount = Formatters.money(paidPrincipal),
             debtAmount = Formatters.money(debt),
-            paidFraction = if (loan.amount > 0f) (paidPrincipal / loan.amount).toFloat() else 0f,
+            paidFraction = if (totalPrincipal > 0) (paidPrincipal / totalPrincipal).toFloat() else 0f,
             currentPayment = Formatters.money(calculation.currentPayment),
             paymentDueDate = Formatters.date(calculation.currentPaymentDate),
             interestPaid = Formatters.money(interestPaid),

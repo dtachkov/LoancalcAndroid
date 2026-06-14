@@ -21,6 +21,7 @@ data class ExtraFormUiState(
     val category: ExtraCategory = ExtraCategory.EARLY,
     val allowedTypes: List<ExtraType> = ExtraTypeUtils.earlyPaymentTypes,
     val selectedType: ExtraType = ExtraType.PAYMENT_FOR_DECREASE_LOAN_AMOUNT,
+    val documentNumber: String = "",
     val amount: String = "",
     val date: Date? = null,
     val amountError: String? = null,
@@ -61,6 +62,7 @@ class ExtraFormViewModel(
     }
 
     fun selectType(type: ExtraType) = _uiState.update { it.copy(selectedType = type, amountError = null) }
+    fun updateDocumentNumber(value: String) = _uiState.update { it.copy(documentNumber = value) }
     fun updateAmount(value: String) = _uiState.update { it.copy(amount = value, amountError = null) }
     fun updateDate(date: Date) = _uiState.update { it.copy(date = date, dateError = null) }
 
@@ -77,6 +79,7 @@ class ExtraFormViewModel(
                     type = state.selectedType,
                     amount = com.example.loancalcandroid.util.Formatters.parseMoney(state.amount),
                     date = state.date,
+                    documentNumber = state.documentNumber.ifBlank { null },
                 )
                 extraRepository.saveExtra(extra)
                 _uiState.update { it.copy(isSaving = false, saved = true) }
@@ -111,6 +114,7 @@ class ExtraFormViewModel(
                     category = category,
                     allowedTypes = types,
                     selectedType = extra.type,
+                    documentNumber = extra.documentNumber.orEmpty(),
                     amount = formatAmount(extra),
                     date = extra.date,
                 )

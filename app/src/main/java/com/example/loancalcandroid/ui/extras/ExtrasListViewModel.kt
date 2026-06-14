@@ -20,6 +20,7 @@ import ru.kredit.calculator.data.model.Loan
 data class ExtraListItem(
     val extra: Extra,
     val typeLabel: String,
+    val documentNumberLabel: String,
     val amountLabel: String,
     val dateLabel: String,
 )
@@ -95,10 +96,13 @@ class ExtrasListViewModel(
         return ExtraListItem(
             extra = extra,
             typeLabel = ExtraTypeUtils.label(extra.type),
+            documentNumberLabel = extra.documentNumber.orEmpty().ifBlank { "—" },
             amountLabel = if (extra.type == ExtraType.CHANGE_RATE) {
-                "${com.example.loancalcandroid.util.Formatters.money(extra.amount)} %"
+                "${com.example.loancalcandroid.util.Formatters.moneyFixed(extra.amount)} %"
+            } else if (extra.type == ExtraType.PAYMENT_FOR_CHANGE_DATE) {
+                ""
             } else {
-                com.example.loancalcandroid.util.Formatters.money(extra.amount)
+                com.example.loancalcandroid.util.Formatters.moneyFixed(extra.amount)
             },
             dateLabel = com.example.loancalcandroid.util.Formatters.date(extra.date),
         )

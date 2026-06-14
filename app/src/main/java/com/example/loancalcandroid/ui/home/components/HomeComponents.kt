@@ -14,7 +14,6 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
-import androidx.compose.material.icons.filled.PieChart
 import androidx.compose.material.icons.outlined.Tune
 import androidx.compose.material3.CenterAlignedTopAppBar
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -43,7 +42,6 @@ import com.example.loancalcandroid.ui.theme.LoanBlueStart
 @Composable
 fun HomeTopBar(
     onSettingsClick: () -> Unit,
-    onAllLoansClick: () -> Unit,
     onAddLoanClick: () -> Unit,
 ) {
     CenterAlignedTopAppBar(
@@ -63,13 +61,6 @@ fun HomeTopBar(
             }
         },
         actions = {
-            IconButton(onClick = onAllLoansClick) {
-                Icon(
-                    imageVector = Icons.Default.PieChart,
-                    contentDescription = stringResource(R.string.all_loans_screen),
-                    tint = LoanBlueDark,
-                )
-            }
             IconButton(onClick = onAddLoanClick) {
                 Surface(
                     modifier = Modifier.size(32.dp),

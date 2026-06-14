@@ -88,10 +88,13 @@ class HomeViewModel(
     }
 
     fun selectLoan(loanId: Long) {
+        chestPreferences.setLastCalculatedLoanId(loanId)
         val loans = _uiState.value.loansRaw
         val index = loans.indexOfFirst { it.id == loanId }
         if (index >= 0) {
             onPagerPageChanged(index + 1)
+        } else {
+            _uiState.update { it.copy(selectedLoanId = loanId) }
         }
     }
 

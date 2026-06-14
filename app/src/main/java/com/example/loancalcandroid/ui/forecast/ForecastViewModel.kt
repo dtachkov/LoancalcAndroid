@@ -10,9 +10,9 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
+import com.example.loancalcandroid.R
 import ru.kredit.calculator.data.LoanCalcData
 import ru.kredit.calculator.data.calculation.CalculationErrors
-import ru.kredit.calculator.data.calculation.LoanCalculationResult
 import ru.kredit.calculator.data.model.ExtraType
 import ru.kredit.calculator.data.model.Loan
 import java.util.Date
@@ -29,7 +29,6 @@ data class ForecastUiState(
     val daysError: String? = null,
     val message: String? = null,
     val error: String? = null,
-    val lastCalculation: LoanCalculationResult? = null,
 )
 
 class ForecastViewModel(
@@ -108,20 +107,19 @@ class ForecastViewModel(
 
                 if (!updatedLoan.isForecastActive) {
                     _uiState.update {
-                        it.copy(isCalculating = false, message = "Прогноз отключён", lastCalculation = null)
+                        it.copy(isCalculating = false, message = "Прогноз отключён")
                     }
                     return@launch
                 }
 
                 val extras = extraRepository.getExtras(loanId)
-                val calculation = withContext(Dispatchers.Default) {
+                withContext(Dispatchers.Default) {
                     loanCalculator.calculate(updatedLoan, extras)
                 }
                 _uiState.update {
                     it.copy(
                         isCalculating = false,
-                        message = "Прогноз рассчитан",
-                        lastCalculation = calculation,
+                        message = getApplication<Application>().getString(R.string.forecast_calculated),
                     )
                 }
             } catch (e: Exception) {

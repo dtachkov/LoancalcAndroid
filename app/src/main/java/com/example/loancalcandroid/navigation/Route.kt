@@ -6,7 +6,6 @@ object Route {
     const val HOME = "home"
     const val SETTINGS = "settings"
     const val HELP = "help"
-    const val ALL_LOANS = "loans"
     const val ADD_LOAN = "loans/add"
     const val EDIT_LOAN = "loans/{loanId}/edit"
     const val SCHEDULE = "loans/{loanId}/schedule"

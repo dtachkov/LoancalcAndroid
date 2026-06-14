@@ -1,24 +1,50 @@
 package com.example.loancalcandroid.util
 
+import java.text.DateFormat
 import java.text.DecimalFormat
 import java.text.DecimalFormatSymbols
+import java.text.NumberFormat
 import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.Locale
 
 object Formatters {
-    private val moneyFormat = DecimalFormat("#,##0.##", DecimalFormatSymbols(Locale("ru", "RU")))
-    private val displayDateFormat = SimpleDateFormat("d MMMM yyyy г.", Locale("ru", "RU"))
-    private val shortDateFormat = SimpleDateFormat("d MMMM yyyy г.", Locale("ru", "RU"))
-    private val inputDateFormat = SimpleDateFormat("dd.MM.yyyy", Locale("ru", "RU"))
-    private val monthDayFormat = SimpleDateFormat("dd.MM", Locale("ru", "RU"))
-    private val yearFormat = SimpleDateFormat("yyyy", Locale("ru", "RU"))
+    private val locale = Locale("ru", "RU")
+    private val moneyFormat = DecimalFormat("#,##0.##", DecimalFormatSymbols(locale))
+    private val moneyFixedFormat = DecimalFormat("#,##0.00", DecimalFormatSymbols(locale))
+    private val displayDateFormat = DateFormat.getDateInstance(DateFormat.DEFAULT, locale)
+    private val percentFormat = NumberFormat.getPercentInstance(locale).apply {
+        maximumFractionDigits = 3
+        (this as DecimalFormat).decimalFormatSymbols = DecimalFormatSymbols(locale).apply {
+            groupingSeparator = ' '
+            decimalSeparator = '.'
+        }
+    }
+    private val shortDateFormat = SimpleDateFormat("d MMMM yyyy г.", locale)
+    private val inputDateFormat = SimpleDateFormat("dd.MM.yyyy", locale)
+    private val monthDayFormat = SimpleDateFormat("dd.MM", locale)
+    private val yearFormat = SimpleDateFormat("yyyy", locale)
 
     fun money(value: Double): String = moneyFormat.format(value)
 
     fun money(value: Float): String = money(value.toDouble())
 
-    fun percent(value: Float): String = "${moneyFormat.format(value.toDouble())} %"
+    fun moneyFixed(value: Double): String = moneyFixedFormat.format(value)
+
+    fun moneyFixed(value: Float): String = moneyFixed(value.toDouble())
+
+    fun moneyWithoutDecimal(value: Double): String {
+        val formatted = moneyFixedFormat.format(value).trim()
+        val dotIndex = formatted.indexOf('.')
+        return if (dotIndex >= 0) formatted.substring(0, dotIndex).trim() else formatted
+    }
+
+    fun moneyWithoutDecimal(value: Float): String = moneyWithoutDecimal(value.toDouble())
+
+    fun percent(value: Float): String = schedulePercent(value.toDouble())
+
+    fun schedulePercent(percent: Double): String =
+        percentFormat.format(percent / 100.0).trim().replace('\u00A0', ' ')
 
     fun date(date: Date?): String {
         if (date == null) return "—"

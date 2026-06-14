@@ -1,6 +1,7 @@
 package com.example.loancalcandroid.ui.schedule
 
 import androidx.compose.animation.core.animateFloatAsState
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.horizontalScroll
@@ -12,6 +13,7 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.RowScope
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
@@ -19,8 +21,6 @@ import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.KeyboardArrowUp
-import androidx.compose.material.icons.outlined.Event
-import androidx.compose.material.icons.outlined.Savings
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.HorizontalDivider
@@ -36,16 +36,19 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.rotate
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.example.loancalcandroid.R
 import com.example.loancalcandroid.ui.common.LoanCalcScaffold
 import com.example.loancalcandroid.ui.loanViewModel
 import com.example.loancalcandroid.ui.theme.LoanBlueDark
 import com.example.loancalcandroid.ui.theme.LoanCardSurface
+import com.example.loancalcandroid.ui.theme.LoanTextSecondary
 import com.example.loancalcandroid.ui.theme.SchedulePreviousBar
 import com.example.loancalcandroid.ui.theme.ScheduleRowExtra
 import com.example.loancalcandroid.ui.theme.ScheduleRowOdd
@@ -221,10 +224,10 @@ private fun BriefHeaderRow() {
             .padding(vertical = 8.dp),
     ) {
         ScheduleHeaderCell(stringResource(R.string.schedule_col_number), 36.dp)
-        ScheduleHeaderCell(stringResource(R.string.schedule_col_date), 0.dp, weight = 1f)
-        ScheduleHeaderCell(stringResource(R.string.schedule_col_payment), 0.dp, weight = 1f)
+        ScheduleHeaderCell(stringResource(R.string.schedule_brief_col_date), 0.dp, weight = 1f)
+        ScheduleHeaderCell(stringResource(R.string.schedule_brief_col_payment), 0.dp, weight = 1f)
         ScheduleHeaderCell("", 40.dp)
-        ScheduleHeaderCell(stringResource(R.string.schedule_col_balance), 0.dp, weight = 1f)
+        ScheduleHeaderCell(stringResource(R.string.schedule_brief_col_balance), 0.dp, weight = 1f)
     }
     HorizontalDivider(color = LoanBlueDark, thickness = 2.dp)
 }
@@ -256,36 +259,39 @@ private fun BriefPaymentRow(row: ScheduleRow) {
             .padding(vertical = 8.dp),
         verticalAlignment = Alignment.CenterVertically,
     ) {
-        ScheduleBodyCell(row.displayNumber, 36.dp, fontWeight = FontWeight.Normal)
-        ScheduleBodyCell(
-            text = Formatters.date(row.date),
-            width = 0.dp,
-            weight = 1f,
-            leadingIcon = if (row.date.isWeekend()) {
-                {
-                    Icon(
-                        Icons.Outlined.Event,
+        ScheduleBodyCell(row.displayNumber, 36.dp, fontWeight = FontWeight.Bold)
+        Box(
+            modifier = Modifier.weight(1f),
+            contentAlignment = Alignment.CenterEnd,
+        ) {
+            Row(verticalAlignment = Alignment.CenterVertically) {
+                if (row.date.isWeekend()) {
+                    Image(
+                        painter = painterResource(R.drawable.ic_schedule_calendar),
                         contentDescription = null,
-                        modifier = Modifier.padding(end = 4.dp),
-                        tint = LoanBlueDark,
+                        modifier = Modifier
+                            .padding(end = 4.dp)
+                            .size(18.dp),
                     )
                 }
-            } else {
-                null
-            },
-        )
-        ScheduleBodyCell(Formatters.money(row.total), 0.dp, weight = 1f)
+                Text(
+                    text = Formatters.date(row.date),
+                    style = MaterialTheme.typography.bodySmall,
+                )
+            }
+        }
+        ScheduleBodyCell(Formatters.moneyFixed(row.total), 0.dp, weight = 1f)
         Box(modifier = Modifier.width(40.dp))
-        ScheduleBodyCell(Formatters.money(row.endBalance), 0.dp, weight = 1f)
+        ScheduleBodyCell(Formatters.moneyFixed(row.endBalance), 0.dp, weight = 1f)
     }
 }
 
 @Composable
 private fun BriefExtraRow(row: ScheduleRow, isRateChange: Boolean) {
     val amountText = if (isRateChange) {
-        Formatters.percent(row.rateExtra.toFloat())
+        Formatters.schedulePercent(row.rateExtra)
     } else {
-        Formatters.money(row.extraAmount)
+        Formatters.moneyFixed(row.extraAmount)
     }
     val typeLabel = if (isRateChange) {
         stringResource(R.string.schedule_extra_rate_change)
@@ -300,11 +306,19 @@ private fun BriefExtraRow(row: ScheduleRow, isRateChange: Boolean) {
             .padding(vertical = 8.dp),
         verticalAlignment = Alignment.CenterVertically,
     ) {
-        ScheduleBodyCell(row.displayNumber, 36.dp)
-        ScheduleBodyCell(typeLabel, 0.dp, weight = 1f, textAlign = TextAlign.Start)
+        ScheduleBodyCell(row.displayNumber, 36.dp, fontWeight = FontWeight.Bold)
+        ScheduleBodyCell(typeLabel, 0.dp, weight = 1f, textAlign = TextAlign.End)
         ScheduleBodyCell(amountText, 0.dp, weight = 1f)
-        ScheduleBodyCell(Formatters.monthDay(row.date), 40.dp)
-        ScheduleBodyCell(Formatters.money(row.endBalance), 0.dp, weight = 1f)
+        Text(
+            text = Formatters.monthDay(row.date),
+            modifier = Modifier
+                .width(40.dp)
+                .padding(horizontal = 2.dp),
+            style = MaterialTheme.typography.labelSmall.copy(fontSize = 9.sp),
+            color = LoanTextSecondary,
+            textAlign = TextAlign.Center,
+        )
+        ScheduleBodyCell(Formatters.moneyFixed(row.endBalance), 0.dp, weight = 1f)
     }
 }
 
@@ -320,10 +334,11 @@ private fun DetailedPaymentRow(row: ScheduleRow, isExtra: Boolean) {
                 text = stringResource(R.string.schedule_year_label, Formatters.year(row.date)),
                 modifier = Modifier
                     .fillMaxWidth()
-                    .background(LoanBlueDark.copy(alpha = 0.08f))
+                    .background(LoanCardSurface)
                     .padding(horizontal = 12.dp, vertical = 4.dp),
-                style = MaterialTheme.typography.labelSmall,
-                color = LoanBlueDark,
+                style = MaterialTheme.typography.bodyMedium,
+                color = LoanTextSecondary,
+                textAlign = TextAlign.Center,
             )
         }
         Row(
@@ -333,26 +348,31 @@ private fun DetailedPaymentRow(row: ScheduleRow, isExtra: Boolean) {
                 .padding(vertical = 8.dp),
             verticalAlignment = Alignment.CenterVertically,
         ) {
-            ScheduleBodyCell(Formatters.monthDay(row.date), 52.dp)
+            ScheduleBodyCell(Formatters.monthDay(row.date), 52.dp, textAlign = TextAlign.Center)
             ScheduleBodyCell(
-                text = if (isExtra) Formatters.money(row.extraAmount.coerceAtLeast(row.total)) else Formatters.money(row.total),
+                text = if (isExtra) {
+                    Formatters.moneyWithoutDecimal(row.extraAmount.coerceAtLeast(row.total))
+                } else {
+                    Formatters.moneyFixed(row.total)
+                },
                 width = 88.dp,
                 leadingIcon = if (isExtra) {
                     {
-                        Icon(
-                            Icons.Outlined.Savings,
+                        Image(
+                            painter = painterResource(R.drawable.ic_schedule_extra),
                             contentDescription = null,
-                            modifier = Modifier.padding(end = 4.dp),
-                            tint = LoanBlueDark,
+                            modifier = Modifier
+                                .padding(end = 4.dp)
+                                .size(16.dp),
                         )
                     }
                 } else {
                     null
                 },
             )
-            ScheduleBodyCell(Formatters.money(row.interest), 88.dp)
-            ScheduleBodyCell(Formatters.money(row.principal), 88.dp)
-            ScheduleBodyCell(Formatters.money(row.endBalance), 88.dp)
+            ScheduleBodyCell(Formatters.moneyFixed(row.interest), 88.dp)
+            ScheduleBodyCell(Formatters.moneyFixed(row.principal), 88.dp)
+            ScheduleBodyCell(Formatters.moneyFixed(row.endBalance), 88.dp)
         }
     }
 }
@@ -369,26 +389,46 @@ private fun DetailedRateChangeRow(row: ScheduleRow) {
                 text = stringResource(R.string.schedule_year_label, Formatters.year(row.date)),
                 modifier = Modifier
                     .fillMaxWidth()
+                    .background(LoanCardSurface)
                     .padding(horizontal = 12.dp, vertical = 4.dp),
-                style = MaterialTheme.typography.labelSmall,
+                style = MaterialTheme.typography.bodyMedium,
+                color = LoanTextSecondary,
+                textAlign = TextAlign.Center,
             )
         }
         Row(
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(horizontal = 12.dp, vertical = 10.dp),
+                .padding(horizontal = 4.dp, vertical = 10.dp),
             verticalAlignment = Alignment.CenterVertically,
         ) {
             Text(
                 text = Formatters.monthDay(row.date),
                 style = MaterialTheme.typography.bodySmall,
                 modifier = Modifier.width(52.dp),
+                textAlign = TextAlign.Center,
             )
-            Text(
-                text = stringResource(R.string.schedule_new_rate, Formatters.percent(row.rateExtra.toFloat())),
-                style = MaterialTheme.typography.bodyMedium,
-                fontWeight = FontWeight.Medium,
-            )
+            Row(
+                modifier = Modifier.weight(1f),
+                horizontalArrangement = Arrangement.Center,
+                verticalAlignment = Alignment.CenterVertically,
+            ) {
+                Image(
+                    painter = painterResource(R.drawable.ic_schedule_percent),
+                    contentDescription = null,
+                    modifier = Modifier
+                        .padding(end = 4.dp)
+                        .size(16.dp),
+                )
+                Text(
+                    text = stringResource(
+                        R.string.schedule_new_rate,
+                        Formatters.schedulePercent(row.rateExtra),
+                    ),
+                    style = MaterialTheme.typography.bodySmall,
+                    color = LoanTextSecondary,
+                )
+            }
         }
     }
 }
@@ -425,20 +465,21 @@ private fun ScheduleSummaryBlock(summary: ScheduleSummary) {
             Text(
                 text = stringResource(
                     R.string.schedule_paid_of,
-                    Formatters.money(summary.paidPrincipal),
-                    Formatters.money(summary.loanAmount),
+                    Formatters.moneyFixed(summary.paidPrincipal),
+                    Formatters.moneyFixed(summary.loanAmount),
                 ),
                 style = MaterialTheme.typography.labelMedium,
                 fontWeight = FontWeight.Bold,
             )
             Text(
-                text = Formatters.money(summary.totalExtras),
+                text = Formatters.moneyFixed(summary.totalExtras),
                 style = MaterialTheme.typography.labelMedium,
                 modifier = Modifier.padding(top = 4.dp),
             )
             Text(
                 text = summary.forecastLabel ?: stringResource(R.string.schedule_forecast_off),
                 style = MaterialTheme.typography.labelMedium,
+                color = if (summary.forecastLabel == null) LoanBlueDark else MaterialTheme.colorScheme.onSurface,
                 modifier = Modifier.padding(top = 4.dp),
             )
         }

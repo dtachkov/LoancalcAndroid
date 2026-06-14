@@ -54,6 +54,7 @@ fun LoanCardsPager(
     loanCards: List<LoanCardUiModel>,
     pagerIndex: Int,
     onPageChanged: (Int) -> Unit,
+    onLoanCardClick: (Long) -> Unit,
     modifier: Modifier = Modifier,
 ) {
     val pageCount = 1 + loanCards.size
@@ -82,7 +83,10 @@ fun LoanCardsPager(
         ) { page ->
             when {
                 page == 0 -> SummaryLoanCard(summary = summary)
-                else -> SingleLoanCard(card = loanCards[page - 1])
+                else -> SingleLoanCard(
+                    card = loanCards[page - 1],
+                    onClick = { onLoanCardClick(loanCards[page - 1].id) },
+                )
             }
         }
         if (pageCount > 1) {
@@ -129,8 +133,11 @@ private fun SummaryLoanCard(summary: AllLoansSummaryUiModel?) {
 }
 
 @Composable
-private fun SingleLoanCard(card: LoanCardUiModel) {
-    LoanGradientCard {
+private fun SingleLoanCard(
+    card: LoanCardUiModel,
+    onClick: () -> Unit,
+) {
+    LoanGradientCard(modifier = Modifier.clickable(onClick = onClick)) {
         Column(verticalArrangement = Arrangement.SpaceBetween, modifier = Modifier.fillMaxHeight()) {
             Text(
                 text = card.title,
@@ -250,61 +257,110 @@ fun DebtProgressSection(
     details: LoanDetailsUiModel,
     modifier: Modifier = Modifier,
 ) {
-    Column(modifier = modifier.fillMaxWidth()) {
-        Row(
-            modifier = Modifier
-                .fillMaxWidth()
-                .height(28.dp)
-                .clip(RoundedCornerShape(8.dp))
-                .background(Color(0xFFF0F0F0)),
-        ) {
-            if (details.paidFraction > 0f) {
-                Box(
-                    modifier = Modifier
-                        .weight(details.paidFraction.coerceIn(0.01f, 1f))
-                        .fillMaxHeight()
-                        .background(LoanGreen),
-                    contentAlignment = Alignment.Center,
-                ) {
-                    if (details.paidFraction > 0.15f) {
-                        Text(
-                            text = "${stringResource(R.string.paid_label)} ${details.paidAmount}",
-                            color = Color.White,
-                            style = MaterialTheme.typography.labelSmall,
-                        )
-                    }
-                }
-            }
-            Box(
-                modifier = Modifier
-                    .weight((1f - details.paidFraction).coerceAtLeast(0.01f))
-                    .fillMaxHeight()
-                    .background(LoanRed),
-                contentAlignment = Alignment.Center,
+    Column(
+        modifier = modifier.fillMaxWidth(),
+        verticalArrangement = Arrangement.spacedBy(12.dp),
+    ) {
+        DebtProgressCard(details = details)
+        CurrentPaymentCard(details = details)
+    }
+}
+
+@Composable
+private fun DebtProgressCard(details: LoanDetailsUiModel) {
+    val paidFraction = details.paidFraction.coerceIn(0f, 1f)
+    val debtFraction = (1f - paidFraction).coerceAtLeast(0f)
+
+    Surface(
+        modifier = Modifier.fillMaxWidth(),
+        shape = RoundedCornerShape(12.dp),
+        color = LoanCardSurface,
+    ) {
+        Column(modifier = Modifier.padding(16.dp)) {
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.SpaceBetween,
+                verticalAlignment = Alignment.Bottom,
             ) {
                 Text(
-                    text = "${stringResource(R.string.debt_label)} ${details.debtAmount}",
-                    color = Color.White,
-                    style = MaterialTheme.typography.labelSmall,
+                    text = details.paidAmount,
+                    style = MaterialTheme.typography.titleMedium,
+                    fontWeight = FontWeight.SemiBold,
+                )
+                Text(
+                    text = details.debtAmount,
+                    style = MaterialTheme.typography.titleMedium,
+                    fontWeight = FontWeight.SemiBold,
+                )
+            }
+            Spacer(modifier = Modifier.height(8.dp))
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .height(5.dp)
+                    .clip(RoundedCornerShape(2.5.dp)),
+            ) {
+                if (paidFraction > 0f) {
+                    Box(
+                        modifier = Modifier
+                            .weight(paidFraction.coerceAtLeast(0.001f))
+                            .fillMaxHeight()
+                            .background(LoanGreen),
+                    )
+                }
+                if (debtFraction > 0f) {
+                    Box(
+                        modifier = Modifier
+                            .weight(debtFraction.coerceAtLeast(0.001f))
+                            .fillMaxHeight()
+                            .background(LoanRed),
+                    )
+                }
+            }
+            Spacer(modifier = Modifier.height(8.dp))
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.SpaceBetween,
+            ) {
+                Text(
+                    text = stringResource(R.string.paid_label),
+                    style = MaterialTheme.typography.labelMedium,
+                    color = LoanGreen,
+                )
+                Text(
+                    text = stringResource(R.string.debt_label),
+                    style = MaterialTheme.typography.labelMedium,
+                    color = LoanRed,
                 )
             }
         }
-        Spacer(modifier = Modifier.height(16.dp))
-        Text(
-            text = stringResource(R.string.current_payment),
-            style = MaterialTheme.typography.bodyMedium,
-            color = LoanTextSecondary,
-        )
-        Text(
-            text = details.currentPayment,
-            style = MaterialTheme.typography.headlineMedium,
-            fontWeight = FontWeight.Bold,
-        )
-        Text(
-            text = stringResource(R.string.pay_until, details.paymentDueDate),
-            style = MaterialTheme.typography.bodySmall,
-            color = LoanTextSecondary,
-        )
+    }
+}
+
+@Composable
+private fun CurrentPaymentCard(details: LoanDetailsUiModel) {
+    Surface(
+        modifier = Modifier.fillMaxWidth(),
+        shape = RoundedCornerShape(12.dp),
+        color = LoanCardSurface,
+    ) {
+        Column(modifier = Modifier.padding(horizontal = 16.dp, vertical = 14.dp)) {
+            Text(
+                text = stringResource(R.string.current_payment),
+                style = MaterialTheme.typography.bodyMedium,
+                color = LoanTextSecondary,
+            )
+            Text(
+                text = details.currentPayment,
+                style = MaterialTheme.typography.headlineMedium,
+                fontWeight = FontWeight.Bold,
+            )
+            Text(
+                text = stringResource(R.string.pay_until, details.paymentDueDate),
+                style = MaterialTheme.typography.bodySmall,
+                color = LoanTextSecondary,
+            )
+        }
     }
 }
 
@@ -468,43 +524,6 @@ fun LoanActionsSection(
                     style = MaterialTheme.typography.bodyLarge,
                 )
             }
-        }
-    }
-}
-
-@Composable
-fun AllLoansOverviewSection(
-    summary: AllLoansSummaryUiModel?,
-    onOpenAllLoans: () -> Unit,
-) {
-    Surface(
-        modifier = Modifier.fillMaxWidth(),
-        shape = RoundedCornerShape(12.dp),
-        color = LoanCardSurface,
-    ) {
-        Column(modifier = Modifier.padding(16.dp)) {
-            Text(
-                text = stringResource(R.string.all_loans_overview_hint),
-                style = MaterialTheme.typography.bodyMedium,
-                color = LoanTextSecondary,
-            )
-            Spacer(modifier = Modifier.height(12.dp))
-            if (summary != null && summary.loansCount > 0) {
-                StatRow(stringResource(R.string.all_loans_total_amount), summary.totalAmount)
-                StatRow(stringResource(R.string.all_loans_total_debt), summary.totalDebt)
-                summary.nearestPaymentAmount?.let { amount ->
-                    StatRow(
-                        label = stringResource(R.string.current_payment),
-                        value = amount,
-                    )
-                }
-            }
-            Spacer(modifier = Modifier.height(8.dp))
-            MenuNavigationRow(
-                title = stringResource(R.string.open_all_loans),
-                onClick = onOpenAllLoans,
-                showDivider = false,
-            )
         }
     }
 }

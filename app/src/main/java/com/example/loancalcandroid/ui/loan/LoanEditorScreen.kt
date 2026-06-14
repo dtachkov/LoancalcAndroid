@@ -8,6 +8,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
+import androidx.compose.foundation.layout.size
 import androidx.compose.material3.Button
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -53,7 +54,22 @@ fun LoanEditorScreen(
         stringResource(R.string.add_loan)
     }
 
-    LoanCalcScaffold(title = title, onBack = onBack) { innerPadding ->
+    LoanCalcScaffold(
+        title = title,
+        onBack = onBack,
+        actions = {
+            TextButton(
+                onClick = viewModel::save,
+                enabled = !uiState.isSaving && !uiState.isLoading,
+            ) {
+                if (uiState.isSaving) {
+                    CircularProgressIndicator(modifier = Modifier.size(18.dp))
+                } else {
+                    Text(stringResource(R.string.save))
+                }
+            }
+        },
+    ) { innerPadding ->
         if (uiState.isLoading) {
             Column(
                 modifier = Modifier

@@ -96,7 +96,7 @@ class ScheduleViewModel(
 
     private fun buildSummary(loan: Loan, calculation: LoanCalculationResult): ScheduleSummary {
         val forecastLabel = if (loan.isForecastActive && loan.forecastStartDate != null) {
-            "${Formatters.money(loan.forecastMonthlyPayment)} с ${Formatters.inputDate(loan.forecastStartDate)}"
+            "${Formatters.moneyFixed(loan.forecastMonthlyPayment)} с ${Formatters.inputDate(loan.forecastStartDate)}"
         } else {
             null
         }
