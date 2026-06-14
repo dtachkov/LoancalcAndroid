@@ -20,8 +20,8 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.KeyboardArrowRight
 import androidx.compose.material.icons.filled.Add
-import androidx.compose.material.icons.filled.Assignment
-import androidx.compose.material.icons.filled.BarChart
+import androidx.compose.material.icons.filled.DateRange
+import androidx.compose.material.icons.filled.List
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.LinearProgressIndicator
@@ -327,13 +327,13 @@ fun QuickActionsRow(
             onClick = onEarlyPaymentClick,
         )
         QuickActionItem(
-            icon = Icons.Default.BarChart,
+            icon = Icons.Default.DateRange,
             label = stringResource(R.string.quick_schedule),
             enabled = enabled,
             onClick = onScheduleClick,
         )
         QuickActionItem(
-            icon = Icons.Default.Assignment,
+            icon = Icons.Default.List,
             label = stringResource(R.string.quick_requisites),
             enabled = enabled,
             onClick = onRequisitesClick,

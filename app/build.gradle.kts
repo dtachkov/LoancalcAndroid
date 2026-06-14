@@ -12,7 +12,7 @@ android {
         applicationId = "ru.kredit.calculator"
         minSdk = 30
         targetSdk = 35
-        versionCode = 54
+        versionCode = 56
         versionName = "2.3"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
@@ -41,7 +41,8 @@ android {
         }
         release {
             signingConfig = signingConfigs.getByName("release")
-            isMinifyEnabled = false
+            isMinifyEnabled = true
+            isShrinkResources = true
             buildConfigField("boolean", "APP_PURCHASED", "false")
             buildConfigField("String", "APPMETRICA_API_KEY", "\"875793e0-e485-4b75-b722-82c4de39cf4c\"")
             proguardFiles(
@@ -78,15 +79,13 @@ dependencies {
     implementation(libs.androidx.ui.graphics)
     implementation(libs.androidx.ui.tooling.preview)
     implementation(libs.androidx.material3)
-    implementation("androidx.compose.material:material-icons-extended")
+    implementation("androidx.compose.material:material-icons-core")
     implementation(libs.coil.compose)
     implementation(platform(libs.rustore.bom))
     implementation(libs.rustore.pay)
     implementation(libs.rustore.review)
     implementation(libs.rustore.billingclient)
     implementation(libs.appmetrica.analytics)
-    implementation(libs.vico.compose)
-    implementation(libs.vico.compose.m3)
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)

@@ -87,7 +87,7 @@
     <string name="loan_type_annuity">Annualità</string>
     <string name="loan_type_graded">Graduato</string>
     <string name="loan_first_payment_date">Prima data di pagamento</string>
-    <string name="loan_issue_date_hint">Il primo pagamento - il pagamento d`interessi solo in</string>
+    <string name="loan_editor_issue_date_hint">Il primo pagamento - il pagamento d`interessi solo in</string>
     <string name="show_advanced">Additional parameters</string>
     <string name="hide_advanced">Hide parameters</string>
     <string name="option_consider_days_off">Consider days off</string>

@@ -87,7 +87,7 @@
     <string name="loan_type_annuity">Ануїтет</string>
     <string name="loan_type_graded">дифференц-е</string>
     <string name="loan_first_payment_date">Дата першого платежу</string>
-    <string name="loan_issue_date_hint">Перший платіж тільки відсотки</string>
+    <string name="loan_editor_issue_date_hint">Перший платіж тільки відсотки</string>
     <string name="show_advanced">Additional parameters</string>
     <string name="hide_advanced">Hide parameters</string>
     <string name="option_consider_days_off">Consider days off</string>

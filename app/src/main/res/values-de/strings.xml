@@ -87,7 +87,7 @@
     <string name="loan_type_annuity">Annuität</string>
     <string name="loan_type_graded">Differenz-е</string>
     <string name="loan_first_payment_date">Erstzahlungsdatum</string>
-    <string name="loan_issue_date_hint">Erste Zahlung - nur Zinsen</string>
+    <string name="loan_editor_issue_date_hint">Erste Zahlung - nur Zinsen</string>
     <string name="show_advanced">Zusatzfunktionen</string>
     <string name="hide_advanced">Hide parameters</string>
     <string name="option_consider_days_off">Berücksichtigen Ruhetage</string>

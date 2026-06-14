@@ -87,7 +87,7 @@
     <string name="loan_type_annuity">קרן שווה</string>
     <string name="loan_type_graded">שפיצר</string>
     <string name="loan_first_payment_date">תאריך התשלום הראשון</string>
-    <string name="loan_issue_date_hint">התשלום הראשון- התשלום רק למוטב</string>
+    <string name="loan_editor_issue_date_hint">התשלום הראשון- התשלום רק למוטב</string>
     <string name="show_advanced">Additional parameters</string>
     <string name="hide_advanced">Hide parameters</string>
     <string name="option_consider_days_off">Consider days off</string>

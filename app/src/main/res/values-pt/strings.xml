@@ -87,7 +87,7 @@
     <string name="loan_type_annuity">Anuidade</string>
     <string name="loan_type_graded">Classificação</string>
     <string name="loan_first_payment_date">Data do primeiro pagamento</string>
-    <string name="loan_issue_date_hint">O primeiro pagamento – o pagamento de juros apenas em</string>
+    <string name="loan_editor_issue_date_hint">O primeiro pagamento – o pagamento de juros apenas em</string>
     <string name="show_advanced">Additional parameters</string>
     <string name="hide_advanced">Hide parameters</string>
     <string name="option_consider_days_off">Consider days off</string>

@@ -87,7 +87,7 @@
     <string name="loan_type_annuity">Renta Vitalicia</string>
     <string name="loan_type_graded">Calificado</string>
     <string name="loan_first_payment_date">Fecha de primer pago</string>
-    <string name="loan_issue_date_hint">El primer pago - el pago sólo de intereses</string>
+    <string name="loan_editor_issue_date_hint">El primer pago - el pago sólo de intereses</string>
     <string name="show_advanced">Additional parameters</string>
     <string name="hide_advanced">Hide parameters</string>
     <string name="option_consider_days_off">Consider days off</string>
