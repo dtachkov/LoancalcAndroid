@@ -12,7 +12,7 @@ import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Button
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.OutlinedTextField
+import com.example.loancalcandroid.ui.common.LoanOutlinedTextField
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -49,7 +49,7 @@ fun SumByPaymentScreen(
                 .padding(horizontal = 16.dp, vertical = 12.dp),
             verticalArrangement = Arrangement.spacedBy(12.dp),
         ) {
-            OutlinedTextField(
+            LoanOutlinedTextField(
                 value = uiState.monthlyPayment,
                 onValueChange = viewModel::updateMonthlyPayment,
                 label = { Text(stringResource(R.string.sum_by_payment_monthly)) },
@@ -63,7 +63,7 @@ fun SumByPaymentScreen(
                 horizontalArrangement = Arrangement.spacedBy(8.dp),
                 verticalAlignment = Alignment.CenterVertically,
             ) {
-                OutlinedTextField(
+                LoanOutlinedTextField(
                     value = uiState.startRate,
                     onValueChange = viewModel::updateStartRate,
                     label = { Text(stringResource(R.string.sum_by_payment_rate_from)) },
@@ -75,7 +75,7 @@ fun SumByPaymentScreen(
                     text = stringResource(R.string.sum_by_payment_range_to),
                     style = MaterialTheme.typography.bodyMedium,
                 )
-                OutlinedTextField(
+                LoanOutlinedTextField(
                     value = uiState.endRate,
                     onValueChange = viewModel::updateEndRate,
                     label = { Text(stringResource(R.string.sum_by_payment_rate_to)) },
@@ -90,7 +90,7 @@ fun SumByPaymentScreen(
                 horizontalArrangement = Arrangement.spacedBy(8.dp),
                 verticalAlignment = Alignment.CenterVertically,
             ) {
-                OutlinedTextField(
+                LoanOutlinedTextField(
                     value = uiState.startTerm,
                     onValueChange = viewModel::updateStartTerm,
                     label = { Text(stringResource(R.string.sum_by_payment_term_from)) },
@@ -102,7 +102,7 @@ fun SumByPaymentScreen(
                     text = stringResource(R.string.sum_by_payment_range_to),
                     style = MaterialTheme.typography.bodyMedium,
                 )
-                OutlinedTextField(
+                LoanOutlinedTextField(
                     value = uiState.endTerm,
                     onValueChange = viewModel::updateEndTerm,
                     label = { Text(stringResource(R.string.sum_by_payment_term_to)) },

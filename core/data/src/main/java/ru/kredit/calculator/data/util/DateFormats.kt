@@ -25,4 +25,11 @@ object DateFormats {
         val formatted = dbDateFormat.format(date)
         return dbDateFormat.parse(formatted) ?: date
     }
+
+    fun addMonths(date: Date, months: Int): Date {
+        val calendar = java.util.Calendar.getInstance()
+        calendar.time = clearTime(date)
+        calendar.add(java.util.Calendar.MONTH, months)
+        return calendar.time
+    }
 }

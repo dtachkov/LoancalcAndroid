@@ -45,6 +45,7 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.loancalcandroid.R
 import com.example.loancalcandroid.ui.home.components.MenuNavigationRow
+import com.example.loancalcandroid.ui.purchase.PurchaseDialog
 import com.example.loancalcandroid.ui.theme.LoanCardSurface
 import com.example.loancalcandroid.ui.theme.LoanTextSecondary
 
@@ -56,7 +57,6 @@ fun SettingsScreen(
     onHelpClick: () -> Unit,
     onVoteClick: () -> Unit,
     onExtraTypesHelpClick: () -> Unit,
-    onPremiumClick: () -> Unit = {},
     viewModel: SettingsViewModel = viewModel(),
 ) {
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
@@ -64,6 +64,8 @@ fun SettingsScreen(
     val snackbarHostState = remember { SnackbarHostState() }
     var showNotificationDialog by remember { mutableStateOf(false) }
     var showImportUrlDialog by remember { mutableStateOf(false) }
+    var showPurchaseDialog by remember { mutableStateOf(false) }
+    val premiumFeatureTitle = stringResource(R.string.feature_premium)
 
     val notificationPermissionLauncher = rememberLauncherForActivityResult(
         contract = ActivityResultContracts.RequestPermission(),
@@ -136,6 +138,13 @@ fun SettingsScreen(
         )
     }
 
+    if (showPurchaseDialog) {
+        PurchaseDialog(
+            featureTitle = premiumFeatureTitle,
+            onDismiss = { showPurchaseDialog = false },
+        )
+    }
+
     val notificationSummary = stringResource(
         R.string.setting_remind_summary,
         uiState.notificationDays,
@@ -197,7 +206,7 @@ fun SettingsScreen(
                                 return@SettingsSwitchRow
                             }
                             if (!uiState.isLicensed) {
-                                onPremiumClick()
+                                showPurchaseDialog = true
                                 return@SettingsSwitchRow
                             }
                             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
@@ -225,7 +234,7 @@ fun SettingsScreen(
                                 if (uiState.isLicensed) {
                                     showNotificationDialog = true
                                 } else {
-                                    onPremiumClick()
+                                    showPurchaseDialog = true
                                 }
                             },
                             showDivider = false,
@@ -279,7 +288,7 @@ fun SettingsScreen(
                         } else {
                             stringResource(R.string.feature_request_title)
                         },
-                        onClick = onPremiumClick,
+                        onClick = { showPurchaseDialog = true },
                     )
                     MenuNavigationRow(
                         title = stringResource(R.string.label_help_app),

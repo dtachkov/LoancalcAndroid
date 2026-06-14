@@ -7,4 +7,6 @@ data class LoanFull(
     val loan: Loan,
     @SerializedName("extras")
     val extras: List<Extra> = emptyList(),
+    @SerializedName("account")
+    val account: LoanDetails? = null,
 )

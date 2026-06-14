@@ -3,6 +3,7 @@ package com.example.loancalcandroid.ui.tax
 import android.app.Application
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.viewModelScope
+import com.example.loancalcandroid.analytics.AnalyticsHelper
 import com.example.loancalcandroid.util.Formatters
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -89,6 +90,7 @@ class TaxViewModel(
                         tableRows = buildTableRows(taxResult, salaryPerMonth),
                     )
                 }
+                AnalyticsHelper.logEvent("CALC_RETURN_TAX")
             } catch (e: Exception) {
                 _uiState.update {
                     it.copy(isCalculating = false, error = CalculationErrors.format(e))

@@ -12,6 +12,7 @@ import org.junit.Before
 import org.junit.Test
 import org.junit.runner.RunWith
 import ru.kredit.calculator.database.entity.ExtraEntity
+import ru.kredit.calculator.database.entity.LoanDetailsEntity
 import ru.kredit.calculator.database.entity.LoanEntity
 import ru.kredit.calculator.database.entity.OfferEntity
 
@@ -36,7 +37,7 @@ class LoancalcDatabaseTest {
     @Test
     fun databaseNameAndVersionMatchLegacyContract() {
         assertEquals("main.db", DatabaseContract.DATABASE_NAME)
-        assertEquals(7, DatabaseContract.DATABASE_VERSION)
+        assertEquals(8, DatabaseContract.DATABASE_VERSION)
     }
 
     @Test
@@ -91,9 +92,21 @@ class LoancalcDatabaseTest {
             )
         )
 
+        database.loanDetailsDao().upsert(
+            LoanDetailsEntity(
+                loanId = loanId,
+                bankName = "Сбербанк",
+                accountNumber = "42302810000000001234",
+                uic = "44552233",
+                correspondentAccount = "30101810400000000225",
+                paymentComment = "Ежемесячный платеж по кредиту",
+            )
+        )
+
         val savedLoan = database.loanDao().getById(loanId)
         val savedExtra = database.extraDao().getByLoanAndExtraId(loanId, extraId)
         val offers = database.offerDao().getAll()
+        val savedDetails = database.loanDetailsDao().getByLoanId(loanId)
 
         assertNotNull(savedLoan)
         assertEquals("14-06-2026/1", savedLoan?.title)
@@ -101,5 +114,8 @@ class LoancalcDatabaseTest {
         assertEquals(loanId, savedExtra?.loanId)
         assertEquals(1, offers.size)
         assertEquals("Bank", offers.first().orgName)
+        assertNotNull(savedDetails)
+        assertEquals("Сбербанк", savedDetails?.bankName)
+        assertEquals("42302810000000001234", savedDetails?.accountNumber)
     }
 }

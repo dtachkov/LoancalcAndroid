@@ -11,11 +11,19 @@ data class LoanCardUiModel(
     val firstPaymentDay: Int,
 )
 
+data class AllLoanPaymentRowUiModel(
+    val loanId: Long,
+    val title: String,
+    val nextPaymentDate: String,
+    val nextPaymentAmount: String,
+)
+
 data class AllLoansSummaryUiModel(
     val loansCount: Int,
     val totalAmount: String,
     val totalDebt: String,
     val paymentsThisMonth: String,
+    val loanPayments: List<AllLoanPaymentRowUiModel> = emptyList(),
 )
 
 data class LoanDetailsUiModel(

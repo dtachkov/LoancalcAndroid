@@ -26,8 +26,7 @@ import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.PrimaryTabRow
-import androidx.compose.material3.Tab
+import com.example.loancalcandroid.ui.common.LoanTabRow
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
@@ -82,18 +81,15 @@ fun ExtrasTabsScreen(
                 .fillMaxSize()
                 .padding(innerPadding),
         ) {
-            PrimaryTabRow(selectedTabIndex = selectedTab) {
-                Tab(
-                    selected = selectedTab == 0,
-                    onClick = { selectedTab = 0 },
-                    text = { Text(stringResource(R.string.extras_tab_list).uppercase()) },
-                )
-                Tab(
-                    selected = selectedTab == 1,
-                    onClick = { selectedTab = 1 },
-                    text = { Text(stringResource(R.string.extras_tab_commission).uppercase()) },
-                )
-            }
+            LoanTabRow(
+                selectedTabIndex = selectedTab,
+                tabs = listOf(
+                    stringResource(R.string.extras_tab_list),
+                    stringResource(R.string.extras_tab_commission),
+                ),
+                onTabSelected = { selectedTab = it },
+                uppercase = true,
+            )
             ExtrasListContent(
                 loanId = loanId,
                 category = category,

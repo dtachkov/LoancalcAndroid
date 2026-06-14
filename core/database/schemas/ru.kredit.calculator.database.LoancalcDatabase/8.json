@@ -1,0 +1,325 @@
+{
+  "formatVersion": 1,
+  "database": {
+    "version": 8,
+    "identityHash": "e407b829cbfbb45ea411f4877c3241cb",
+    "entities": [
+      {
+        "tableName": "Loans",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`_id` INTEGER PRIMARY KEY AUTOINCREMENT, `creation_date` TEXT, `title` TEXT, `amount` REAL, `rate` REAL, `term` INTEGER, `type` INTEGER, `first_payment_date` TEXT, `date_of_issue` TEXT, `monthly_payment` REAL, `consider_days_off` INTEGER, `pay_on_last_day_of_month` INTEGER, `apply_extras_immediately` INTEGER DEFAULT 0, `interest_only_after_principal_paid_by_extra` INTEGER DEFAULT 1, `ignore_passed_periods_after_rate_change` INTEGER DEFAULT 0, `extra_day_in_month` INTEGER DEFAULT 0, `is_forecast_active` INTEGER DEFAULT 0, `forecast_montly_pay` REAL, `forecast_days_before` INTEGER, `forecast_start_date` TEXT, `forecast_extra_type` INTEGER)",
+        "fields": [
+          {
+            "fieldPath": "id",
+            "columnName": "_id",
+            "affinity": "INTEGER"
+          },
+          {
+            "fieldPath": "creationDate",
+            "columnName": "creation_date",
+            "affinity": "TEXT"
+          },
+          {
+            "fieldPath": "title",
+            "columnName": "title",
+            "affinity": "TEXT"
+          },
+          {
+            "fieldPath": "amount",
+            "columnName": "amount",
+            "affinity": "REAL"
+          },
+          {
+            "fieldPath": "rate",
+            "columnName": "rate",
+            "affinity": "REAL"
+          },
+          {
+            "fieldPath": "term",
+            "columnName": "term",
+            "affinity": "INTEGER"
+          },
+          {
+            "fieldPath": "type",
+            "columnName": "type",
+            "affinity": "INTEGER"
+          },
+          {
+            "fieldPath": "firstPaymentDate",
+            "columnName": "first_payment_date",
+            "affinity": "TEXT"
+          },
+          {
+            "fieldPath": "dateOfIssue",
+            "columnName": "date_of_issue",
+            "affinity": "TEXT"
+          },
+          {
+            "fieldPath": "monthlyPayment",
+            "columnName": "monthly_payment",
+            "affinity": "REAL"
+          },
+          {
+            "fieldPath": "considerDaysOff",
+            "columnName": "consider_days_off",
+            "affinity": "INTEGER"
+          },
+          {
+            "fieldPath": "payOnLastDayOfMonth",
+            "columnName": "pay_on_last_day_of_month",
+            "affinity": "INTEGER"
+          },
+          {
+            "fieldPath": "applyExtrasImmediately",
+            "columnName": "apply_extras_immediately",
+            "affinity": "INTEGER",
+            "defaultValue": "0"
+          },
+          {
+            "fieldPath": "calculateExtrasByTermLikeSberbank",
+            "columnName": "interest_only_after_principal_paid_by_extra",
+            "affinity": "INTEGER",
+            "defaultValue": "1"
+          },
+          {
+            "fieldPath": "ignorePassedPeriodsAfterRateChange",
+            "columnName": "ignore_passed_periods_after_rate_change",
+            "affinity": "INTEGER",
+            "defaultValue": "0"
+          },
+          {
+            "fieldPath": "extraDayInMonth",
+            "columnName": "extra_day_in_month",
+            "affinity": "INTEGER",
+            "defaultValue": "0"
+          },
+          {
+            "fieldPath": "isForecastActive",
+            "columnName": "is_forecast_active",
+            "affinity": "INTEGER",
+            "defaultValue": "0"
+          },
+          {
+            "fieldPath": "forecastMonthlyPay",
+            "columnName": "forecast_montly_pay",
+            "affinity": "REAL"
+          },
+          {
+            "fieldPath": "forecastDaysBefore",
+            "columnName": "forecast_days_before",
+            "affinity": "INTEGER"
+          },
+          {
+            "fieldPath": "forecastStartDate",
+            "columnName": "forecast_start_date",
+            "affinity": "TEXT"
+          },
+          {
+            "fieldPath": "forecastExtraType",
+            "columnName": "forecast_extra_type",
+            "affinity": "INTEGER"
+          }
+        ],
+        "primaryKey": {
+          "autoGenerate": true,
+          "columnNames": [
+            "_id"
+          ]
+        }
+      },
+      {
+        "tableName": "extras",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`_id` INTEGER PRIMARY KEY AUTOINCREMENT, `document_number` TEXT, `type` INTEGER, `date` TEXT, `amount` REAL, `loanId` INTEGER)",
+        "fields": [
+          {
+            "fieldPath": "id",
+            "columnName": "_id",
+            "affinity": "INTEGER"
+          },
+          {
+            "fieldPath": "documentNumber",
+            "columnName": "document_number",
+            "affinity": "TEXT"
+          },
+          {
+            "fieldPath": "type",
+            "columnName": "type",
+            "affinity": "INTEGER"
+          },
+          {
+            "fieldPath": "date",
+            "columnName": "date",
+            "affinity": "TEXT"
+          },
+          {
+            "fieldPath": "amount",
+            "columnName": "amount",
+            "affinity": "REAL"
+          },
+          {
+            "fieldPath": "loanId",
+            "columnName": "loanId",
+            "affinity": "INTEGER"
+          }
+        ],
+        "primaryKey": {
+          "autoGenerate": true,
+          "columnNames": [
+            "_id"
+          ]
+        }
+      },
+      {
+        "tableName": "Offers",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`_id` INTEGER PRIMARY KEY AUTOINCREMENT, `name` TEXT, `org_name` TEXT, `term` INTEGER, `rate_type` TEXT, `rate` TEXT, `logo_color` TEXT, `logo_image` TEXT, `link` TEXT, `amount_limit` REAL, `requirements` TEXT, `extra_payment_rules` TEXT, `docs` TEXT)",
+        "fields": [
+          {
+            "fieldPath": "id",
+            "columnName": "_id",
+            "affinity": "INTEGER"
+          },
+          {
+            "fieldPath": "name",
+            "columnName": "name",
+            "affinity": "TEXT"
+          },
+          {
+            "fieldPath": "orgName",
+            "columnName": "org_name",
+            "affinity": "TEXT"
+          },
+          {
+            "fieldPath": "term",
+            "columnName": "term",
+            "affinity": "INTEGER"
+          },
+          {
+            "fieldPath": "rateType",
+            "columnName": "rate_type",
+            "affinity": "TEXT"
+          },
+          {
+            "fieldPath": "rate",
+            "columnName": "rate",
+            "affinity": "TEXT"
+          },
+          {
+            "fieldPath": "logoColor",
+            "columnName": "logo_color",
+            "affinity": "TEXT"
+          },
+          {
+            "fieldPath": "logoImage",
+            "columnName": "logo_image",
+            "affinity": "TEXT"
+          },
+          {
+            "fieldPath": "link",
+            "columnName": "link",
+            "affinity": "TEXT"
+          },
+          {
+            "fieldPath": "amountLimit",
+            "columnName": "amount_limit",
+            "affinity": "REAL"
+          },
+          {
+            "fieldPath": "requirements",
+            "columnName": "requirements",
+            "affinity": "TEXT"
+          },
+          {
+            "fieldPath": "extraPaymentRules",
+            "columnName": "extra_payment_rules",
+            "affinity": "TEXT"
+          },
+          {
+            "fieldPath": "docs",
+            "columnName": "docs",
+            "affinity": "TEXT"
+          }
+        ],
+        "primaryKey": {
+          "autoGenerate": true,
+          "columnNames": [
+            "_id"
+          ]
+        }
+      },
+      {
+        "tableName": "loan_details",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`loan_id` INTEGER NOT NULL, `bank_name` TEXT NOT NULL, `account_number` TEXT NOT NULL, `uic` TEXT NOT NULL, `correspondent_account` TEXT NOT NULL, `payment_comment` TEXT, PRIMARY KEY(`loan_id`), FOREIGN KEY(`loan_id`) REFERENCES `Loans`(`_id`) ON UPDATE NO ACTION ON DELETE CASCADE )",
+        "fields": [
+          {
+            "fieldPath": "loanId",
+            "columnName": "loan_id",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "bankName",
+            "columnName": "bank_name",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "accountNumber",
+            "columnName": "account_number",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "uic",
+            "columnName": "uic",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "correspondentAccount",
+            "columnName": "correspondent_account",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "paymentComment",
+            "columnName": "payment_comment",
+            "affinity": "TEXT"
+          }
+        ],
+        "primaryKey": {
+          "autoGenerate": false,
+          "columnNames": [
+            "loan_id"
+          ]
+        },
+        "indices": [
+          {
+            "name": "index_loan_details_loan_id",
+            "unique": true,
+            "columnNames": [
+              "loan_id"
+            ],
+            "orders": [],
+            "createSql": "CREATE UNIQUE INDEX IF NOT EXISTS `index_loan_details_loan_id` ON `${TABLE_NAME}` (`loan_id`)"
+          }
+        ],
+        "foreignKeys": [
+          {
+            "table": "Loans",
+            "onDelete": "CASCADE",
+            "onUpdate": "NO ACTION",
+            "columns": [
+              "loan_id"
+            ],
+            "referencedColumns": [
+              "_id"
+            ]
+          }
+        ]
+      }
+    ],
+    "setupQueries": [
+      "CREATE TABLE IF NOT EXISTS room_master_table (id INTEGER PRIMARY KEY,identity_hash TEXT)",
+      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, 'e407b829cbfbb45ea411f4877c3241cb')"
+    ]
+  }
+}

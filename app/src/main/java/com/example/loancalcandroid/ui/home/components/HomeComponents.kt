@@ -116,32 +116,35 @@ fun LoanCardStat(
     modifier: Modifier = Modifier,
     shrinkLabel: Boolean = false,
 ) {
+    val labelStyle = MaterialTheme.typography.labelMedium.copy(
+        color = Color.White.copy(alpha = 0.85f),
+    )
+    val valueStyle = MaterialTheme.typography.titleMedium.copy(
+        color = Color.White,
+        fontWeight = FontWeight.SemiBold,
+    )
+
     Column(modifier = modifier) {
         if (shrinkLabel) {
             AutoShrinkText(
                 text = label,
-                style = MaterialTheme.typography.labelMedium.copy(
-                    color = Color.White.copy(alpha = 0.85f),
-                ),
+                style = labelStyle,
                 minFontSize = 8.sp,
                 maxLines = 1,
             )
         } else {
-            Text(
+            AutoShrinkText(
                 text = label,
-                style = MaterialTheme.typography.labelMedium,
-                color = Color.White.copy(alpha = 0.85f),
+                style = labelStyle,
+                minFontSize = 9.sp,
                 maxLines = 1,
-                overflow = TextOverflow.Ellipsis,
             )
         }
-        Text(
+        AutoShrinkText(
             text = value,
-            style = MaterialTheme.typography.titleMedium,
-            color = Color.White,
-            fontWeight = FontWeight.SemiBold,
+            style = valueStyle,
+            minFontSize = 11.sp,
             maxLines = 1,
-            overflow = TextOverflow.Ellipsis,
         )
     }
 }

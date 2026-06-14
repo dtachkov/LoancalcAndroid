@@ -101,10 +101,10 @@
     <string name="schedule_brief_col_date">Date</string>
     <string name="schedule_brief_col_payment">Сума платежу</string>
     <string name="schedule_brief_col_balance">Залишок боргу</string>
-    <string name="schedule_col_payment">Сума платежу</string>
-    <string name="schedule_col_principal">Основний борг</string>
-    <string name="schedule_col_interest">Нараховані відсотки</string>
-    <string name="schedule_col_balance">Залишок боргу</string>
+    <string name="schedule_col_payment">Сума\nплатежу</string>
+    <string name="schedule_col_principal">Основний\nборг</string>
+    <string name="schedule_col_interest">Нараховані\nвідсотки</string>
+    <string name="schedule_col_balance">Залишок\nборгу</string>
     <string name="schedule_col_extras">Дострокове погашення</string>
     <string name="add_extra">Add extra payment</string>
     <string name="title_add_extra_payment">Додавання дострокового платежу</string>

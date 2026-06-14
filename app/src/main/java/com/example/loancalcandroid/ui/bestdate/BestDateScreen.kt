@@ -8,39 +8,34 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Button
 import androidx.compose.material3.CircularProgressIndicator
-import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedButton
+import com.example.loancalcandroid.ui.common.LoanOutlinedTextField
 import androidx.compose.material3.Text
-import androidx.compose.material3.rememberDatePickerState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.example.loancalcandroid.LoanCalcApplication
 import com.example.loancalcandroid.R
+import com.example.loancalcandroid.ui.common.DatePickerField
 import com.example.loancalcandroid.ui.common.FeatureCalculationProgress
-import com.example.loancalcandroid.ui.common.FeatureDateRow
-import com.example.loancalcandroid.ui.common.FeatureMoneyInputRow
 import com.example.loancalcandroid.ui.common.FeatureResultTable
 import com.example.loancalcandroid.ui.common.FeatureTypeSegmentedControl
 import com.example.loancalcandroid.ui.common.LoanCalcScaffold
 import com.example.loancalcandroid.ui.loanViewModel
 import com.example.loancalcandroid.ui.theme.LoanTextSecondary
 import com.example.loancalcandroid.util.Formatters
-import java.util.Calendar
-import java.util.Date
 
 @Composable
 fun BestDateScreen(
@@ -76,8 +71,8 @@ fun BestDateScreen(
                 .fillMaxSize()
                 .padding(innerPadding)
                 .verticalScroll(rememberScrollState())
-                .padding(horizontal = 16.dp, vertical = 12.dp),
-            verticalArrangement = Arrangement.spacedBy(8.dp),
+                .padding(16.dp),
+            verticalArrangement = Arrangement.spacedBy(12.dp),
         ) {
             Text(
                 text = stringResource(R.string.best_date_hint),
@@ -85,11 +80,15 @@ fun BestDateScreen(
                 color = LoanTextSecondary,
             )
 
-            FeatureMoneyInputRow(
-                label = stringResource(R.string.extra_payment_amount),
+            LoanOutlinedTextField(
                 value = uiState.amount,
                 onValueChange = viewModel::updateAmount,
-                error = uiState.amountError,
+                label = { Text(stringResource(R.string.extra_payment_amount)) },
+                modifier = Modifier.fillMaxWidth(),
+                singleLine = true,
+                keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Decimal),
+                isError = uiState.amountError != null,
+                supportingText = uiState.amountError?.let { { Text(it) } },
             )
 
             Text(
@@ -104,12 +103,12 @@ fun BestDateScreen(
                 onSelectTerm = { viewModel.setDecreaseAmount(false) },
             )
 
-            BestDateDatePickerRow(
+            DatePickerField(
                 label = stringResource(R.string.best_date_start_date),
                 value = uiState.startDate,
                 onValueChange = viewModel::updateStartDate,
             )
-            BestDateDatePickerRow(
+            DatePickerField(
                 label = stringResource(R.string.best_date_end_date),
                 value = uiState.endDate,
                 onValueChange = viewModel::updateEndDate,
@@ -193,57 +192,4 @@ fun BestDateScreen(
             }
         }
     }
-}
-
-@OptIn(ExperimentalMaterial3Api::class)
-@Composable
-private fun BestDateDatePickerRow(
-    label: String,
-    value: Date,
-    onValueChange: (Date) -> Unit,
-) {
-    var showDialog by remember { mutableStateOf(false) }
-
-    FeatureDateRow(
-        label = label,
-        value = value,
-        formattedValue = Formatters.date(value),
-        onClick = { showDialog = true },
-    )
-
-    if (showDialog) {
-        val datePickerState = rememberDatePickerState(initialSelectedDateMillis = value.time)
-        androidx.compose.material3.DatePickerDialog(
-            onDismissRequest = { showDialog = false },
-            confirmButton = {
-                androidx.compose.material3.TextButton(
-                    onClick = {
-                        datePickerState.selectedDateMillis?.let { millis ->
-                            onValueChange(millis.toLocalDate())
-                        }
-                        showDialog = false
-                    },
-                ) {
-                    Text(stringResource(R.string.ok))
-                }
-            },
-            dismissButton = {
-                androidx.compose.material3.TextButton(onClick = { showDialog = false }) {
-                    Text(stringResource(R.string.cancel))
-                }
-            },
-        ) {
-            androidx.compose.material3.DatePicker(state = datePickerState)
-        }
-    }
-}
-
-private fun Long.toLocalDate(): Date {
-    val calendar = Calendar.getInstance()
-    calendar.timeInMillis = this
-    calendar.set(Calendar.HOUR_OF_DAY, 0)
-    calendar.set(Calendar.MINUTE, 0)
-    calendar.set(Calendar.SECOND, 0)
-    calendar.set(Calendar.MILLISECOND, 0)
-    return calendar.time
 }

@@ -3,6 +3,7 @@ package com.example.loancalcandroid.ui.offers
 import android.app.Application
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.viewModelScope
+import com.example.loancalcandroid.analytics.AnalyticsHelper
 import com.example.loancalcandroid.util.Formatters
 import java.util.Calendar
 import java.util.Date
@@ -164,6 +165,7 @@ class OfferDetailViewModel(
                         error = null,
                     )
                 }
+                AnalyticsHelper.logCalculation(loan.amount, "OfferDetailViewModel")
             } catch (e: Exception) {
                 _uiState.update { it.copy(error = CalculationErrors.format(e)) }
             }

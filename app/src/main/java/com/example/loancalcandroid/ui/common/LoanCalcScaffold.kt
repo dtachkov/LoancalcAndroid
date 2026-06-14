@@ -22,10 +22,12 @@ fun LoanCalcScaffold(
     modifier: Modifier = Modifier,
     actions: @Composable () -> Unit = {},
     floatingActionButton: @Composable () -> Unit = {},
+    bottomBar: @Composable () -> Unit = {},
     content: @Composable (innerPadding: androidx.compose.foundation.layout.PaddingValues) -> Unit,
 ) {
     Scaffold(
         modifier = modifier,
+        bottomBar = bottomBar,
         topBar = {
             CenterAlignedTopAppBar(
                 title = { Text(title) },

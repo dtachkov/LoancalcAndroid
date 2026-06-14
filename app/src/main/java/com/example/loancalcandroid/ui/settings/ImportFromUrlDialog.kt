@@ -8,7 +8,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedButton
-import androidx.compose.material3.OutlinedTextField
+import com.example.loancalcandroid.ui.common.LoanOutlinedTextField
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
@@ -41,7 +41,7 @@ fun ImportFromUrlDialog(
         title = { Text(stringResource(R.string.menu_item_import_url)) },
         text = {
             Column(modifier = Modifier.fillMaxWidth()) {
-                OutlinedTextField(
+                LoanOutlinedTextField(
                     value = urlText,
                     onValueChange = { urlText = it },
                     label = { Text(stringResource(R.string.custom_loan_url)) },

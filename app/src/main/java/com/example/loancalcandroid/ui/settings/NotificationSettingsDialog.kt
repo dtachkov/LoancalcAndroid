@@ -6,7 +6,7 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.AlertDialog
-import androidx.compose.material3.OutlinedTextField
+import com.example.loancalcandroid.ui.common.LoanOutlinedTextField
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
@@ -64,7 +64,7 @@ fun NotificationSettingsDialog(
                     horizontalArrangement = Arrangement.spacedBy(8.dp),
                 ) {
                     Text(stringResource(R.string.label_remind_of))
-                    OutlinedTextField(
+                    LoanOutlinedTextField(
                         value = daysText,
                         onValueChange = { daysText = it.filter { ch -> ch.isDigit() } },
                         modifier = Modifier.weight(1f),
@@ -81,7 +81,7 @@ fun NotificationSettingsDialog(
                     horizontalArrangement = Arrangement.spacedBy(8.dp),
                 ) {
                     Text(stringResource(R.string.label_at))
-                    OutlinedTextField(
+                    LoanOutlinedTextField(
                         value = hourText,
                         onValueChange = { hourText = it.filter { ch -> ch.isDigit() } },
                         modifier = Modifier.weight(1f),
@@ -91,7 +91,7 @@ fun NotificationSettingsDialog(
                         supportingText = hourError?.let { { Text(it) } },
                     )
                     Text(stringResource(R.string.label_hours))
-                    OutlinedTextField(
+                    LoanOutlinedTextField(
                         value = minuteText,
                         onValueChange = { minuteText = it.filter { ch -> ch.isDigit() } },
                         modifier = Modifier.weight(1f),

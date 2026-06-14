@@ -5,6 +5,7 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.RowScope
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
@@ -224,6 +225,8 @@ fun FeatureResultTable(
     rows: List<List<String>>,
     selectedRowIndex: Int? = null,
     modifier: Modifier = Modifier,
+    firstColumnWidth: Dp? = null,
+    firstColumnWeight: Float = 1.2f,
 ) {
     Column(modifier = modifier.fillMaxWidth()) {
         Row(
@@ -235,9 +238,14 @@ fun FeatureResultTable(
             headers.forEachIndexed { index, header ->
                 Text(
                     text = header,
-                    modifier = Modifier.weight(if (index == 0) 1.2f else 1f),
+                    modifier = firstColumnModifier(
+                        index = index,
+                        firstColumnWidth = firstColumnWidth,
+                        firstColumnWeight = firstColumnWeight,
+                        fillWidth = true,
+                    ),
                     style = MaterialTheme.typography.labelMedium,
-                    textAlign = if (index == 0) TextAlign.Start else TextAlign.End,
+                    textAlign = TextAlign.Start,
                 )
             }
         }
@@ -251,13 +259,35 @@ fun FeatureResultTable(
                 row.forEachIndexed { cellIndex, cell ->
                     Text(
                         text = cell,
-                        modifier = Modifier.weight(if (cellIndex == 0) 1.2f else 1f),
+                        modifier = firstColumnModifier(
+                            index = cellIndex,
+                            firstColumnWidth = firstColumnWidth,
+                            firstColumnWeight = firstColumnWeight,
+                            fillWidth = true,
+                        ),
                         style = MaterialTheme.typography.bodyMedium,
-                        textAlign = if (cellIndex == 0) TextAlign.Start else TextAlign.End,
+                        textAlign = TextAlign.Start,
                     )
                 }
             }
             HorizontalDivider()
         }
+    }
+}
+
+private fun RowScope.firstColumnModifier(
+    index: Int,
+    firstColumnWidth: Dp?,
+    firstColumnWeight: Float,
+    fillWidth: Boolean,
+): Modifier {
+    return when {
+        index == 0 && firstColumnWidth != null -> Modifier.width(firstColumnWidth)
+        index == 0 -> Modifier
+            .weight(firstColumnWeight)
+            .then(if (fillWidth) Modifier.fillMaxWidth() else Modifier)
+        else -> Modifier
+            .weight(1f)
+            .then(if (fillWidth) Modifier.fillMaxWidth() else Modifier)
     }
 }

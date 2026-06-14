@@ -21,7 +21,7 @@ import java.io.IOException
 
 object ShareScheduleUtil {
 
-    suspend fun share(context: Context, loanId: Long) = withContext(Dispatchers.IO) {
+    suspend fun buildReportHtml(context: Context, loanId: Long): String = withContext(Dispatchers.IO) {
         val data = LoanCalcData.get()
         val loan = data.loanRepository.getLoan(loanId)
             ?: throw IllegalStateException(context.getString(R.string.share_schedule_loan_not_found))
@@ -29,9 +29,16 @@ object ShareScheduleUtil {
         val extras = data.extraRepository.getExtras(loanId)
         val calculation = data.loanCalculator.calculate(loan, extras)
 
-        val html = buildHtml(context, loan, extras, calculation.payments)
-        val file = saveHtml(context, loan.id, html)
+        buildHtml(context, loan, extras, calculation.payments)
+    }
+
+    suspend fun share(context: Context, loanId: Long) = withContext(Dispatchers.IO) {
+        val html = buildReportHtml(context, loanId)
+        val file = saveHtml(context, loanId, html)
             ?: throw IOException(context.getString(R.string.share_schedule_save_failed))
+
+        val loan = LoanCalcData.get().loanRepository.getLoan(loanId)
+            ?: throw IllegalStateException(context.getString(R.string.share_schedule_loan_not_found))
 
         withContext(Dispatchers.Main) {
             startShareActivity(context, loan, file)

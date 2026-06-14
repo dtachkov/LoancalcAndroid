@@ -19,6 +19,9 @@ dependencyResolutionManagement {
         maven {
             url = uri("https://artifactory-external.vkpartner.ru/artifactory/maven")
         }
+        maven {
+            url = uri("https://artifactory-external.vkpartner.ru/artifactory/maven-rustore-exposed/")
+        }
     }
 }
 

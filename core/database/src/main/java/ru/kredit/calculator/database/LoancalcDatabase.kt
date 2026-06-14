@@ -6,8 +6,10 @@ import androidx.room.Room
 import androidx.room.RoomDatabase
 import ru.kredit.calculator.database.dao.ExtraDao
 import ru.kredit.calculator.database.dao.LoanDao
+import ru.kredit.calculator.database.dao.LoanDetailsDao
 import ru.kredit.calculator.database.dao.OfferDao
 import ru.kredit.calculator.database.entity.ExtraEntity
+import ru.kredit.calculator.database.entity.LoanDetailsEntity
 import ru.kredit.calculator.database.entity.LoanEntity
 import ru.kredit.calculator.database.entity.OfferEntity
 
@@ -16,6 +18,7 @@ import ru.kredit.calculator.database.entity.OfferEntity
         LoanEntity::class,
         ExtraEntity::class,
         OfferEntity::class,
+        LoanDetailsEntity::class,
     ],
     version = DatabaseContract.DATABASE_VERSION,
     exportSchema = true,
@@ -24,6 +27,7 @@ abstract class LoancalcDatabase : RoomDatabase() {
     abstract fun loanDao(): LoanDao
     abstract fun extraDao(): ExtraDao
     abstract fun offerDao(): OfferDao
+    abstract fun loanDetailsDao(): LoanDetailsDao
 
     companion object {
         @Volatile

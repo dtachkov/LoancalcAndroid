@@ -15,7 +15,7 @@ private val LightColorScheme = lightColorScheme(
     onBackground = Color(0xFF1C1C1E),
     onSurface = Color(0xFF1C1C1E),
     onSurfaceVariant = LoanTextSecondary,
-    outline = LoanDivider,
+    outline = LoanInputBorder,
 )
 
 @Composable

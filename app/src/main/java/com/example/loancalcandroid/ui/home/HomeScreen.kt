@@ -23,6 +23,7 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.example.loancalcandroid.R
 import com.example.loancalcandroid.ui.home.components.AllLoansMenuSection
+import com.example.loancalcandroid.ui.home.components.AllLoansPaymentsSection
 import com.example.loancalcandroid.ui.home.components.DebtProgressSection
 import com.example.loancalcandroid.ui.home.components.HomeTopBar
 import com.example.loancalcandroid.ui.home.components.LoanActionsSection
@@ -107,6 +108,15 @@ fun HomeScreen(
             }
 
             if (uiState.pagerIndex == 0) {
+                uiState.allLoansSummary?.loanPayments?.takeIf { it.isNotEmpty() }?.let { loans ->
+                    item {
+                        AllLoansPaymentsSection(
+                            loans = loans,
+                            onLoanClick = viewModel::selectLoan,
+                        )
+                        Spacer(modifier = Modifier.height(16.dp))
+                    }
+                }
                 item {
                     AllLoansMenuSection(
                         showCompare = (uiState.allLoansSummary?.loansCount ?: 0) > 0,

@@ -2,6 +2,7 @@ package com.example.loancalcandroid.ui.sumbypayment
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.example.loancalcandroid.analytics.AnalyticsHelper
 import com.example.loancalcandroid.util.Formatters
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -129,6 +130,7 @@ class SumByPaymentViewModel : ViewModel() {
                     )
                 }
             }
+            AnalyticsHelper.logEvent("CALC_SUM_LOAN")
         }
     }
 

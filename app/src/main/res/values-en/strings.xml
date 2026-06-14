@@ -38,6 +38,16 @@
     <string name="quick_early_payment">Add extra payment</string>
     <string name="quick_schedule">Amortization</string>
     <string name="quick_requisites">Details</string>
+    <string name="requisites_bank_name">Bank name</string>
+    <string name="requisites_bank_name_placeholder">Sberbank</string>
+    <string name="requisites_account_number">Account number</string>
+    <string name="requisites_account_number_placeholder">423028…</string>
+    <string name="requisites_bic">BIC</string>
+    <string name="requisites_bic_placeholder">44552233</string>
+    <string name="requisites_correspondent_account">Correspondent account</string>
+    <string name="requisites_correspondent_account_placeholder">301…</string>
+    <string name="requisites_payment_comment">Payment comment</string>
+    <string name="requisites_payment_comment_placeholder">Credit monthly payment. VAT is not applied</string>
     <string name="paid_label">Paid:</string>
     <string name="debt_label">Owing amount:</string>
     <string name="current_payment">Next payment:</string>
@@ -82,12 +92,16 @@
     <string name="save">Save</string>
     <string name="ok">Ok</string>
     <string name="loan_title">Loan Name</string>
-    <string name="loan_term">Term (months):</string>
-    <string name="loan_type">Payment type:</string>
-    <string name="loan_type_annuity">Annuity</string>
-    <string name="loan_type_graded">Graded</string>
+    <string name="loan_editor_amount">Loan Amount</string>
+    <string name="loan_editor_rate">Rate per Year (%)</string>
+    <string name="loan_editor_term">Term (months)</string>
+    <string name="loan_term">Term (months)</string>
+    <string name="loan_type">Payment type</string>
+    <string name="loan_type_annuity">annuity</string>
+    <string name="loan_type_graded">graded (GPM)</string>
     <string name="loan_first_payment_date">First payment date</string>
-    <string name="loan_issue_date_hint">The first payment - the payment of interest only</string>
+    <string name="loan_editor_issue_date">Date of issue</string>
+    <string name="loan_editor_issue_date_hint">The first payment - the payment of interest only</string>
     <string name="show_advanced">Additional parameters</string>
     <string name="hide_advanced">Hide parameters</string>
     <string name="option_consider_days_off">Consider days off</string>
@@ -103,7 +117,7 @@
     <string name="schedule_brief_col_balance">Balance</string>
     <string name="schedule_col_payment">Payment</string>
     <string name="schedule_col_principal">Principal</string>
-    <string name="schedule_col_interest">Accrued interest</string>
+    <string name="schedule_col_interest">Accrued\ninterest</string>
     <string name="schedule_col_balance">Balance</string>
     <string name="schedule_col_extras">Extra Payment</string>
     <string name="add_extra">Add extra payment</string>
@@ -114,6 +128,8 @@
     <string name="extra_type">Extra Payment type</string>
     <string name="extra_payment_date">Payment Date</string>
     <string name="extra_payment_amount">Extra Payment Amount</string>
+    <string name="extra_interest_to_pay">Percent will be paid</string>
+    <string name="extra_net_amount">Net extra value</string>
     <string name="extra_payment_rate">Interest rate</string>
     <string name="extra_payment_rules">Extra payment rules</string>
     <string name="extra_date">Date</string>
@@ -270,6 +286,6 @@
     <string name="premium_exist">У вас уже есть</string>
     <string name="premium_title">Premium доступен</string>
     <string name="all_features_available">Вам доступны все возможности</string>
-    <string name="menu_item_premium">Premium</string>
+    <string name="menu_item_premium">Get Premium</string>
     <string name="widget_label_license_required">Payment required</string>
 </resources>

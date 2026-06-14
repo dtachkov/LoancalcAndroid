@@ -54,6 +54,7 @@ class LoanCalcData private constructor(
             val loanRepository = LoanRepository(
                 loanDao = database.loanDao(),
                 extraDao = database.extraDao(),
+                loanDetailsDao = database.loanDetailsDao(),
                 ioDispatcher = ioDispatcher,
             )
             val extraRepository = ExtraRepository(

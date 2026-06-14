@@ -1,10 +1,7 @@
 package com.example.loancalcandroid.ui.offers
 
-import android.content.Intent
-import android.net.Uri
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -13,25 +10,40 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
-import androidx.compose.material3.Button
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.MoreVert
 import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.material3.DropdownMenu
+import androidx.compose.material3.DropdownMenuItem
+import androidx.compose.material3.HorizontalDivider
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Slider
+import androidx.compose.material3.SliderDefaults
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.core.text.HtmlCompat
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import coil.compose.AsyncImage
 import com.example.loancalcandroid.R
+import com.example.loancalcandroid.analytics.AnalyticsHelper
 import com.example.loancalcandroid.ui.common.LoanCalcScaffold
+import com.example.loancalcandroid.ui.theme.LoanDivider
 import com.example.loancalcandroid.ui.theme.LoanTextSecondary
+import com.example.loancalcandroid.ui.theme.OfferAccentText
 import com.example.loancalcandroid.util.Formatters
 
 @Composable
@@ -44,10 +56,47 @@ fun OfferDetailScreen(
     }
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
     val context = LocalContext.current
+    var menuExpanded by remember { mutableStateOf(false) }
 
     LoanCalcScaffold(
         title = stringResource(R.string.offer_detail_title),
         onBack = onBack,
+        actions = {
+            IconButton(onClick = { menuExpanded = true }) {
+                Icon(Icons.Default.MoreVert, contentDescription = null)
+            }
+            DropdownMenu(
+                expanded = menuExpanded,
+                onDismissRequest = { menuExpanded = false },
+            ) {
+                DropdownMenuItem(
+                    text = { Text(stringResource(R.string.offer_save_loan)) },
+                    onClick = {
+                        menuExpanded = false
+                        viewModel.saveToMyLoans()
+                    },
+                    enabled = !uiState.isSaving,
+                )
+            }
+        },
+        bottomBar = {
+            val offer = uiState.offer
+            if (offer != null && !uiState.isLoading) {
+                Column {
+                    HorizontalDivider(color = LoanDivider)
+                    OfferOrderButton(
+                        text = stringResource(R.string.offer_order_loan),
+                        onClick = {
+                            offer.link?.let { link ->
+                                AnalyticsHelper.openOfferLink(context, offer.name, link)
+                            }
+                        },
+                        enabled = !offer.link.isNullOrBlank(),
+                        modifier = Modifier.padding(16.dp),
+                    )
+                }
+            }
+        },
     ) { innerPadding ->
         if (uiState.isLoading) {
             Column(
@@ -70,7 +119,7 @@ fun OfferDetailScreen(
                     .padding(innerPadding)
                     .padding(16.dp),
             ) {
-                Text(text = uiState.error ?: "Предложение не найдено")
+                Text(text = uiState.error ?: stringResource(R.string.offer_not_found))
             }
             return@LoanCalcScaffold
         }
@@ -81,55 +130,98 @@ fun OfferDetailScreen(
                 .padding(innerPadding)
                 .verticalScroll(rememberScrollState())
                 .padding(horizontal = 16.dp, vertical = 12.dp),
-            verticalArrangement = Arrangement.spacedBy(12.dp),
+            verticalArrangement = Arrangement.spacedBy(8.dp),
         ) {
-            Row(verticalAlignment = Alignment.CenterVertically) {
+            Column(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .offerFrame()
+                    .padding(16.dp),
+                horizontalAlignment = Alignment.CenterHorizontally,
+            ) {
                 AsyncImage(
                     model = offer.logoImage,
                     contentDescription = offer.name,
-                    modifier = Modifier.size(56.dp),
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .height(27.dp),
+                    contentScale = ContentScale.Fit,
                 )
-                Column(modifier = Modifier.padding(start = 12.dp)) {
-                    Text(
-                        text = offer.organizationName.orEmpty(),
-                        style = MaterialTheme.typography.labelLarge,
-                        color = LoanTextSecondary,
-                    )
-                    Text(
-                        text = offer.name.orEmpty(),
-                        style = MaterialTheme.typography.titleLarge,
-                        fontWeight = FontWeight.SemiBold,
-                    )
-                }
+                Text(
+                    text = offer.organizationName.orEmpty(),
+                    style = MaterialTheme.typography.bodyLarge,
+                    textAlign = TextAlign.Center,
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(top = 8.dp),
+                )
+                Text(
+                    text = offer.name.orEmpty(),
+                    style = MaterialTheme.typography.bodyLarge,
+                    textAlign = TextAlign.Center,
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(top = 16.dp),
+                )
             }
 
-            OfferSliderSection(
-                label = stringResource(R.string.offer_amount),
-                valueText = Formatters.moneyWithoutDecimal(uiState.selectedAmount.toDouble()),
-                progress = uiState.amountProgress,
-                max = uiState.amountMaxProgress,
-                onProgressChange = viewModel::updateAmountProgress,
+            OfferSectionHeader(text = stringResource(R.string.offer_terms))
+
+            OfferInputLabelRow(
+                label = stringResource(R.string.offer_amount_label),
+                value = Formatters.moneyWithoutDecimal(uiState.selectedAmount.toDouble()),
             )
-            OfferSliderSection(
-                label = stringResource(R.string.loan_term),
-                valueText = uiState.selectedTerm.toString(),
-                progress = uiState.termProgress,
-                max = uiState.termMaxProgress,
-                onProgressChange = viewModel::updateTermProgress,
+            Slider(
+                value = uiState.amountProgress.toFloat(),
+                onValueChange = { viewModel.updateAmountProgress(it.toInt()) },
+                valueRange = 0f..uiState.amountMaxProgress.toFloat().coerceAtLeast(0f),
+                steps = uiState.amountMaxProgress.coerceAtLeast(1) - 1,
+                colors = SliderDefaults.colors(
+                    thumbColor = OfferAccentText,
+                    activeTrackColor = OfferAccentText,
+                ),
             )
 
-            OfferValueRow(stringResource(R.string.loan_rate), uiState.rateText)
-            OfferValueRow(stringResource(R.string.offer_monthly_payment), uiState.monthlyPaymentText)
-            OfferValueRow(stringResource(R.string.offer_overpay), uiState.overpayText)
+            OfferInputLabelRow(
+                label = stringResource(R.string.offer_term_label),
+                value = uiState.selectedTerm.toString(),
+            )
+            Slider(
+                value = uiState.termProgress.toFloat(),
+                onValueChange = { viewModel.updateTermProgress(it.toInt()) },
+                valueRange = 0f..uiState.termMaxProgress.toFloat().coerceAtLeast(0f),
+                steps = uiState.termMaxProgress.coerceAtLeast(1) - 1,
+                colors = SliderDefaults.colors(
+                    thumbColor = OfferAccentText,
+                    activeTrackColor = OfferAccentText,
+                ),
+            )
+
+            OfferInputLabelRow(
+                label = stringResource(R.string.offer_rate_label),
+                value = uiState.rateText,
+            )
+
+            Spacer(modifier = Modifier.height(8.dp))
+
+            OfferCalculationCard(
+                monthlyPayment = uiState.monthlyPaymentText,
+                monthlyPaymentLabel = stringResource(R.string.offer_monthly_payment),
+                overpay = uiState.overpayText,
+                overpayLabel = stringResource(R.string.offer_overpay),
+            )
 
             offer.documents?.let {
-                OfferHtmlSection(stringResource(R.string.offer_documents), it)
+                OfferSectionHeader(text = stringResource(R.string.offer_documents))
+                OfferHtmlBody(html = it)
             }
             offer.requirements?.let {
-                OfferHtmlSection(stringResource(R.string.offer_requirements), it)
+                OfferSectionHeader(text = stringResource(R.string.offer_requirements))
+                OfferHtmlBody(html = it)
             }
             offer.extraPaymentRules?.takeIf { it.isNotBlank() }?.let {
-                OfferHtmlSection(stringResource(R.string.offer_early_payments), it)
+                OfferSectionHeader(text = stringResource(R.string.offer_early_payments))
+                OfferHtmlBody(html = it)
             }
 
             uiState.error?.let {
@@ -139,80 +231,17 @@ fun OfferDetailScreen(
                 Text(text = it, color = MaterialTheme.colorScheme.primary)
             }
 
-            Button(
-                onClick = {
-                    offer.link?.let { link ->
-                        context.startActivity(Intent(Intent.ACTION_VIEW, Uri.parse(link)))
-                    }
-                },
-                modifier = Modifier.fillMaxWidth(),
-                enabled = !offer.link.isNullOrBlank(),
-            ) {
-                Text(stringResource(R.string.offers_order))
-            }
-            Button(
-                onClick = viewModel::saveToMyLoans,
-                enabled = !uiState.isSaving,
-                modifier = Modifier.fillMaxWidth(),
-            ) {
-                if (uiState.isSaving) {
-                    CircularProgressIndicator(modifier = Modifier.padding(end = 8.dp))
-                }
-                Text(stringResource(R.string.offer_save_loan))
-            }
+            Spacer(modifier = Modifier.height(72.dp))
         }
     }
 }
 
 @Composable
-private fun OfferSliderSection(
-    label: String,
-    valueText: String,
-    progress: Int,
-    max: Int,
-    onProgressChange: (Int) -> Unit,
-) {
-    Column {
-        Row(
-            modifier = Modifier.fillMaxWidth(),
-            horizontalArrangement = Arrangement.SpaceBetween,
-        ) {
-            Text(text = label, style = MaterialTheme.typography.bodyLarge)
-            Text(text = valueText, style = MaterialTheme.typography.bodyLarge)
-        }
-        Slider(
-            value = progress.toFloat(),
-            onValueChange = { onProgressChange(it.toInt()) },
-            valueRange = 0f..max.toFloat().coerceAtLeast(0f),
-            steps = max.coerceAtLeast(1) - 1,
-        )
-    }
-}
-
-@Composable
-private fun OfferValueRow(label: String, value: String) {
-    Row(
-        modifier = Modifier.fillMaxWidth(),
-        horizontalArrangement = Arrangement.SpaceBetween,
-    ) {
-        Text(text = label, style = MaterialTheme.typography.bodyLarge)
-        Text(text = value, style = MaterialTheme.typography.bodyLarge, fontWeight = FontWeight.Medium)
-    }
-}
-
-@Composable
-private fun OfferHtmlSection(title: String, html: String) {
-    Column(modifier = Modifier.fillMaxWidth()) {
-        Text(
-            text = title,
-            style = MaterialTheme.typography.titleMedium,
-            fontWeight = FontWeight.SemiBold,
-        )
-        Spacer(modifier = Modifier.height(4.dp))
-        Text(
-            text = HtmlCompat.fromHtml(html, HtmlCompat.FROM_HTML_MODE_COMPACT).toString(),
-            style = MaterialTheme.typography.bodyMedium,
-            color = LoanTextSecondary,
-        )
-    }
+private fun OfferHtmlBody(html: String) {
+    Text(
+        text = HtmlCompat.fromHtml(html, HtmlCompat.FROM_HTML_MODE_COMPACT).toString(),
+        style = MaterialTheme.typography.bodyMedium,
+        color = Color.Black,
+        modifier = Modifier.padding(top = 8.dp),
+    )
 }

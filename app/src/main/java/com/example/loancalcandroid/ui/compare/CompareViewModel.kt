@@ -3,6 +3,7 @@ package com.example.loancalcandroid.ui.compare
 import android.app.Application
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.viewModelScope
+import com.example.loancalcandroid.analytics.AnalyticsHelper
 import com.example.loancalcandroid.util.Formatters
 import java.util.Date
 import kotlinx.coroutines.CancellationException
@@ -106,6 +107,7 @@ class CompareViewModel(
                         bestLoanTitle = best?.loanTitle,
                     )
                 }
+                AnalyticsHelper.logEvent("CALC_BEST_LOAN")
             } catch (e: CancellationException) {
                 _uiState.update { it.copy(isCalculating = false) }
             } catch (e: Exception) {

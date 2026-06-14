@@ -3,6 +3,7 @@ package com.example.loancalcandroid.ui.bestdate
 import android.app.Application
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.viewModelScope
+import com.example.loancalcandroid.analytics.AnalyticsHelper
 import com.example.loancalcandroid.util.Formatters
 import java.util.Calendar
 import java.util.Date
@@ -109,9 +110,11 @@ class BestDateViewModel(
                         bestDate = best?.date,
                     )
                 }
+                AnalyticsHelper.logEvent("CALC_BEST_DATE")
             } catch (e: CancellationException) {
                 _uiState.update { it.copy(isCalculating = false) }
             } catch (e: Exception) {
+                AnalyticsHelper.logEvent("ERROR_BEST_DATE", CalculationErrors.format(e))
                 _uiState.update {
                     it.copy(isCalculating = false, error = CalculationErrors.format(e))
                 }

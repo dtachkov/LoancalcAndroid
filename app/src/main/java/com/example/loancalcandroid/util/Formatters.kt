@@ -22,6 +22,7 @@ object Formatters {
     }
     private val shortDateFormat = SimpleDateFormat("d MMMM yyyy г.", locale)
     private val inputDateFormat = SimpleDateFormat("dd.MM.yyyy", locale)
+    private val cardDateFormat = SimpleDateFormat("dd.MM.yy", locale)
     private val monthDayFormat = SimpleDateFormat("dd.MM", locale)
     private val yearFormat = SimpleDateFormat("yyyy", locale)
 
@@ -49,6 +50,11 @@ object Formatters {
     fun date(date: Date?): String {
         if (date == null) return "—"
         return displayDateFormat.format(date)
+    }
+
+    fun cardDate(date: Date?): String {
+        if (date == null) return "—"
+        return cardDateFormat.format(date)
     }
 
     fun shortDate(date: Date?): String {

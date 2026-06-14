@@ -4,12 +4,12 @@ import ru.kredit.calculator.data.model.ExtraType
 
 object ExtraTypeUtils {
     val earlyPaymentTypes: List<ExtraType> = listOf(
+        ExtraType.PAYMENT_FOR_DECREASE_LOAN_AMOUNT,
         ExtraType.CHANGE_RATE,
         ExtraType.PAYMENT_FOR_DECREASE_TERM,
-        ExtraType.PAYMENT_FOR_DECREASE_LOAN_AMOUNT,
-        ExtraType.PAYMENT_FOR_CHANGE_DATE,
         ExtraType.PAYMENT_FOR_DECREASE_LOAN_AMOUNT_MONTHLY,
         ExtraType.PAYMENT_FOR_DECREASE_TERM_MONTHLY,
+        ExtraType.PAYMENT_FOR_CHANGE_DATE,
     )
 
     val commissionTypes: List<ExtraType> = listOf(

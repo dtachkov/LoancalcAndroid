@@ -5,6 +5,7 @@ import android.app.Application
 import android.appwidget.AppWidgetManager
 import android.content.ComponentName
 import android.os.Bundle
+import com.example.loancalcandroid.analytics.AnalyticsHelper
 import com.example.loancalcandroid.billing.RuStoreLicenseManager
 import com.example.loancalcandroid.notification.NotificationScheduler
 import com.example.loancalcandroid.notification.PaymentNotificationHelper
@@ -32,6 +33,10 @@ class LoanCalcApplication : Application() {
 
     override fun onCreate() {
         super.onCreate()
+        AnalyticsHelper.activate(this)
+        if (!isMainProcess()) {
+            return
+        }
         val data = LoanCalcData.initialize(
             context = this,
             buildType = BuildConfig.BUILD_TYPE,
@@ -50,6 +55,8 @@ class LoanCalcApplication : Application() {
         }
         WidgetUpdater.updateAllWidgets(this)
     }
+
+    private fun isMainProcess(): Boolean = packageName == getProcessName()
 
     private fun hasActiveWidgets(): Boolean {
         val manager = AppWidgetManager.getInstance(this)

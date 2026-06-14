@@ -3,10 +3,12 @@ package ru.kredit.calculator.data.mapper
 import ru.kredit.calculator.data.model.Extra
 import ru.kredit.calculator.data.model.ExtraType
 import ru.kredit.calculator.data.model.Loan
+import ru.kredit.calculator.data.model.LoanDetails
 import ru.kredit.calculator.data.model.LoanType
 import ru.kredit.calculator.data.model.Offer
 import ru.kredit.calculator.data.util.DateFormats
 import ru.kredit.calculator.database.entity.ExtraEntity
+import ru.kredit.calculator.database.entity.LoanDetailsEntity
 import ru.kredit.calculator.database.entity.LoanEntity
 import ru.kredit.calculator.database.entity.OfferEntity
 
@@ -62,6 +64,27 @@ fun Loan.toEntity(): LoanEntity {
         forecastDaysBefore = if (isForecastActive) forecastDaysBefore else null,
         forecastStartDate = if (isForecastActive) DateFormats.formatDate(forecastStartDate) else null,
         forecastExtraType = if (isForecastActive) forecastExtraType.toInt() else null,
+    )
+}
+
+fun LoanDetailsEntity.toDomain(): LoanDetails {
+    return LoanDetails(
+        bankName = bankName,
+        accountNumber = accountNumber,
+        uic = uic,
+        correspondentAccount = correspondentAccount,
+        paymentComment = paymentComment,
+    )
+}
+
+fun LoanDetails.toEntity(loanId: Long): LoanDetailsEntity {
+    return LoanDetailsEntity(
+        loanId = loanId,
+        bankName = bankName,
+        accountNumber = accountNumber,
+        uic = uic,
+        correspondentAccount = correspondentAccount,
+        paymentComment = paymentComment?.takeIf { it.isNotBlank() },
     )
 }
 

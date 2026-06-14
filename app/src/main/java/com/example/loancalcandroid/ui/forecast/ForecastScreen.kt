@@ -16,7 +16,7 @@ import androidx.compose.material3.Button
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedButton
-import androidx.compose.material3.OutlinedTextField
+import com.example.loancalcandroid.ui.common.LoanOutlinedTextField
 import androidx.compose.material3.Switch
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -90,7 +90,7 @@ fun ForecastScreen(
             )
 
             if (uiState.forecastEnabled) {
-                OutlinedTextField(
+                LoanOutlinedTextField(
                     value = uiState.monthlyPayment,
                     onValueChange = viewModel::updateMonthlyPayment,
                     label = { Text(stringResource(R.string.forecast_monthly_payment)) },
@@ -100,7 +100,7 @@ fun ForecastScreen(
                     isError = uiState.monthlyPaymentError != null,
                     supportingText = uiState.monthlyPaymentError?.let { { Text(it) } },
                 )
-                OutlinedTextField(
+                LoanOutlinedTextField(
                     value = uiState.daysBeforePayment,
                     onValueChange = viewModel::updateDaysBeforePayment,
                     label = { Text(stringResource(R.string.forecast_days_before)) },

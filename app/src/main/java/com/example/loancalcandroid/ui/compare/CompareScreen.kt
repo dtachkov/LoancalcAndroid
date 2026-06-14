@@ -8,39 +8,77 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Button
 import androidx.compose.material3.CircularProgressIndicator
-import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedButton
+import com.example.loancalcandroid.ui.common.LoanOutlinedTextField
 import androidx.compose.material3.Text
-import androidx.compose.material3.rememberDatePickerState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import androidx.lifecycle.viewmodel.compose.viewModel
+import android.app.Application
+import androidx.lifecycle.ViewModel
+import androidx.lifecycle.ViewModelProvider
 import com.example.loancalcandroid.LoanCalcApplication
 import com.example.loancalcandroid.R
+import com.example.loancalcandroid.ui.common.DatePickerField
 import com.example.loancalcandroid.ui.common.FeatureCalculationProgress
-import com.example.loancalcandroid.ui.common.FeatureDateRow
-import com.example.loancalcandroid.ui.common.FeatureMoneyInputRow
 import com.example.loancalcandroid.ui.common.FeatureResultTable
 import com.example.loancalcandroid.ui.common.FeatureTypeSegmentedControl
 import com.example.loancalcandroid.ui.common.LoanCalcScaffold
 import com.example.loancalcandroid.ui.loanViewModel
 import com.example.loancalcandroid.ui.theme.LoanTextSecondary
 import com.example.loancalcandroid.util.Formatters
-import java.util.Calendar
-import java.util.Date
+
+@Composable
+fun CompareTabContent(
+    onPurchaseRequired: () -> Unit,
+    modifier: Modifier = Modifier,
+) {
+    val application = LocalContext.current.applicationContext as Application
+    val viewModel: CompareViewModel = viewModel(
+        key = "loans_list_compare",
+        factory = object : ViewModelProvider.Factory {
+            @Suppress("UNCHECKED_CAST")
+            override fun <T : ViewModel> create(modelClass: Class<T>): T {
+                return CompareViewModel(application, 0L) as T
+            }
+        },
+    )
+    val uiState by viewModel.uiState.collectAsStateWithLifecycle()
+    val licenseManager = (LocalContext.current.applicationContext as LoanCalcApplication).licenseManager
+    val isLicensed by licenseManager.isLicensed.collectAsStateWithLifecycle()
+
+    Column(
+        modifier = modifier
+            .verticalScroll(rememberScrollState())
+            .padding(16.dp),
+        verticalArrangement = Arrangement.spacedBy(12.dp),
+    ) {
+        CompareFormContent(
+            uiState = uiState,
+            isLicensed = isLicensed,
+            onExtraDateChange = viewModel::updateExtraDate,
+            onAmountChange = viewModel::updateAmount,
+            onSelectAmount = { viewModel.setDecreaseAmount(true) },
+            onSelectTerm = { viewModel.setDecreaseAmount(false) },
+            onCalculate = viewModel::calculate,
+            onStop = viewModel::stopCalculation,
+            onPurchaseRequired = onPurchaseRequired,
+        )
+    }
+}
 
 @Composable
 fun CompareScreen(
@@ -75,26 +113,57 @@ fun CompareScreen(
                 .fillMaxSize()
                 .padding(innerPadding)
                 .verticalScroll(rememberScrollState())
-                .padding(horizontal = 16.dp, vertical = 12.dp),
-            verticalArrangement = Arrangement.spacedBy(8.dp),
+                .padding(16.dp),
+            verticalArrangement = Arrangement.spacedBy(12.dp),
         ) {
+            CompareFormContent(
+                uiState = uiState,
+                isLicensed = isLicensed,
+                onExtraDateChange = viewModel::updateExtraDate,
+                onAmountChange = viewModel::updateAmount,
+                onSelectAmount = { viewModel.setDecreaseAmount(true) },
+                onSelectTerm = { viewModel.setDecreaseAmount(false) },
+                onCalculate = viewModel::calculate,
+                onStop = viewModel::stopCalculation,
+                onPurchaseRequired = onPurchaseRequired,
+            )
+        }
+    }
+}
+
+@Composable
+private fun CompareFormContent(
+    uiState: CompareUiState,
+    isLicensed: Boolean,
+    onExtraDateChange: (java.util.Date) -> Unit,
+    onAmountChange: (String) -> Unit,
+    onSelectAmount: () -> Unit,
+    onSelectTerm: () -> Unit,
+    onCalculate: () -> Unit,
+    onStop: () -> Unit,
+    onPurchaseRequired: () -> Unit,
+) {
             Text(
                 text = stringResource(R.string.compare_hint),
                 style = MaterialTheme.typography.bodyMedium,
                 color = LoanTextSecondary,
             )
 
-            CompareDatePickerRow(
+            DatePickerField(
                 label = stringResource(R.string.compare_extra_date),
                 value = uiState.extraDate,
-                onValueChange = viewModel::updateExtraDate,
+                onValueChange = onExtraDateChange,
             )
 
-            FeatureMoneyInputRow(
-                label = stringResource(R.string.extra_payment_amount),
+            LoanOutlinedTextField(
                 value = uiState.amount,
-                onValueChange = viewModel::updateAmount,
-                error = uiState.amountError,
+                onValueChange = onAmountChange,
+                label = { Text(stringResource(R.string.extra_payment_amount)) },
+                modifier = Modifier.fillMaxWidth(),
+                singleLine = true,
+                keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Decimal),
+                isError = uiState.amountError != null,
+                supportingText = uiState.amountError?.let { { Text(it) } },
             )
 
             Text(
@@ -105,8 +174,8 @@ fun CompareScreen(
                 decreaseAmountLabel = stringResource(R.string.forecast_type_amount),
                 decreaseTermLabel = stringResource(R.string.forecast_type_term),
                 decreaseAmount = uiState.decreaseAmount,
-                onSelectAmount = { viewModel.setDecreaseAmount(true) },
-                onSelectTerm = { viewModel.setDecreaseAmount(false) },
+                onSelectAmount = onSelectAmount,
+                onSelectTerm = onSelectTerm,
             )
 
             if (uiState.isCalculating) {
@@ -116,7 +185,7 @@ fun CompareScreen(
                     statusText = stringResource(R.string.compare_progress, uiState.progressText),
                 )
                 OutlinedButton(
-                    onClick = viewModel::stopCalculation,
+                    onClick = onStop,
                     modifier = Modifier.fillMaxWidth(),
                 ) {
                     Text(stringResource(R.string.best_date_stop))
@@ -125,7 +194,7 @@ fun CompareScreen(
                 Button(
                     onClick = {
                         if (isLicensed) {
-                            viewModel.calculate()
+                            onCalculate()
                         } else {
                             onPurchaseRequired()
                         }
@@ -169,59 +238,4 @@ fun CompareScreen(
                     modifier = Modifier.padding(top = 8.dp),
                 )
             }
-        }
-    }
-}
-
-@OptIn(ExperimentalMaterial3Api::class)
-@Composable
-private fun CompareDatePickerRow(
-    label: String,
-    value: Date,
-    onValueChange: (Date) -> Unit,
-) {
-    var showDialog by remember { mutableStateOf(false) }
-
-    FeatureDateRow(
-        label = label,
-        value = value,
-        formattedValue = Formatters.date(value),
-        onClick = { showDialog = true },
-    )
-
-    if (showDialog) {
-        val datePickerState = rememberDatePickerState(initialSelectedDateMillis = value.time)
-        androidx.compose.material3.DatePickerDialog(
-            onDismissRequest = { showDialog = false },
-            confirmButton = {
-                androidx.compose.material3.TextButton(
-                    onClick = {
-                        datePickerState.selectedDateMillis?.let { millis ->
-                            onValueChange(millis.toLocalDate())
-                        }
-                        showDialog = false
-                    },
-                ) {
-                    Text(stringResource(R.string.ok))
-                }
-            },
-            dismissButton = {
-                androidx.compose.material3.TextButton(onClick = { showDialog = false }) {
-                    Text(stringResource(R.string.cancel))
-                }
-            },
-        ) {
-            androidx.compose.material3.DatePicker(state = datePickerState)
-        }
-    }
-}
-
-private fun Long.toLocalDate(): Date {
-    val calendar = Calendar.getInstance()
-    calendar.timeInMillis = this
-    calendar.set(Calendar.HOUR_OF_DAY, 0)
-    calendar.set(Calendar.MINUTE, 0)
-    calendar.set(Calendar.SECOND, 0)
-    calendar.set(Calendar.MILLISECOND, 0)
-    return calendar.time
 }

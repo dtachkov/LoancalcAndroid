@@ -4,7 +4,6 @@ import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -19,7 +18,6 @@ import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
-import androidx.compose.foundation.rememberScrollState
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.HelpOutline
 import androidx.compose.material.icons.filled.Add
@@ -31,8 +29,7 @@ import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.PrimaryTabRow
-import androidx.compose.material3.Tab
+import com.example.loancalcandroid.ui.common.LoanTabRow
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -68,6 +65,9 @@ private val BriefNumberColumnWidth = 40.dp
 private val BriefDummyColumnWidth = 50.dp
 private val BriefMinColumnWidth = 70.dp
 private val BriefDateMinColumnWidth = 96.dp
+private val DetailedDateColumnWidth = 44.dp
+private val DetailedMinValueColumnWidth = 52.dp
+private const val DetailedValueColumnWeight = 1f
 private const val BriefDateColumnWeight = 1.45f
 private const val BriefAmountColumnWeight = 1f
 private val BriefCellStyle
@@ -152,18 +152,14 @@ fun ScheduleScreen(
                         .fillMaxSize()
                         .padding(innerPadding),
                 ) {
-                    PrimaryTabRow(selectedTabIndex = uiState.selectedTab) {
-                        Tab(
-                            selected = uiState.selectedTab == 0,
-                            onClick = { viewModel.selectTab(0) },
-                            text = { Text(stringResource(R.string.schedule_tab_brief)) },
-                        )
-                        Tab(
-                            selected = uiState.selectedTab == 1,
-                            onClick = { viewModel.selectTab(1) },
-                            text = { Text(stringResource(R.string.schedule_tab_detailed)) },
-                        )
-                    }
+                    LoanTabRow(
+                        selectedTabIndex = uiState.selectedTab,
+                        tabs = listOf(
+                            stringResource(R.string.schedule_tab_brief),
+                            stringResource(R.string.schedule_tab_detailed),
+                        ),
+                        onTabSelected = viewModel::selectTab,
+                    )
 
                     when (uiState.selectedTab) {
                         0 -> BriefScheduleTab(
@@ -297,7 +293,11 @@ private fun BriefHeaderRow() {
             .background(LoanBlueDark)
             .padding(vertical = 8.dp),
     ) {
-        BriefHeaderCell(stringResource(R.string.schedule_col_number), BriefNumberColumnWidth)
+        BriefHeaderCell(
+            text = stringResource(R.string.schedule_col_number),
+            width = BriefNumberColumnWidth,
+            textAlign = TextAlign.Center,
+        )
         BriefHeaderCell(
             text = stringResource(R.string.schedule_brief_col_date),
             weight = BriefDateColumnWeight,
@@ -319,14 +319,29 @@ private fun DetailedHeaderRow() {
         modifier = Modifier
             .fillMaxWidth()
             .background(LoanBlueDark)
-            .horizontalScroll(rememberScrollState())
             .padding(vertical = 8.dp),
     ) {
-        ScheduleHeaderCell(stringResource(R.string.schedule_col_date), 52.dp)
-        ScheduleHeaderCell(stringResource(R.string.schedule_col_payment), 88.dp)
-        ScheduleHeaderCell(stringResource(R.string.schedule_col_interest), 88.dp)
-        ScheduleHeaderCell(stringResource(R.string.schedule_col_principal), 88.dp)
-        ScheduleHeaderCell(stringResource(R.string.schedule_col_balance), 88.dp)
+        ScheduleHeaderCell(
+            text = stringResource(R.string.schedule_col_date),
+            width = DetailedDateColumnWidth,
+            textAlign = TextAlign.Center,
+        )
+        ScheduleHeaderCell(
+            text = stringResource(R.string.schedule_col_payment),
+            weight = DetailedValueColumnWeight,
+        )
+        ScheduleHeaderCell(
+            text = stringResource(R.string.schedule_col_interest),
+            weight = DetailedValueColumnWeight,
+        )
+        ScheduleHeaderCell(
+            text = stringResource(R.string.schedule_col_principal),
+            weight = DetailedValueColumnWeight,
+        )
+        ScheduleHeaderCell(
+            text = stringResource(R.string.schedule_col_balance),
+            weight = DetailedValueColumnWeight,
+        )
     }
     HorizontalDivider(color = LoanBlueDark, thickness = 2.dp)
 }
@@ -410,35 +425,48 @@ private fun DetailedPaymentRow(
         Row(
             modifier = Modifier
                 .fillMaxWidth()
-                .horizontalScroll(rememberScrollState())
                 .padding(vertical = 8.dp),
             verticalAlignment = Alignment.CenterVertically,
         ) {
-            ScheduleBodyCell(Formatters.monthDay(row.date), 52.dp, textAlign = TextAlign.Center)
+            ScheduleBodyCell(
+                text = Formatters.monthDay(row.date),
+                width = DetailedDateColumnWidth,
+                textAlign = TextAlign.Center,
+            )
             ScheduleBodyCell(
                 text = if (isExtra) {
                     Formatters.moneyWithoutDecimal(row.extraAmount.coerceAtLeast(row.total))
                 } else {
                     Formatters.moneyFixed(row.total)
                 },
-                width = 88.dp,
+                weight = DetailedValueColumnWeight,
+                textAlign = TextAlign.Start,
                 leadingIcon = if (isExtra) {
                     {
                         Image(
                             painter = painterResource(R.drawable.ic_schedule_extra),
                             contentDescription = null,
                             modifier = Modifier
-                                .padding(end = 4.dp)
-                                .size(16.dp),
+                                .padding(end = 2.dp)
+                                .size(14.dp),
                         )
                     }
                 } else {
                     null
                 },
             )
-            ScheduleBodyCell(Formatters.moneyFixed(row.interest), 88.dp)
-            ScheduleBodyCell(Formatters.moneyFixed(row.principal), 88.dp)
-            ScheduleBodyCell(Formatters.moneyFixed(row.endBalance), 88.dp)
+            ScheduleBodyCell(
+                text = Formatters.moneyFixed(row.interest),
+                weight = DetailedValueColumnWeight,
+            )
+            ScheduleBodyCell(
+                text = Formatters.moneyFixed(row.principal),
+                weight = DetailedValueColumnWeight,
+            )
+            ScheduleBodyCell(
+                text = Formatters.moneyFixed(row.endBalance),
+                weight = DetailedValueColumnWeight,
+            )
         }
     }
 }
@@ -470,34 +498,38 @@ private fun DetailedRateChangeRow(
         Row(
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(horizontal = 4.dp, vertical = 10.dp),
+                .padding(horizontal = 2.dp, vertical = 10.dp),
             verticalAlignment = Alignment.CenterVertically,
         ) {
             Text(
                 text = Formatters.monthDay(row.date),
                 style = MaterialTheme.typography.bodySmall,
-                modifier = Modifier.width(52.dp),
+                modifier = Modifier.width(DetailedDateColumnWidth),
                 textAlign = TextAlign.Center,
             )
             Row(
-                modifier = Modifier.weight(1f),
-                horizontalArrangement = Arrangement.Center,
+                modifier = Modifier
+                    .weight(DetailedValueColumnWeight * 4)
+                    .widthIn(min = DetailedMinValueColumnWidth * 4),
                 verticalAlignment = Alignment.CenterVertically,
             ) {
                 Image(
                     painter = painterResource(R.drawable.ic_schedule_percent),
                     contentDescription = null,
                     modifier = Modifier
-                        .padding(end = 4.dp)
-                        .size(16.dp),
+                        .padding(end = 2.dp)
+                        .size(14.dp),
                 )
-                Text(
+                AutoShrinkText(
                     text = stringResource(
                         R.string.schedule_new_rate,
                         Formatters.schedulePercent(row.rateExtra),
                     ),
-                    style = MaterialTheme.typography.bodySmall,
-                    color = LoanTextSecondary,
+                    modifier = Modifier.weight(1f),
+                    style = MaterialTheme.typography.bodySmall.copy(color = LoanTextSecondary),
+                    textAlign = TextAlign.Start,
+                    minFontSize = 9.sp,
+                    maxLines = 2,
                 )
             }
         }
@@ -527,28 +559,48 @@ private fun RowScope.BriefHeaderCell(
     width: androidx.compose.ui.unit.Dp = 0.dp,
     weight: Float = 0f,
     minWidth: androidx.compose.ui.unit.Dp = BriefMinColumnWidth,
+    textAlign: TextAlign = TextAlign.Start,
 ) {
-    Text(
-        text = text,
-        modifier = Modifier
-            .then(
-                if (weight > 0f) {
-                    Modifier
-                        .weight(weight)
-                        .widthIn(min = minWidth)
-                } else {
-                    Modifier.width(width)
-                },
-            )
-            .padding(horizontal = 4.dp),
-        style = MaterialTheme.typography.labelMedium.copy(
-            fontWeight = FontWeight.Bold,
-            color = Color.White,
-        ),
-        textAlign = TextAlign.Center,
-        maxLines = 1,
-        overflow = TextOverflow.Ellipsis,
+    val style = MaterialTheme.typography.labelSmall.copy(
+        fontWeight = FontWeight.Bold,
+        color = Color.White,
     )
+    val cellModifier = Modifier
+        .then(
+            if (weight > 0f) {
+                Modifier
+                    .weight(weight)
+                    .widthIn(min = minWidth)
+            } else {
+                Modifier.width(width)
+            },
+        )
+        .padding(horizontal = 4.dp)
+        .fillMaxWidth()
+
+    if (text.isEmpty()) {
+        Box(modifier = cellModifier)
+        return
+    }
+
+    if (textAlign == TextAlign.Center && weight == 0f) {
+        Text(
+            text = text,
+            modifier = cellModifier,
+            style = style,
+            textAlign = TextAlign.Center,
+            maxLines = 1,
+        )
+    } else {
+        AutoShrinkText(
+            text = text,
+            modifier = cellModifier,
+            style = style,
+            textAlign = textAlign,
+            minFontSize = 8.sp,
+            maxLines = 2,
+        )
+    }
 }
 
 @Composable
@@ -597,16 +649,17 @@ private fun RowScope.BriefDateCell(
 
 @Composable
 private fun RowScope.BriefLabelCell(text: String) {
-    Text(
+    AutoShrinkText(
         text = text,
         modifier = Modifier
             .weight(BriefDateColumnWeight)
             .widthIn(min = BriefDateMinColumnWidth)
-            .padding(horizontal = 4.dp),
-        style = BriefCellStyle,
-        textAlign = TextAlign.End,
-        maxLines = 1,
-        overflow = TextOverflow.Ellipsis,
+            .padding(horizontal = 4.dp)
+            .fillMaxWidth(),
+        style = BriefCellStyle.copy(fontSize = 12.sp),
+        textAlign = TextAlign.Start,
+        minFontSize = 9.sp,
+        maxLines = 2,
     )
 }
 
@@ -695,45 +748,80 @@ private fun ScheduleSummaryBlock(summary: ScheduleSummary) {
 @Composable
 private fun RowScope.ScheduleHeaderCell(
     text: String,
-    width: androidx.compose.ui.unit.Dp,
+    width: androidx.compose.ui.unit.Dp = 0.dp,
     weight: Float = 0f,
+    minWidth: androidx.compose.ui.unit.Dp = DetailedMinValueColumnWidth,
+    textAlign: TextAlign = TextAlign.Start,
 ) {
-    Text(
-        text = text,
-        modifier = Modifier
-            .then(if (weight > 0f) Modifier.weight(weight) else Modifier.width(width))
-            .padding(horizontal = 4.dp),
-        style = MaterialTheme.typography.labelMedium.copy(
-            fontWeight = FontWeight.Bold,
-            color = Color.White,
-        ),
-        textAlign = TextAlign.Center,
-        maxLines = 1,
+    val style = MaterialTheme.typography.labelSmall.copy(
+        fontWeight = FontWeight.Bold,
+        color = Color.White,
     )
+    val cellModifier = Modifier
+        .then(
+            if (weight > 0f) {
+                Modifier
+                    .weight(weight)
+                    .widthIn(min = minWidth)
+            } else {
+                Modifier.width(width)
+            },
+        )
+        .padding(horizontal = 2.dp)
+        .fillMaxWidth()
+
+    if (textAlign == TextAlign.Center && weight == 0f) {
+        Text(
+            text = text,
+            modifier = cellModifier,
+            style = style,
+            textAlign = TextAlign.Center,
+            maxLines = 2,
+        )
+    } else {
+        AutoShrinkText(
+            text = text,
+            modifier = cellModifier,
+            style = style,
+            textAlign = textAlign,
+            minFontSize = 8.sp,
+            maxLines = 2,
+        )
+    }
 }
 
 @Composable
 private fun RowScope.ScheduleBodyCell(
     text: String,
-    width: androidx.compose.ui.unit.Dp,
+    width: androidx.compose.ui.unit.Dp = 0.dp,
     weight: Float = 0f,
+    minWidth: androidx.compose.ui.unit.Dp = DetailedMinValueColumnWidth,
     fontWeight: FontWeight = FontWeight.Normal,
-    textAlign: TextAlign = TextAlign.End,
+    textAlign: TextAlign = TextAlign.Start,
     leadingIcon: (@Composable () -> Unit)? = null,
 ) {
     Row(
         modifier = Modifier
-            .then(if (weight > 0f) Modifier.weight(weight) else Modifier.width(width))
-            .padding(horizontal = 4.dp),
+            .then(
+                if (weight > 0f) {
+                    Modifier
+                        .weight(weight)
+                        .widthIn(min = minWidth)
+                } else {
+                    Modifier.width(width)
+                },
+            )
+            .padding(horizontal = 2.dp),
         verticalAlignment = Alignment.CenterVertically,
-        horizontalArrangement = if (textAlign == TextAlign.Start) Arrangement.Start else Arrangement.End,
     ) {
         leadingIcon?.invoke()
-        Text(
+        AutoShrinkText(
             text = text,
+            modifier = if (leadingIcon != null) Modifier.weight(1f) else Modifier.fillMaxWidth(),
             style = MaterialTheme.typography.bodySmall.copy(fontWeight = fontWeight),
             textAlign = textAlign,
-            maxLines = 2,
+            minFontSize = 8.sp,
+            maxLines = 1,
         )
     }
 }

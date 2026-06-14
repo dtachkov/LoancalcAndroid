@@ -12,8 +12,12 @@ import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import ru.kredit.calculator.data.LoanCalcData
 import ru.kredit.calculator.data.calculation.ExtraTypeUtils
+import ru.kredit.calculator.data.calculation.ExtraInterestCalculator
+import ru.kredit.calculator.data.calculation.LoanCalculator
+import ru.kredit.calculator.data.calculation.PaymentSummary
 import ru.kredit.calculator.data.model.Extra
 import ru.kredit.calculator.data.model.ExtraType
+import ru.kredit.calculator.data.model.Loan
 import java.util.Date
 
 data class ExtraFormPrefill(
@@ -36,6 +40,10 @@ data class ExtraFormUiState(
     val dateError: String? = null,
     val saveError: String? = null,
     val saved: Boolean = false,
+    val showInterestBreakdown: Boolean = false,
+    val interestToPay: Double = 0.0,
+    val netExtraAmount: Double = 0.0,
+    val netExtraIsError: Boolean = false,
 )
 
 class ExtraFormViewModel(
@@ -47,6 +55,11 @@ class ExtraFormViewModel(
 ) : AndroidViewModel(application) {
     private val loanId: Long = savedStateHandle.get<Long>(Route.ARG_LOAN_ID) ?: 0L
     private val extraRepository = LoanCalcData.get().extraRepository
+    private val loanRepository = LoanCalcData.get().loanRepository
+    private val loanCalculator = LoanCalculator()
+    private var loan: Loan? = null
+    private var schedulePayments: List<PaymentSummary> = emptyList()
+    private var extrasForCalculation: List<Extra> = emptyList()
     private val allowedTypes = when (category) {
         ExtraCategory.EARLY -> ExtraTypeUtils.earlyPaymentTypes
         ExtraCategory.COMMISSION -> ExtraTypeUtils.commissionTypes
@@ -65,17 +78,33 @@ class ExtraFormViewModel(
     val uiState: StateFlow<ExtraFormUiState> = _uiState.asStateFlow()
 
     init {
-        if (extraId != null) {
-            loadExtra(extraId)
-        } else {
-            _uiState.update { it.copy(isLoading = false) }
+        viewModelScope.launch {
+            loadCalculationContext()
+            if (extraId != null) {
+                loadExtra(extraId)
+            } else {
+                _uiState.update { it.copy(isLoading = false) }
+                recalculateBreakdown()
+            }
         }
     }
 
-    fun selectType(type: ExtraType) = _uiState.update { it.copy(selectedType = type, amountError = null) }
+    fun selectType(type: ExtraType) {
+        _uiState.update { it.copy(selectedType = type, amountError = null) }
+        recalculateBreakdown()
+    }
+
     fun updateDocumentNumber(value: String) = _uiState.update { it.copy(documentNumber = value) }
-    fun updateAmount(value: String) = _uiState.update { it.copy(amount = value, amountError = null) }
-    fun updateDate(date: Date) = _uiState.update { it.copy(date = date, dateError = null) }
+
+    fun updateAmount(value: String) {
+        _uiState.update { it.copy(amount = value, amountError = null) }
+        recalculateBreakdown()
+    }
+
+    fun updateDate(date: Date) {
+        _uiState.update { it.copy(date = date, dateError = null) }
+        recalculateBreakdown()
+    }
 
     fun save() {
         val state = _uiState.value
@@ -103,6 +132,61 @@ class ExtraFormViewModel(
                     it.copy(isSaving = false, saveError = e.message ?: "Ошибка сохранения")
                 }
             }
+        }
+    }
+
+    private suspend fun loadCalculationContext() {
+        val loadedLoan = loanRepository.getLoan(loanId) ?: return
+        val allExtras = extraRepository.getExtras(loanId)
+        extrasForCalculation = if (extraId != null) {
+            allExtras.filter { it.id != extraId }
+        } else {
+            allExtras
+        }
+        loan = loadedLoan
+        schedulePayments = try {
+            loanCalculator.calculate(loadedLoan, extrasForCalculation).payments
+        } catch (_: Exception) {
+            emptyList()
+        }
+    }
+
+    private fun recalculateBreakdown() {
+        val state = _uiState.value
+        val currentLoan = loan
+        val showBreakdown = currentLoan != null &&
+            state.category == ExtraCategory.EARLY &&
+            currentLoan.applyExtrasImmediately &&
+            state.selectedType != ExtraType.CHANGE_RATE &&
+            state.selectedType != ExtraType.PAYMENT_FOR_CHANGE_DATE
+
+        if (!showBreakdown || state.date == null) {
+            _uiState.update {
+                it.copy(
+                    showInterestBreakdown = false,
+                    interestToPay = 0.0,
+                    netExtraAmount = 0.0,
+                    netExtraIsError = false,
+                )
+            }
+            return
+        }
+
+        val interest = ExtraInterestCalculator.interestForExtraDate(
+            loan = currentLoan,
+            payments = schedulePayments,
+            extras = extrasForCalculation,
+            extraDate = state.date,
+        )
+        val extraAmount = com.example.loancalcandroid.util.Formatters.parseMoney(state.amount).toDouble()
+        val netExtra = extraAmount - interest
+        _uiState.update {
+            it.copy(
+                showInterestBreakdown = true,
+                interestToPay = interest,
+                netExtraAmount = if (netExtra > 0) netExtra else 0.0,
+                netExtraIsError = netExtra <= 0,
+            )
         }
     }
 
@@ -134,6 +218,7 @@ class ExtraFormViewModel(
                     date = extra.date,
                 )
             }
+            recalculateBreakdown()
         }
     }
 

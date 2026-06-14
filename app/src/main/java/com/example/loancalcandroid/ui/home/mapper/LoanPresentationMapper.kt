@@ -1,5 +1,6 @@
 package com.example.loancalcandroid.ui.home.mapper
 
+import com.example.loancalcandroid.ui.home.model.AllLoanPaymentRowUiModel
 import com.example.loancalcandroid.ui.home.model.AllLoansSummaryUiModel
 import com.example.loancalcandroid.ui.home.model.LoanCardUiModel
 import com.example.loancalcandroid.ui.home.model.LoanDetailsUiModel
@@ -8,6 +9,7 @@ import ru.kredit.calculator.data.calculation.LoanCalculationResult
 import ru.kredit.calculator.data.model.Extra
 import ru.kredit.calculator.data.model.ExtraType
 import ru.kredit.calculator.data.model.Loan
+import ru.kredit.calculator.data.model.effectiveIssueDate
 import java.util.Calendar
 import java.util.Date
 import kotlin.math.max
@@ -22,7 +24,7 @@ object LoanPresentationMapper {
             title = loan.title.orEmpty().ifBlank { "Кредит #${loan.id}" },
             amount = Formatters.money(loan.amount),
             rate = Formatters.percent(loan.rate),
-            issueDate = Formatters.date(loan.dateOfIssue ?: loan.firstPaymentDate),
+            issueDate = Formatters.cardDate(loan.effectiveIssueDate()),
             monthsPaid = monthsPaid.coerceAtMost(loan.term),
             termMonths = loan.term,
             firstPaymentDay = dayOfMonth(loan.firstPaymentDate),
@@ -40,12 +42,22 @@ object LoanPresentationMapper {
         val paymentsThisMonth = loans.sumOf { loan ->
             calculations[loan.id]?.currentPayment ?: 0.0
         }
+        val loanPayments = loans.map { loan ->
+            val calculation = calculations[loan.id]
+            AllLoanPaymentRowUiModel(
+                loanId = loan.id,
+                title = loan.title.orEmpty().ifBlank { "Кредит #${loan.id}" },
+                nextPaymentDate = Formatters.date(calculation?.currentPaymentDate),
+                nextPaymentAmount = calculation?.let { Formatters.money(it.currentPayment) } ?: "—",
+            )
+        }
 
         return AllLoansSummaryUiModel(
             loansCount = loans.size,
             totalAmount = Formatters.money(totalAmount),
             totalDebt = Formatters.money(totalDebt),
             paymentsThisMonth = Formatters.money(paymentsThisMonth),
+            loanPayments = loanPayments,
         )
     }
 
@@ -89,7 +101,7 @@ object LoanPresentationMapper {
     }
 
     private fun estimateMonthsPaid(loan: Loan): Int {
-        val start = loan.firstPaymentDate ?: loan.dateOfIssue ?: return 0
+        val start = loan.effectiveIssueDate() ?: return 0
         val diffDays = ((Date().time - start.time) / (24 * 60 * 60 * 1000)).toInt()
         return max(0, diffDays / 30)
     }

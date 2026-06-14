@@ -27,6 +27,8 @@ import ru.kredit.calculator.database.dao.ExtraDao
 import ru.kredit.calculator.database.dao.ExtraDao_Impl
 import ru.kredit.calculator.database.dao.LoanDao
 import ru.kredit.calculator.database.dao.LoanDao_Impl
+import ru.kredit.calculator.database.dao.LoanDetailsDao
+import ru.kredit.calculator.database.dao.LoanDetailsDao_Impl
 import ru.kredit.calculator.database.dao.OfferDao
 import ru.kredit.calculator.database.dao.OfferDao_Impl
 
@@ -45,27 +47,35 @@ public class LoancalcDatabase_Impl : LoancalcDatabase() {
     OfferDao_Impl(this)
   }
 
+  private val _loanDetailsDao: Lazy<LoanDetailsDao> = lazy {
+    LoanDetailsDao_Impl(this)
+  }
+
   protected override fun createOpenDelegate(): RoomOpenDelegate {
-    val _openDelegate: RoomOpenDelegate = object : RoomOpenDelegate(7,
-        "98974e8ce5981b83c4327760e0e136b7", "df97aac265103bce3f4ea06fb7f3cc9f") {
+    val _openDelegate: RoomOpenDelegate = object : RoomOpenDelegate(8,
+        "e407b829cbfbb45ea411f4877c3241cb", "048454a29ae8dabf457a46914ab29b60") {
       public override fun createAllTables(connection: SQLiteConnection) {
         connection.execSQL("CREATE TABLE IF NOT EXISTS `Loans` (`_id` INTEGER PRIMARY KEY AUTOINCREMENT, `creation_date` TEXT, `title` TEXT, `amount` REAL, `rate` REAL, `term` INTEGER, `type` INTEGER, `first_payment_date` TEXT, `date_of_issue` TEXT, `monthly_payment` REAL, `consider_days_off` INTEGER, `pay_on_last_day_of_month` INTEGER, `apply_extras_immediately` INTEGER DEFAULT 0, `interest_only_after_principal_paid_by_extra` INTEGER DEFAULT 1, `ignore_passed_periods_after_rate_change` INTEGER DEFAULT 0, `extra_day_in_month` INTEGER DEFAULT 0, `is_forecast_active` INTEGER DEFAULT 0, `forecast_montly_pay` REAL, `forecast_days_before` INTEGER, `forecast_start_date` TEXT, `forecast_extra_type` INTEGER)")
         connection.execSQL("CREATE TABLE IF NOT EXISTS `extras` (`_id` INTEGER PRIMARY KEY AUTOINCREMENT, `document_number` TEXT, `type` INTEGER, `date` TEXT, `amount` REAL, `loanId` INTEGER)")
         connection.execSQL("CREATE TABLE IF NOT EXISTS `Offers` (`_id` INTEGER PRIMARY KEY AUTOINCREMENT, `name` TEXT, `org_name` TEXT, `term` INTEGER, `rate_type` TEXT, `rate` TEXT, `logo_color` TEXT, `logo_image` TEXT, `link` TEXT, `amount_limit` REAL, `requirements` TEXT, `extra_payment_rules` TEXT, `docs` TEXT)")
+        connection.execSQL("CREATE TABLE IF NOT EXISTS `loan_details` (`loan_id` INTEGER NOT NULL, `bank_name` TEXT NOT NULL, `account_number` TEXT NOT NULL, `uic` TEXT NOT NULL, `correspondent_account` TEXT NOT NULL, `payment_comment` TEXT, PRIMARY KEY(`loan_id`), FOREIGN KEY(`loan_id`) REFERENCES `Loans`(`_id`) ON UPDATE NO ACTION ON DELETE CASCADE )")
+        connection.execSQL("CREATE UNIQUE INDEX IF NOT EXISTS `index_loan_details_loan_id` ON `loan_details` (`loan_id`)")
         connection.execSQL("CREATE TABLE IF NOT EXISTS room_master_table (id INTEGER PRIMARY KEY,identity_hash TEXT)")
-        connection.execSQL("INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, '98974e8ce5981b83c4327760e0e136b7')")
+        connection.execSQL("INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, 'e407b829cbfbb45ea411f4877c3241cb')")
       }
 
       public override fun dropAllTables(connection: SQLiteConnection) {
         connection.execSQL("DROP TABLE IF EXISTS `Loans`")
         connection.execSQL("DROP TABLE IF EXISTS `extras`")
         connection.execSQL("DROP TABLE IF EXISTS `Offers`")
+        connection.execSQL("DROP TABLE IF EXISTS `loan_details`")
       }
 
       public override fun onCreate(connection: SQLiteConnection) {
       }
 
       public override fun onOpen(connection: SQLiteConnection) {
+        connection.execSQL("PRAGMA foreign_keys = ON")
         internalInitInvalidationTracker(connection)
       }
 
@@ -205,6 +215,37 @@ public class LoancalcDatabase_Impl : LoancalcDatabase() {
               | Found:
               |""".trimMargin() + _existingOffers)
         }
+        val _columnsLoanDetails: MutableMap<String, TableInfo.Column> = mutableMapOf()
+        _columnsLoanDetails.put("loan_id", TableInfo.Column("loan_id", "INTEGER", true, 1, null,
+            TableInfo.CREATED_FROM_ENTITY))
+        _columnsLoanDetails.put("bank_name", TableInfo.Column("bank_name", "TEXT", true, 0, null,
+            TableInfo.CREATED_FROM_ENTITY))
+        _columnsLoanDetails.put("account_number", TableInfo.Column("account_number", "TEXT", true,
+            0, null, TableInfo.CREATED_FROM_ENTITY))
+        _columnsLoanDetails.put("uic", TableInfo.Column("uic", "TEXT", true, 0, null,
+            TableInfo.CREATED_FROM_ENTITY))
+        _columnsLoanDetails.put("correspondent_account", TableInfo.Column("correspondent_account",
+            "TEXT", true, 0, null, TableInfo.CREATED_FROM_ENTITY))
+        _columnsLoanDetails.put("payment_comment", TableInfo.Column("payment_comment", "TEXT",
+            false, 0, null, TableInfo.CREATED_FROM_ENTITY))
+        val _foreignKeysLoanDetails: MutableSet<TableInfo.ForeignKey> = mutableSetOf()
+        _foreignKeysLoanDetails.add(TableInfo.ForeignKey("Loans", "CASCADE", "NO ACTION",
+            listOf("loan_id"), listOf("_id")))
+        val _indicesLoanDetails: MutableSet<TableInfo.Index> = mutableSetOf()
+        _indicesLoanDetails.add(TableInfo.Index("index_loan_details_loan_id", true,
+            listOf("loan_id"), listOf("ASC")))
+        val _infoLoanDetails: TableInfo = TableInfo("loan_details", _columnsLoanDetails,
+            _foreignKeysLoanDetails, _indicesLoanDetails)
+        val _existingLoanDetails: TableInfo = read(connection, "loan_details")
+        if (!_infoLoanDetails.equals(_existingLoanDetails)) {
+          return RoomOpenDelegate.ValidationResult(false, """
+              |loan_details(ru.kredit.calculator.database.entity.LoanDetailsEntity).
+              | Expected:
+              |""".trimMargin() + _infoLoanDetails + """
+              |
+              | Found:
+              |""".trimMargin() + _existingLoanDetails)
+        }
         return RoomOpenDelegate.ValidationResult(true, null)
       }
     }
@@ -214,11 +255,12 @@ public class LoancalcDatabase_Impl : LoancalcDatabase() {
   protected override fun createInvalidationTracker(): InvalidationTracker {
     val _shadowTablesMap: MutableMap<String, String> = mutableMapOf()
     val _viewTables: MutableMap<String, Set<String>> = mutableMapOf()
-    return InvalidationTracker(this, _shadowTablesMap, _viewTables, "Loans", "extras", "Offers")
+    return InvalidationTracker(this, _shadowTablesMap, _viewTables, "Loans", "extras", "Offers",
+        "loan_details")
   }
 
   public override fun clearAllTables() {
-    super.performClear(false, "Loans", "extras", "Offers")
+    super.performClear(true, "Loans", "extras", "Offers", "loan_details")
   }
 
   protected override fun getRequiredTypeConverterClasses(): Map<KClass<*>, List<KClass<*>>> {
@@ -226,6 +268,7 @@ public class LoancalcDatabase_Impl : LoancalcDatabase() {
     _typeConvertersMap.put(LoanDao::class, LoanDao_Impl.getRequiredConverters())
     _typeConvertersMap.put(ExtraDao::class, ExtraDao_Impl.getRequiredConverters())
     _typeConvertersMap.put(OfferDao::class, OfferDao_Impl.getRequiredConverters())
+    _typeConvertersMap.put(LoanDetailsDao::class, LoanDetailsDao_Impl.getRequiredConverters())
     return _typeConvertersMap
   }
 
@@ -246,4 +289,6 @@ public class LoancalcDatabase_Impl : LoancalcDatabase() {
   public override fun extraDao(): ExtraDao = _extraDao.value
 
   public override fun offerDao(): OfferDao = _offerDao.value
+
+  public override fun loanDetailsDao(): LoanDetailsDao = _loanDetailsDao.value
 }

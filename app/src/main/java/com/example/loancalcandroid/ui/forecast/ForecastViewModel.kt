@@ -10,6 +10,7 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
+import com.example.loancalcandroid.analytics.AnalyticsHelper
 import com.example.loancalcandroid.R
 import ru.kredit.calculator.data.LoanCalcData
 import ru.kredit.calculator.data.calculation.CalculationErrors
@@ -122,6 +123,7 @@ class ForecastViewModel(
                         message = getApplication<Application>().getString(R.string.forecast_calculated),
                     )
                 }
+                AnalyticsHelper.logEvent("CALC_FORECAST")
             } catch (e: Exception) {
                 _uiState.update { it.copy(isCalculating = false, error = CalculationErrors.format(e)) }
             }

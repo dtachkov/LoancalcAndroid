@@ -8,13 +8,14 @@ import androidx.activity.enableEdgeToEdge
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.ui.Modifier
+import com.example.loancalcandroid.analytics.AnalyticsHelper
+import com.example.loancalcandroid.billing.RuStorePayHelper
 import com.example.loancalcandroid.navigation.LoanCalcNavGraph
 import com.example.loancalcandroid.notification.NotificationActions
 import com.example.loancalcandroid.review.ReviewRequester
 import com.example.loancalcandroid.ui.theme.LoanCalcAndroidTheme
+import com.example.loancalcandroid.BuildConfig
 import ru.kredit.calculator.data.LoanCalcData
-import ru.rustore.sdk.pay.RuStorePayClient
-import ru.rustore.sdk.pay.model.SdkTheme
 import java.util.Date
 
 class MainActivity : ComponentActivity() {
@@ -22,11 +23,10 @@ class MainActivity : ComponentActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        if (savedInstanceState != null) {
-            RuStorePayClient.instance.getIntentInteractor().proceedIntent(intent, SdkTheme.LIGHT)
-        }
+        RuStorePayHelper.proceedPaymentIntent(this, intent)
         handleNotificationIntent(intent)
         ReviewRequester.maybeRequestReview(this)
+        AnalyticsHelper.logEvent("APP_OPEN", BuildConfig.VERSION_NAME)
         enableEdgeToEdge()
         setContent {
             LoanCalcAndroidTheme {
@@ -42,7 +42,7 @@ class MainActivity : ComponentActivity() {
     override fun onNewIntent(intent: Intent) {
         super.onNewIntent(intent)
         setIntent(intent)
-        RuStorePayClient.instance.getIntentInteractor().proceedIntent(intent, SdkTheme.LIGHT)
+        RuStorePayHelper.proceedPaymentIntent(this, intent)
         handleNotificationIntent(intent)
     }
 

@@ -2,7 +2,7 @@ package ru.kredit.calculator.database
 
 object DatabaseContract {
     const val DATABASE_NAME = "main.db"
-    const val DATABASE_VERSION = 7
+    const val DATABASE_VERSION = 8
 
     object LoanColumns {
         const val TABLE_NAME = "Loans"
@@ -56,6 +56,16 @@ object DatabaseContract {
         const val EXTRA_PAYMENT_RULES = "extra_payment_rules"
     }
 
+    object LoanDetailsColumns {
+        const val TABLE_NAME = "loan_details"
+        const val LOAN_ID = "loan_id"
+        const val BANK_NAME = "bank_name"
+        const val ACCOUNT_NUMBER = "account_number"
+        const val UIC = "uic"
+        const val CORRESPONDENT_ACCOUNT = "correspondent_account"
+        const val PAYMENT_COMMENT = "payment_comment"
+    }
+
     object Version {
         const val INITIAL = 1
         const val ADD_CREATION_DATE_COLUMN_TO_LOAN = 2
@@ -64,5 +74,6 @@ object DatabaseContract {
         const val ADD_EXTRA_DAY_IN_MONTH_COLUMN_TO_LOAN = 5
         const val ADD_OFFERS_TABLE = 6
         const val ADD_FORECAST = 7
+        const val ADD_LOAN_DETAILS = 8
     }
 }

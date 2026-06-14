@@ -102,9 +102,6 @@ fun LoanCalcNavGraph(
                 onHelpClick = { navController.navigate(Route.helpTopic(Route.HELP_TOPIC_APP)) },
                 onVoteClick = { navController.navigate(Route.helpTopic(Route.HELP_TOPIC_VOTE)) },
                 onExtraTypesHelpClick = { navController.navigate(Route.helpTopic(Route.HELP_TOPIC_EXTRA_TYPES)) },
-                onPremiumClick = {
-                    navController.navigateToPurchase(R.string.feature_premium)
-                },
             )
         }
 

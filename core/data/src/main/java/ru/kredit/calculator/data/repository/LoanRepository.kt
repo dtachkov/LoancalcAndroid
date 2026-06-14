@@ -9,6 +9,7 @@ import ru.kredit.calculator.data.mapper.toEntity
 import ru.kredit.calculator.data.model.Extra
 import ru.kredit.calculator.data.model.ExtraType
 import ru.kredit.calculator.data.model.Loan
+import ru.kredit.calculator.data.model.LoanDetails
 import ru.kredit.calculator.data.model.LoanFull
 import ru.kredit.calculator.data.util.DateFormats
 import java.text.SimpleDateFormat
@@ -18,6 +19,7 @@ import java.util.Locale
 class LoanRepository(
     private val loanDao: ru.kredit.calculator.database.dao.LoanDao,
     private val extraDao: ru.kredit.calculator.database.dao.ExtraDao,
+    private val loanDetailsDao: ru.kredit.calculator.database.dao.LoanDetailsDao,
     private val ioDispatcher: CoroutineDispatcher,
 ) {
 
@@ -54,6 +56,18 @@ class LoanRepository(
         }
     }
 
+    suspend fun getLoanDetails(loanId: Long): LoanDetails = withContext(ioDispatcher) {
+        loanDetailsDao.getByLoanId(loanId)?.toDomain() ?: LoanDetails()
+    }
+
+    suspend fun saveLoanDetails(loanId: Long, details: LoanDetails) = withContext(ioDispatcher) {
+        if (details.isEmpty()) {
+            loanDetailsDao.deleteByLoanId(loanId)
+        } else {
+            loanDetailsDao.upsert(details.toEntity(loanId))
+        }
+    }
+
     suspend fun deleteLoan(loanId: Long) = withContext(ioDispatcher) {
         extraDao.deleteByLoanId(loanId)
         loanDao.deleteById(loanId)
@@ -68,7 +82,8 @@ class LoanRepository(
     suspend fun getLoanFull(loanId: Long): LoanFull? = withContext(ioDispatcher) {
         val loan = loanDao.getById(loanId)?.toDomain() ?: return@withContext null
         val extras = extraDao.getByLoanId(loanId).map { it.toDomain() }
-        LoanFull(loan = loan, extras = extras)
+        val account = loanDetailsDao.getByLoanId(loanId)?.toDomain()
+        LoanFull(loan = loan, extras = extras, account = account)
     }
 
     suspend fun getLoanFulls(loanIds: List<Long>): List<LoanFull> = withContext(ioDispatcher) {
@@ -78,11 +93,14 @@ class LoanRepository(
         val extrasByLoanId = extraDao.getByLoanIds(loanIds)
             .map { it.toDomain() }
             .groupBy { it.loanId }
+        val detailsByLoanId = loanDetailsDao.getByLoanIds(loanIds)
+            .associate { it.loanId to it.toDomain() }
 
         loans.map { loan ->
             LoanFull(
                 loan = loan,
                 extras = extrasByLoanId[loan.id].orEmpty(),
+                account = detailsByLoanId[loan.id],
             )
         }
     }

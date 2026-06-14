@@ -3,6 +3,7 @@ package com.example.loancalcandroid.ui.loan
 import android.app.Application
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.viewModelScope
+import com.example.loancalcandroid.analytics.AnalyticsHelper
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -98,6 +99,7 @@ class LoanEditorViewModel(
                         .getOrDefault(0f)
                 }
                 val saved = loanRepository.saveLoan(loan.copy(monthlyPayment = monthlyPayment))
+                AnalyticsHelper.logCalculation(loan.amount, "LoanEditorViewModel")
                 _uiState.update { it.copy(isSaving = false, savedLoanId = saved.id) }
             } catch (e: Exception) {
                 _uiState.update {

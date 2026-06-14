@@ -27,8 +27,8 @@ fun AutoShrinkText(
     maxLines: Int = 1,
 ) {
     BoxWithConstraints(modifier.fillMaxWidth()) {
-        var fontSize by remember(text, maxWidth) { mutableStateOf(style.fontSize) }
-        var readyToDraw by remember(text, maxWidth) { mutableStateOf(false) }
+        var fontSize by remember(text, maxWidth, maxLines) { mutableStateOf(style.fontSize) }
+        var readyToDraw by remember(text, maxWidth, maxLines) { mutableStateOf(false) }
 
         Text(
             text = text,
@@ -44,9 +44,12 @@ fun AutoShrinkText(
             lineHeight = style.lineHeight,
             maxLines = maxLines,
             overflow = TextOverflow.Clip,
-            softWrap = false,
+            softWrap = maxLines > 1,
             onTextLayout = { result ->
-                if (result.didOverflowWidth && fontSize.value > minFontSize.value) {
+                val overflows = result.didOverflowWidth ||
+                    (maxLines > 1 && result.didOverflowHeight)
+                if (overflows && fontSize.value > minFontSize.value) {
+                    readyToDraw = false
                     fontSize = (fontSize.value - 0.5f).sp
                 } else {
                     readyToDraw = true

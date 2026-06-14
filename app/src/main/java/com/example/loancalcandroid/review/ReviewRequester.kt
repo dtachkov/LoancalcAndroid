@@ -1,6 +1,7 @@
 package com.example.loancalcandroid.review
 
 import android.app.Activity
+import com.example.loancalcandroid.analytics.AnalyticsHelper
 import ru.kredit.calculator.data.LoanCalcData
 import ru.kredit.calculator.data.preferences.ApplicationReviewPreferences
 import ru.rustore.sdk.review.RuStoreReviewManagerFactory
@@ -19,6 +20,8 @@ object ReviewRequester {
         if (reviewPreferences.getAppLaunchesCount() < ApplicationReviewPreferences.LAUNCHES_BEFORE_ASK_REVIEW) {
             return
         }
+
+        AnalyticsHelper.logEvent("REQUEST_REVIEW", "REQUEST")
 
         val manager = RuStoreReviewManagerFactory.create(activity)
         manager.requestReviewFlow()

@@ -1,12 +1,11 @@
 package com.example.loancalcandroid.ui.common
 
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.material3.DatePicker
 import androidx.compose.material3.DatePickerDialog
 import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.material3.rememberDatePickerState
@@ -33,21 +32,23 @@ fun DatePickerField(
 ) {
     var showDialog by remember { mutableStateOf(false) }
     val displayText = Formatters.date(value)
+    val interactionSource = remember { MutableInteractionSource() }
 
-    Box(
+    LoanOutlinedTextField(
+        value = displayText,
+        onValueChange = {},
+        readOnly = true,
+        enabled = false,
+        label = { Text(label) },
         modifier = modifier
             .fillMaxWidth()
-            .clickable(enabled = enabled) { showDialog = true },
-    ) {
-        OutlinedTextField(
-            value = displayText,
-            onValueChange = {},
-            readOnly = true,
-            enabled = false,
-            label = { Text(label) },
-            modifier = Modifier.fillMaxWidth(),
-        )
-    }
+            .clickable(
+                enabled = enabled,
+                indication = null,
+                interactionSource = interactionSource,
+            ) { showDialog = true },
+        singleLine = true,
+    )
 
     if (showDialog) {
         val initialMillis = value?.time ?: System.currentTimeMillis()

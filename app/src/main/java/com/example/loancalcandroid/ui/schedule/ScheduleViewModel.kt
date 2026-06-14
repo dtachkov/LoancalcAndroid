@@ -4,6 +4,7 @@ import android.app.Application
 import android.content.Context
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.viewModelScope
+import com.example.loancalcandroid.analytics.AnalyticsHelper
 import com.example.loancalcandroid.util.Formatters
 import com.example.loancalcandroid.util.ShareScheduleUtil
 import kotlinx.coroutines.Dispatchers
@@ -97,6 +98,7 @@ class ScheduleViewModel(
                 currentPaymentIndex = calculation.currentPaymentIndex,
             )
             val summary = buildSummary(loan, calculation)
+            AnalyticsHelper.logCalculation(loan.amount, "ScheduleViewModel")
 
             _uiState.update {
                 it.copy(

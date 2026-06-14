@@ -3,19 +3,18 @@ package com.example.loancalcandroid.billing
 import android.app.Activity
 import android.content.Context
 import com.example.loancalcandroid.BuildConfig
+import com.example.loancalcandroid.analytics.AnalyticsHelper
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import ru.kredit.calculator.data.LoanCalcData
 import ru.rustore.sdk.billingclient.RuStoreBillingClientFactory
-import ru.rustore.sdk.pay.RuStorePayClient
 import ru.rustore.sdk.pay.model.PreferredPurchaseType
 import ru.rustore.sdk.pay.model.Product
 import ru.rustore.sdk.pay.model.ProductId
 import ru.rustore.sdk.pay.model.ProductPurchaseParams
 import ru.rustore.sdk.pay.model.ProductPurchaseResult
-import ru.rustore.sdk.pay.model.PurchaseAvailabilityResult
 import ru.rustore.sdk.pay.model.RuStorePaymentException
 import ru.rustore.sdk.pay.model.SdkTheme
 
@@ -41,9 +40,16 @@ class RuStoreLicenseManager(
     )
 
     init {
+        BillingLogger.logEvent("Billing is Initialized")
+        BillingLogger.logEvent(
+            "RuStore installed: ${RuStorePayHelper.isRuStoreInstalled(appContext)}",
+        )
         refreshLicenseState()
-        loadProducts()
-        refreshPurchases()
+        RuStorePayHelper.runPayClientAction("init") {
+            loadProducts()
+            refreshPurchases()
+            RuStorePayHelper.checkAuthorizationStatus()
+        }
         refreshOldPurchases()
     }
 
@@ -59,20 +65,39 @@ class RuStoreLicenseManager(
     }
 
     fun loadProducts() {
-        val productInteractor = RuStorePayClient.instance.getProductInteractor()
         val ids = BillingProducts.productIds.map(::ProductId)
-        productInteractor.getProducts(ids)
+        RuStorePayHelper.productInteractor().getProducts(ids)
             .addOnSuccessListener { products ->
+                BillingLogger.logEvent("OK. getSKUDetails Products list success found ${products.size}")
                 _products.value = products.associateBy { it.productId.value }
+            }
+            .addOnFailureListener { throwable ->
+                BillingLogger.logEvent(
+                    "Error. getSKUDetails When getting products list with message: ${throwable.localizedMessage}",
+                )
+                AnalyticsHelper.logEvent("ERROR_BILLING", throwable.localizedMessage.orEmpty())
             }
     }
 
     fun refreshPurchases() {
-        val purchaseInteractor = RuStorePayClient.instance.getPurchaseInteractor()
-        purchaseInteractor.getPurchases(null, null)
+        RuStorePayHelper.purchaseInteractor().getPurchases(productType = null, purchaseStatus = null)
             .addOnSuccessListener { purchases ->
-                licenseFromNewBilling = purchases.isNotEmpty()
+                licenseFromNewBilling = RuStorePayHelper.hasActiveLicensePurchase(purchases)
+                BillingLogger.logEvent(
+                    "OK. getPurchasedItems When getting purchased items = ${purchases.size}",
+                )
+                if (licenseFromNewBilling) {
+                    BillingLogger.logEvent("License Bought is true")
+                } else {
+                    BillingLogger.logEvent("Error. getPurchasedItems Active purchases not found")
+                }
                 refreshLicenseState()
+            }
+            .addOnFailureListener { error ->
+                BillingLogger.logEvent(
+                    "Error. getPurchasedItems When getting purchased items with message ${error.localizedMessage}",
+                )
+                AnalyticsHelper.logEvent("ERROR_BILLING", error.localizedMessage.orEmpty())
             }
     }
 
@@ -80,19 +105,25 @@ class RuStoreLicenseManager(
         billingClient.purchases.getPurchases()
             .addOnSuccessListener { purchases ->
                 licenseFromOldBilling = purchases.isNotEmpty()
+                BillingLogger.logEvent("Old license status is $licenseFromOldBilling (${purchases.size} items)")
                 refreshLicenseState()
+            }
+            .addOnFailureListener { error ->
+                BillingLogger.logEvent(
+                    "Error. getOldPurchases When getting purchased items with message ${error.localizedMessage}",
+                )
             }
     }
 
     fun checkPurchaseAvailability(
         onUnavailableMessage: (String) -> Unit = {},
     ) {
-        RuStorePayClient.instance.getPurchaseInteractor().getPurchaseAvailability()
-            .addOnSuccessListener { result ->
-                if (result is PurchaseAvailabilityResult.Unavailable) {
-                    onUnavailableMessage(result.cause.message.orEmpty())
-                }
-            }
+        RuStorePayHelper.checkPurchaseAvailability(
+            onUnavailable = onUnavailableMessage,
+            onError = { message ->
+                AnalyticsHelper.logEvent("ERROR_BILLING", message)
+            },
+        )
     }
 
     fun purchase(
@@ -105,22 +136,54 @@ class RuStoreLicenseManager(
         val product = _products.value[productId]
         if (product == null) {
             loadProducts()
+            BillingLogger.logEvent("Error. launchBillingFlow Product not found: $productId")
             onError("products_unavailable")
             return
         }
 
+        RuStorePayHelper.checkPurchaseAvailability(
+            onAvailable = {
+                startPurchase(product, onSuccess, onError, onCancelled)
+            },
+            onUnavailable = { message ->
+                onError(message.ifBlank { "products_unavailable" })
+            },
+            onError = { message ->
+                AnalyticsHelper.logEvent("ERROR_BILLING", message)
+                onError(message.ifBlank { "products_unavailable" })
+            },
+        )
+    }
+
+    private fun startPurchase(
+        product: Product,
+        onSuccess: () -> Unit,
+        onError: (String) -> Unit,
+        onCancelled: () -> Unit,
+    ) {
         val params = ProductPurchaseParams(product.productId, null, null, null, null, null)
-        RuStorePayClient.instance.getPurchaseInteractor()
-            .purchase(params, PreferredPurchaseType.ONE_STEP, SdkTheme.LIGHT, null)
-            .addOnSuccessListener { result ->
-                handlePurchaseResult(result, product, onSuccess, onError)
-            }
-            .addOnFailureListener { throwable ->
-                when (throwable) {
-                    is RuStorePaymentException.ProductPurchaseCancelled -> onCancelled()
-                    else -> onError(throwable.localizedMessage.orEmpty())
+        RuStorePayHelper.runPayClientAction("purchase") {
+            RuStorePayHelper.purchaseInteractor()
+                .purchase(params, PreferredPurchaseType.ONE_STEP, SdkTheme.LIGHT, null)
+                .addOnSuccessListener { result ->
+                    BillingLogger.logEvent("OK. handlePaymentResult When handle payment result")
+                    handlePurchaseResult(result, product, onSuccess, onError)
                 }
-            }
+                .addOnFailureListener { throwable ->
+                    when (throwable) {
+                        is RuStorePaymentException.ProductPurchaseCancelled -> {
+                            BillingLogger.logEvent("OK. launchBillingFlow User canceled purchase")
+                            onCancelled()
+                        }
+                        else -> {
+                            val message = throwable.localizedMessage.orEmpty()
+                            BillingLogger.logEvent("Error. launchBillingFlow When start purchase $message")
+                            AnalyticsHelper.logEvent("ERROR_BILLING", message)
+                            onError(message)
+                        }
+                    }
+                }
+        }
     }
 
     private fun handlePurchaseResult(
@@ -129,18 +192,27 @@ class RuStoreLicenseManager(
         onSuccess: () -> Unit,
         onError: (String) -> Unit,
     ) {
-        RuStorePayClient.instance.getPurchaseInteractor().getPurchases(null, null)
+        RuStorePayHelper.purchaseInteractor().getPurchases(productType = null, purchaseStatus = null)
             .addOnSuccessListener { purchases ->
-                if (result.productId.value == product.productId.value && purchases.isNotEmpty()) {
+                val purchaseConfirmed = result.productId.value == product.productId.value &&
+                    RuStorePayHelper.hasActiveLicensePurchase(purchases)
+                if (purchaseConfirmed) {
                     licenseFromNewBilling = true
                     refreshLicenseState()
+                    refreshOldPurchases()
+                    AnalyticsHelper.logPurchase(success = true)
                     onSuccess()
                 } else {
+                    BillingLogger.logEvent("Error. handlePaymentResult Purchase not confirmed")
+                    AnalyticsHelper.logPurchase(success = false)
                     onError("purchase_not_confirmed")
                 }
             }
             .addOnFailureListener { throwable ->
-                onError(throwable.localizedMessage.orEmpty())
+                val message = throwable.localizedMessage.orEmpty()
+                BillingLogger.logEvent("Error. handlePaymentResult $message")
+                AnalyticsHelper.logEvent("ERROR_BILLING", message)
+                onError(message)
             }
     }
 

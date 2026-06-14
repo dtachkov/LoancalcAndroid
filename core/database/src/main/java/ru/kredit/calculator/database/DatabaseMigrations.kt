@@ -17,7 +17,32 @@ object DatabaseMigrations {
             migration4to5(),
             migration5to6(),
             migration6to7(),
+            migration7to8(),
         )
+
+    private fun createLoanDetailsTableSql(tableName: String): String {
+        return """
+            CREATE TABLE IF NOT EXISTS $tableName (
+                ${DatabaseContract.LoanDetailsColumns.LOAN_ID} INTEGER NOT NULL PRIMARY KEY,
+                ${DatabaseContract.LoanDetailsColumns.BANK_NAME} TEXT NOT NULL,
+                ${DatabaseContract.LoanDetailsColumns.ACCOUNT_NUMBER} TEXT NOT NULL,
+                ${DatabaseContract.LoanDetailsColumns.UIC} TEXT NOT NULL,
+                ${DatabaseContract.LoanDetailsColumns.CORRESPONDENT_ACCOUNT} TEXT NOT NULL,
+                ${DatabaseContract.LoanDetailsColumns.PAYMENT_COMMENT} TEXT,
+                FOREIGN KEY(${DatabaseContract.LoanDetailsColumns.LOAN_ID})
+                    REFERENCES ${DatabaseContract.LoanColumns.TABLE_NAME}(${DatabaseContract.LoanColumns.ID})
+                    ON DELETE CASCADE
+            )
+            """.trimIndent()
+    }
+
+    private fun createLoanDetailsIndex(database: SupportSQLiteDatabase) {
+        database.execSQL(
+            "CREATE UNIQUE INDEX IF NOT EXISTS index_loan_details_loan_id " +
+                "ON ${DatabaseContract.LoanDetailsColumns.TABLE_NAME} " +
+                "(${DatabaseContract.LoanDetailsColumns.LOAN_ID})",
+        )
+    }
 
     private fun migration1to2(): Migration = Migration(1, 2) { database ->
         val today = dateFormat.format(Date())
@@ -95,5 +120,10 @@ object DatabaseMigrations {
             "ALTER TABLE ${DatabaseContract.LoanColumns.TABLE_NAME} " +
                 "ADD COLUMN ${DatabaseContract.LoanColumns.FORECAST_EXTRA_TYPE} INTEGER"
         )
+    }
+
+    private fun migration7to8(): Migration = Migration(7, 8) { database ->
+        database.execSQL(createLoanDetailsTableSql(DatabaseContract.LoanDetailsColumns.TABLE_NAME))
+        createLoanDetailsIndex(database)
     }
 }

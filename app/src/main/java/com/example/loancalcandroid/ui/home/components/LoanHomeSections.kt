@@ -41,6 +41,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import com.example.loancalcandroid.R
+import com.example.loancalcandroid.ui.home.model.AllLoanPaymentRowUiModel
 import com.example.loancalcandroid.ui.home.model.AllLoansSummaryUiModel
 import com.example.loancalcandroid.ui.home.model.LoanCardUiModel
 import com.example.loancalcandroid.ui.home.model.LoanDetailsUiModel
@@ -174,6 +175,71 @@ private fun SummaryLoanCard(
 }
 
 @Composable
+fun AllLoansPaymentsSection(
+    loans: List<AllLoanPaymentRowUiModel>,
+    onLoanClick: (Long) -> Unit,
+    modifier: Modifier = Modifier,
+) {
+    if (loans.isEmpty()) return
+
+    Surface(
+        modifier = modifier.fillMaxWidth(),
+        shape = RoundedCornerShape(16.dp),
+        color = LoanCardSurface,
+        shadowElevation = 1.dp,
+    ) {
+        Column {
+            loans.forEachIndexed { index, loan ->
+                AllLoanPaymentRow(
+                    loan = loan,
+                    onClick = { onLoanClick(loan.loanId) },
+                )
+                if (index < loans.lastIndex) {
+                    HorizontalDivider(
+                        modifier = Modifier.padding(horizontal = 16.dp),
+                        color = MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.5f),
+                    )
+                }
+            }
+        }
+    }
+}
+
+@Composable
+private fun AllLoanPaymentRow(
+    loan: AllLoanPaymentRowUiModel,
+    onClick: () -> Unit,
+) {
+    Row(
+        modifier = Modifier
+            .fillMaxWidth()
+            .clickable(onClick = onClick)
+            .padding(horizontal = 16.dp, vertical = 12.dp),
+        verticalAlignment = Alignment.CenterVertically,
+    ) {
+        Column(modifier = Modifier.weight(1f)) {
+            Text(
+                text = loan.title,
+                style = MaterialTheme.typography.bodyLarge,
+                fontWeight = FontWeight.Medium,
+            )
+            Text(
+                text = loan.nextPaymentDate,
+                style = MaterialTheme.typography.bodySmall,
+                color = LoanTextSecondary,
+                modifier = Modifier.padding(top = 2.dp),
+            )
+        }
+        Text(
+            text = loan.nextPaymentAmount,
+            style = MaterialTheme.typography.titleMedium,
+            fontWeight = FontWeight.SemiBold,
+            modifier = Modifier.padding(start = 12.dp),
+        )
+    }
+}
+
+@Composable
 private fun SingleLoanCard(
     card: LoanCardUiModel,
     onClick: () -> Unit,
@@ -215,15 +281,29 @@ private fun SingleLoanCard(
                     style = MaterialTheme.typography.bodySmall,
                 )
             }
-            Row(horizontalArrangement = Arrangement.spacedBy(20.dp)) {
-                LoanCardStat(label = stringResource(R.string.loan_amount), value = card.amount)
-                LoanCardStat(label = stringResource(R.string.loan_rate), value = card.rate)
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.spacedBy(8.dp),
+            ) {
+                LoanCardStat(
+                    label = stringResource(R.string.loan_amount),
+                    value = card.amount,
+                    modifier = Modifier.weight(1f),
+                    shrinkLabel = true,
+                )
+                LoanCardStat(
+                    label = stringResource(R.string.loan_rate),
+                    value = card.rate,
+                    modifier = Modifier.weight(0.8f),
+                    shrinkLabel = true,
+                )
+                LoanCardStat(
+                    label = stringResource(R.string.loan_issue_date),
+                    value = card.issueDate,
+                    modifier = Modifier.weight(1.2f),
+                    shrinkLabel = true,
+                )
             }
-            Text(
-                text = "${stringResource(R.string.loan_issue_date)}: ${card.issueDate}",
-                color = Color.White.copy(alpha = 0.9f),
-                style = MaterialTheme.typography.bodySmall,
-            )
         }
     }
 }

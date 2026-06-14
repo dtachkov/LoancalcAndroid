@@ -9,15 +9,16 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import ru.kredit.calculator.data.LoanCalcData
-import ru.kredit.calculator.data.model.Loan
-
-data class RequisiteRow(val label: String, val value: String)
+import ru.kredit.calculator.data.model.LoanDetails
 
 data class RequisitesUiState(
     val isLoading: Boolean = true,
-    val title: String = "",
-    val rows: List<RequisiteRow> = emptyList(),
-    val error: String? = null,
+    val bankName: String = "",
+    val accountNumber: String = "",
+    val uic: String = "",
+    val correspondentAccount: String = "",
+    val paymentComment: String = "",
+    val isSaving: Boolean = false,
 )
 
 class RequisitesViewModel(
@@ -25,44 +26,57 @@ class RequisitesViewModel(
     private val loanId: Long,
 ) : AndroidViewModel(application) {
     private val loanRepository = LoanCalcData.get().loanRepository
-
     private val _uiState = MutableStateFlow(RequisitesUiState())
     val uiState: StateFlow<RequisitesUiState> = _uiState.asStateFlow()
 
     init {
+        load()
+    }
+
+    fun load() {
         viewModelScope.launch {
-            val loan = loanRepository.getLoan(loanId)
-            if (loan == null) {
-                _uiState.update { it.copy(isLoading = false, error = "Кредит не найден") }
-                return@launch
-            }
+            _uiState.update { it.copy(isLoading = true) }
+            val details = loanRepository.getLoanDetails(loanId)
             _uiState.update {
                 it.copy(
                     isLoading = false,
-                    title = loan.title.orEmpty().ifBlank { "Кредит #$loanId" },
-                    rows = buildRows(loan),
+                    bankName = details.bankName,
+                    accountNumber = details.accountNumber,
+                    uic = details.uic,
+                    correspondentAccount = details.correspondentAccount,
+                    paymentComment = details.paymentComment.orEmpty(),
                 )
             }
         }
     }
 
-    private fun buildRows(loan: Loan): List<RequisiteRow> {
-        val f = com.example.loancalcandroid.util.Formatters
-        return listOf(
-            RequisiteRow("Название", loan.title.orEmpty().ifBlank { "—" }),
-            RequisiteRow("Сумма", f.money(loan.amount)),
-            RequisiteRow("Ставка", f.percent(loan.rate)),
-            RequisiteRow("Срок", "${loan.term} мес."),
-            RequisiteRow("Тип", if (loan.type.id == 0) "Аннуитет" else "Дифференцированный"),
-            RequisiteRow("Дата выдачи", f.date(loan.dateOfIssue ?: loan.firstPaymentDate)),
-            RequisiteRow("Первый платёж", f.date(loan.firstPaymentDate)),
-            RequisiteRow("Ежемес. платёж", f.money(loan.monthlyPayment)),
-            RequisiteRow("Учитывать выходные", yesNo(loan.considerDaysOff)),
-            RequisiteRow("Платёж в последний день", yesNo(loan.payOnLastDayOfMonth)),
-            RequisiteRow("Досрочки сразу", yesNo(loan.applyExtrasImmediately)),
-            RequisiteRow("Как Сбербанк (по остатку)", yesNo(loan.calculateExtrasByBalanceLikeSberbank)),
-        )
-    }
+    fun updateBankName(value: String) = _uiState.update { it.copy(bankName = value) }
 
-    private fun yesNo(value: Boolean) = if (value) "Да" else "Нет"
+    fun updateAccountNumber(value: String) = _uiState.update { it.copy(accountNumber = value) }
+
+    fun updateUic(value: String) = _uiState.update { it.copy(uic = value) }
+
+    fun updateCorrespondentAccount(value: String) = _uiState.update { it.copy(correspondentAccount = value) }
+
+    fun updatePaymentComment(value: String) = _uiState.update { it.copy(paymentComment = value) }
+
+    fun save() {
+        val state = _uiState.value
+        if (state.isLoading || state.isSaving) return
+
+        viewModelScope.launch {
+            _uiState.update { it.copy(isSaving = true) }
+            loanRepository.saveLoanDetails(
+                loanId = loanId,
+                details = LoanDetails(
+                    bankName = state.bankName.trim(),
+                    accountNumber = state.accountNumber.trim(),
+                    uic = state.uic.trim(),
+                    correspondentAccount = state.correspondentAccount.trim(),
+                    paymentComment = state.paymentComment.trim().takeIf { it.isNotEmpty() },
+                ),
+            )
+            _uiState.update { it.copy(isSaving = false) }
+        }
+    }
 }

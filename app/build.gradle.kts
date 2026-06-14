@@ -36,12 +36,14 @@ android {
     buildTypes {
         debug {
             signingConfig = signingConfigs.getByName("debug")
-            buildConfigField("boolean", "APP_PURCHASED", "true")
+            buildConfigField("boolean", "APP_PURCHASED", "false")
+            buildConfigField("String", "APPMETRICA_API_KEY", "\"875793e0-e485-4b75-b722-82c4de39cf4c\"")
         }
         release {
             signingConfig = signingConfigs.getByName("release")
             isMinifyEnabled = false
             buildConfigField("boolean", "APP_PURCHASED", "false")
+            buildConfigField("String", "APPMETRICA_API_KEY", "\"875793e0-e485-4b75-b722-82c4de39cf4c\"")
             proguardFiles(
                 getDefaultProguardFile("proguard-android-optimize.txt"),
                 "proguard-rules.pro"
@@ -82,6 +84,7 @@ dependencies {
     implementation(libs.rustore.pay)
     implementation(libs.rustore.review)
     implementation(libs.rustore.billingclient)
+    implementation(libs.appmetrica.analytics)
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)

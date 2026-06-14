@@ -20,6 +20,11 @@ class ImportExportRepository(
 
         loans.forEach { loanFull ->
             val savedLoan = loanRepository.saveLoan(loanFull.loan.copy(id = 0))
+            loanFull.account?.let { account ->
+                if (!account.isEmpty()) {
+                    loanRepository.saveLoanDetails(savedLoan.id, account)
+                }
+            }
             loanFull.extras.forEach { extra ->
                 extraRepository.saveExtra(
                     extra.copy(

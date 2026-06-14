@@ -13,7 +13,7 @@ import androidx.compose.material3.Button
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.OutlinedTextField
+import com.example.loancalcandroid.ui.common.LoanOutlinedTextField
 import androidx.compose.material3.RadioButton
 import androidx.compose.material3.Switch
 import androidx.compose.material3.Text
@@ -91,35 +91,35 @@ fun LoanEditorScreen(
                 .padding(16.dp),
             verticalArrangement = Arrangement.spacedBy(12.dp),
         ) {
-            OutlinedTextField(
+            LoanOutlinedTextField(
                 value = uiState.title,
                 onValueChange = viewModel::updateTitle,
                 label = { Text(stringResource(R.string.loan_title)) },
                 modifier = Modifier.fillMaxWidth(),
                 singleLine = true,
             )
-            OutlinedTextField(
+            LoanOutlinedTextField(
                 value = uiState.amount,
                 onValueChange = viewModel::updateAmount,
-                label = { Text(stringResource(R.string.loan_amount)) },
+                label = { Text(stringResource(R.string.loan_editor_amount)) },
                 modifier = Modifier.fillMaxWidth(),
                 singleLine = true,
                 isError = uiState.amountError != null,
                 supportingText = uiState.amountError?.let { { Text(it) } },
             )
-            OutlinedTextField(
+            LoanOutlinedTextField(
                 value = uiState.rate,
                 onValueChange = viewModel::updateRate,
-                label = { Text(stringResource(R.string.loan_rate)) },
+                label = { Text(stringResource(R.string.loan_editor_rate)) },
                 modifier = Modifier.fillMaxWidth(),
                 singleLine = true,
                 isError = uiState.rateError != null,
                 supportingText = uiState.rateError?.let { { Text(it) } },
             )
-            OutlinedTextField(
+            LoanOutlinedTextField(
                 value = uiState.term,
                 onValueChange = viewModel::updateTerm,
-                label = { Text(stringResource(R.string.loan_term)) },
+                label = { Text(stringResource(R.string.loan_editor_term)) },
                 modifier = Modifier.fillMaxWidth(),
                 singleLine = true,
                 isError = uiState.termError != null,
@@ -140,12 +140,12 @@ fun LoanEditorScreen(
             }
 
             DatePickerField(
-                label = stringResource(R.string.loan_issue_date),
+                label = stringResource(R.string.loan_editor_issue_date),
                 value = uiState.dateOfIssue,
                 onValueChange = viewModel::updateDateOfIssue,
             )
             Text(
-                text = stringResource(R.string.loan_issue_date_hint),
+                text = stringResource(R.string.loan_editor_issue_date_hint),
                 style = MaterialTheme.typography.bodySmall,
                 color = MaterialTheme.colorScheme.onSurfaceVariant,
             )
