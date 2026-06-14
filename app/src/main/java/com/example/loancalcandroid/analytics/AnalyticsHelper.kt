@@ -10,10 +10,13 @@ import io.appmetrica.analytics.AppMetrica
 
 object AnalyticsHelper {
     private const val TAG = "Analytics"
+    private val isAnalyticsEnabled: Boolean
+        get() = !BuildConfig.DEBUG
 
     fun logEvent(eventName: String, eventText: String = "") {
-        val params = mapOf("text" to eventText)
         Log.d(TAG, "$eventName: $eventText")
+        if (!isAnalyticsEnabled) return
+        val params = mapOf("text" to eventText)
         runCatching {
             AppMetrica.reportEvent(eventName, params)
         }.onFailure {
@@ -22,11 +25,12 @@ object AnalyticsHelper {
     }
 
     fun logCalculation(amount: Float, source: String) {
+        Log.d(TAG, "CALC_LOAN: amount=$amount source=$source")
+        if (!isAnalyticsEnabled) return
         val params = mapOf(
             "amount" to amount.toString(),
             "source" to source,
         )
-        Log.d(TAG, "CALC_LOAN: amount=$amount source=$source")
         runCatching {
             AppMetrica.reportEvent("CALC_LOAN", params)
         }.onFailure {
@@ -39,8 +43,9 @@ object AnalyticsHelper {
     }
 
     fun logPurchase(success: Boolean) {
-        val params = mapOf("is_success" to success.toString())
         Log.d(TAG, "purchase: success=$success")
+        if (!isAnalyticsEnabled) return
+        val params = mapOf("is_success" to success.toString())
         runCatching {
             AppMetrica.reportEvent("purchase", params)
         }.onFailure {
@@ -63,13 +68,14 @@ object AnalyticsHelper {
     }
 
     fun activate(context: Context) {
+        if (!isAnalyticsEnabled) {
+            Log.d(TAG, "AppMetrica disabled in debug build")
+            return
+        }
         if (BuildConfig.APPMETRICA_API_KEY.isBlank()) return
         runCatching {
             val builder = io.appmetrica.analytics.AppMetricaConfig
                 .newConfigBuilder(BuildConfig.APPMETRICA_API_KEY)
-            if (BuildConfig.DEBUG) {
-                builder.withLogs()
-            }
             AppMetrica.activate(context, builder.build())
             AppMetrica.enableActivityAutoTracking(context.applicationContext as android.app.Application)
         }.onFailure {
