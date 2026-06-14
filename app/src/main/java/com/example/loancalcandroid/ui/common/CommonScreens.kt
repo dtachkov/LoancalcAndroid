@@ -74,7 +74,10 @@ fun FeaturePlaceholderScreen(
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun SettingsScreen(onBack: () -> Unit) {
+fun SettingsScreen(
+    onBack: () -> Unit,
+    onOffersClick: () -> Unit,
+) {
     val settings = ru.kredit.calculator.data.LoanCalcData.get().settingsPreferences
     var loadLastLoan by remember { mutableStateOf(settings.isLoadLastLoanAtStart()) }
     var notificationsEnabled by remember { mutableStateOf(settings.areNotificationsEnabled()) }
@@ -118,6 +121,11 @@ fun SettingsScreen(onBack: () -> Unit) {
                         notificationsEnabled = !notificationsEnabled
                         settings.setNotificationsEnabled(notificationsEnabled)
                     },
+                )
+                MenuNavigationRow(
+                    title = stringResource(R.string.offers_screen),
+                    subtitle = stringResource(R.string.offers_settings_hint),
+                    onClick = onOffersClick,
                     showDivider = false,
                 )
             }

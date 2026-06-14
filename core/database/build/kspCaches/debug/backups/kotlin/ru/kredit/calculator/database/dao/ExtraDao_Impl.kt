@@ -9,7 +9,7 @@ import androidx.room.util.getColumnIndexOrThrow
 import androidx.room.util.performSuspending
 import androidx.sqlite.SQLiteStatement
 import javax.`annotation`.processing.Generated
-import kotlin.Double
+import kotlin.Float
 import kotlin.Int
 import kotlin.Long
 import kotlin.String
@@ -37,10 +37,15 @@ public class ExtraDao_Impl(
     this.__db = __db
     this.__insertAdapterOfExtraEntity = object : EntityInsertAdapter<ExtraEntity>() {
       protected override fun createQuery(): String =
-          "INSERT OR ABORT INTO `extras` (`_id`,`document_number`,`type`,`date`,`amount`,`loanId`) VALUES (nullif(?, 0),?,?,?,?,?)"
+          "INSERT OR ABORT INTO `extras` (`_id`,`document_number`,`type`,`date`,`amount`,`loanId`) VALUES (?,?,?,?,?,?)"
 
       protected override fun bind(statement: SQLiteStatement, entity: ExtraEntity) {
-        statement.bindLong(1, entity.id)
+        val _tmpId: Long? = entity.id
+        if (_tmpId == null) {
+          statement.bindNull(1)
+        } else {
+          statement.bindLong(1, _tmpId)
+        }
         val _tmpDocumentNumber: String? = entity.documentNumber
         if (_tmpDocumentNumber == null) {
           statement.bindNull(2)
@@ -59,11 +64,11 @@ public class ExtraDao_Impl(
         } else {
           statement.bindText(4, _tmpDate)
         }
-        val _tmpAmount: Double? = entity.amount
+        val _tmpAmount: Float? = entity.amount
         if (_tmpAmount == null) {
           statement.bindNull(5)
         } else {
-          statement.bindDouble(5, _tmpAmount)
+          statement.bindDouble(5, _tmpAmount.toDouble())
         }
         val _tmpLoanId: Long? = entity.loanId
         if (_tmpLoanId == null) {
@@ -78,7 +83,12 @@ public class ExtraDao_Impl(
           "UPDATE OR ABORT `extras` SET `_id` = ?,`document_number` = ?,`type` = ?,`date` = ?,`amount` = ?,`loanId` = ? WHERE `_id` = ?"
 
       protected override fun bind(statement: SQLiteStatement, entity: ExtraEntity) {
-        statement.bindLong(1, entity.id)
+        val _tmpId: Long? = entity.id
+        if (_tmpId == null) {
+          statement.bindNull(1)
+        } else {
+          statement.bindLong(1, _tmpId)
+        }
         val _tmpDocumentNumber: String? = entity.documentNumber
         if (_tmpDocumentNumber == null) {
           statement.bindNull(2)
@@ -97,11 +107,11 @@ public class ExtraDao_Impl(
         } else {
           statement.bindText(4, _tmpDate)
         }
-        val _tmpAmount: Double? = entity.amount
+        val _tmpAmount: Float? = entity.amount
         if (_tmpAmount == null) {
           statement.bindNull(5)
         } else {
-          statement.bindDouble(5, _tmpAmount)
+          statement.bindDouble(5, _tmpAmount.toDouble())
         }
         val _tmpLoanId: Long? = entity.loanId
         if (_tmpLoanId == null) {
@@ -109,7 +119,12 @@ public class ExtraDao_Impl(
         } else {
           statement.bindLong(6, _tmpLoanId)
         }
-        statement.bindLong(7, entity.id)
+        val _tmpId_1: Long? = entity.id
+        if (_tmpId_1 == null) {
+          statement.bindNull(7)
+        } else {
+          statement.bindLong(7, _tmpId_1)
+        }
       }
     }
   }
@@ -141,8 +156,12 @@ public class ExtraDao_Impl(
         val _result: MutableList<ExtraEntity> = mutableListOf()
         while (_stmt.step()) {
           val _item: ExtraEntity
-          val _tmpId: Long
-          _tmpId = _stmt.getLong(_columnIndexOfId)
+          val _tmpId: Long?
+          if (_stmt.isNull(_columnIndexOfId)) {
+            _tmpId = null
+          } else {
+            _tmpId = _stmt.getLong(_columnIndexOfId)
+          }
           val _tmpDocumentNumber: String?
           if (_stmt.isNull(_columnIndexOfDocumentNumber)) {
             _tmpDocumentNumber = null
@@ -161,11 +180,11 @@ public class ExtraDao_Impl(
           } else {
             _tmpDate = _stmt.getText(_columnIndexOfDate)
           }
-          val _tmpAmount: Double?
+          val _tmpAmount: Float?
           if (_stmt.isNull(_columnIndexOfAmount)) {
             _tmpAmount = null
           } else {
-            _tmpAmount = _stmt.getDouble(_columnIndexOfAmount)
+            _tmpAmount = _stmt.getDouble(_columnIndexOfAmount).toFloat()
           }
           val _tmpLoanId: Long?
           if (_stmt.isNull(_columnIndexOfLoanId)) {
@@ -199,8 +218,12 @@ public class ExtraDao_Impl(
         val _result: MutableList<ExtraEntity> = mutableListOf()
         while (_stmt.step()) {
           val _item: ExtraEntity
-          val _tmpId: Long
-          _tmpId = _stmt.getLong(_columnIndexOfId)
+          val _tmpId: Long?
+          if (_stmt.isNull(_columnIndexOfId)) {
+            _tmpId = null
+          } else {
+            _tmpId = _stmt.getLong(_columnIndexOfId)
+          }
           val _tmpDocumentNumber: String?
           if (_stmt.isNull(_columnIndexOfDocumentNumber)) {
             _tmpDocumentNumber = null
@@ -219,11 +242,11 @@ public class ExtraDao_Impl(
           } else {
             _tmpDate = _stmt.getText(_columnIndexOfDate)
           }
-          val _tmpAmount: Double?
+          val _tmpAmount: Float?
           if (_stmt.isNull(_columnIndexOfAmount)) {
             _tmpAmount = null
           } else {
-            _tmpAmount = _stmt.getDouble(_columnIndexOfAmount)
+            _tmpAmount = _stmt.getDouble(_columnIndexOfAmount).toFloat()
           }
           val _tmpLoanId: Long?
           if (_stmt.isNull(_columnIndexOfLoanId)) {
@@ -265,8 +288,12 @@ public class ExtraDao_Impl(
         val _result: MutableList<ExtraEntity> = mutableListOf()
         while (_stmt.step()) {
           val _item_1: ExtraEntity
-          val _tmpId: Long
-          _tmpId = _stmt.getLong(_columnIndexOfId)
+          val _tmpId: Long?
+          if (_stmt.isNull(_columnIndexOfId)) {
+            _tmpId = null
+          } else {
+            _tmpId = _stmt.getLong(_columnIndexOfId)
+          }
           val _tmpDocumentNumber: String?
           if (_stmt.isNull(_columnIndexOfDocumentNumber)) {
             _tmpDocumentNumber = null
@@ -285,11 +312,11 @@ public class ExtraDao_Impl(
           } else {
             _tmpDate = _stmt.getText(_columnIndexOfDate)
           }
-          val _tmpAmount: Double?
+          val _tmpAmount: Float?
           if (_stmt.isNull(_columnIndexOfAmount)) {
             _tmpAmount = null
           } else {
-            _tmpAmount = _stmt.getDouble(_columnIndexOfAmount)
+            _tmpAmount = _stmt.getDouble(_columnIndexOfAmount).toFloat()
           }
           val _tmpLoanId: Long?
           if (_stmt.isNull(_columnIndexOfLoanId)) {
@@ -324,8 +351,12 @@ public class ExtraDao_Impl(
         val _columnIndexOfLoanId: Int = getColumnIndexOrThrow(_stmt, "loanId")
         val _result: ExtraEntity?
         if (_stmt.step()) {
-          val _tmpId: Long
-          _tmpId = _stmt.getLong(_columnIndexOfId)
+          val _tmpId: Long?
+          if (_stmt.isNull(_columnIndexOfId)) {
+            _tmpId = null
+          } else {
+            _tmpId = _stmt.getLong(_columnIndexOfId)
+          }
           val _tmpDocumentNumber: String?
           if (_stmt.isNull(_columnIndexOfDocumentNumber)) {
             _tmpDocumentNumber = null
@@ -344,11 +375,11 @@ public class ExtraDao_Impl(
           } else {
             _tmpDate = _stmt.getText(_columnIndexOfDate)
           }
-          val _tmpAmount: Double?
+          val _tmpAmount: Float?
           if (_stmt.isNull(_columnIndexOfAmount)) {
             _tmpAmount = null
           } else {
-            _tmpAmount = _stmt.getDouble(_columnIndexOfAmount)
+            _tmpAmount = _stmt.getDouble(_columnIndexOfAmount).toFloat()
           }
           val _tmpLoanId: Long?
           if (_stmt.isNull(_columnIndexOfLoanId)) {

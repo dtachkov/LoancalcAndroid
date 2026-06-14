@@ -1,18 +1,27 @@
 package com.example.loancalcandroid
 
 import android.app.Application
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.SupervisorJob
+import kotlinx.coroutines.launch
 import ru.kredit.calculator.data.LoanCalcData
 import ru.kredit.calculator.database.DatabaseContract
 import ru.kredit.calculator.database.DatabasePathResolver
 import java.io.File
 
 class LoanCalcApplication : Application() {
+    private val applicationScope = CoroutineScope(SupervisorJob() + Dispatchers.IO)
+
     override fun onCreate() {
         super.onCreate()
-        LoanCalcData.initialize(
+        val data = LoanCalcData.initialize(
             context = this,
             buildType = BuildConfig.BUILD_TYPE,
         )
+        applicationScope.launch {
+            data.offerRepository.refreshOffers(data.settingsPreferences.getLanguageCode())
+        }
     }
 
     override fun getDatabasePath(name: String): File {

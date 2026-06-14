@@ -50,4 +50,16 @@ class EntityMappersTest {
         assertEquals(ExtraType.PAYMENT_FOR_DECREASE_TERM, restored.forecastExtraType)
         assertEquals("2026-06-14", source.toEntity().creationDate)
     }
+
+    @Test
+    fun newLoanEntityUsesNullIdForInsert() {
+        val loan = Loan(
+            id = 0,
+            amount = 1000f,
+            rate = 10f,
+            term = 12,
+        )
+
+        assertEquals(null, loan.toEntity().id)
+    }
 }

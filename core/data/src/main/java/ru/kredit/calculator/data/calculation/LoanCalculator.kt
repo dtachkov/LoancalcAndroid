@@ -250,6 +250,100 @@ class LoanCalculator {
         )
     }
 
+    @Throws(InfiniteLoanException::class, ExtraForecastException::class, LoanException::class)
+    fun calculateTaxStats(
+        loan: Loan,
+        extras: List<Extra>,
+        objectPrice: Double,
+    ): TaxCalculationResult {
+        val calendar = createCalendar(loan)
+        val loanManager = LoanManager(calendar, Calculator(calendar)).apply {
+            setObjectPrice(objectPrice)
+        }
+
+        val firstPaymentDate = loan.firstPaymentDate ?: Date(0)
+        val issueDate = loan.dateOfIssue ?: Date(0).apply { time = 0 }
+        val firstPaymentIsPercentOnly = loan.dateOfIssue != null
+
+        val (firstDay, firstMonth, firstYear) = firstPaymentDate.toYmd()
+        val (issueDay, issueMonth, issueYear) = issueDate.toYmd()
+
+        val calcLoan = buildCalcLoan(
+            loanCalendar = calendar,
+            firstPaymentIsPercentOnly = firstPaymentIsPercentOnly,
+            dateOfIssueYear = issueYear,
+            dateOfIssueMonth = issueMonth,
+            dateOfIssueDay = issueDay,
+            firstPaymentYear = firstYear,
+            firstPaymentMonth = firstMonth,
+            firstPaymentDay = firstDay,
+            raiffeisen = loan.extraDayInMonth,
+            applyExtrasImmediately = loan.applyExtrasImmediately,
+            interestOnlyAfterPrincipalPaidByExtra = loan.calculateExtrasByBalanceLikeSberbank,
+            ignorePassedPeriodsAfterRateChange = loan.ignorePassedPeriodsAfterRateChange,
+            term = loan.term,
+            rate = loan.rate,
+            amount = loan.amount,
+            type = loan.type.toInt(),
+            extras = buildExtrasSet(calendar, loan, extras),
+        )
+
+        loanManager.setLoan(calcLoan)
+        loanManager.calculate(false)
+        val stats = loanManager.stats
+
+        return TaxCalculationResult(
+            principalTax = stats.principialTax,
+            interestTax = stats.interestTax,
+            totalReturnTax = stats.totalReturnTax,
+            taxPayments = stats.taxPayments.orEmpty().map { payment ->
+                TaxPaymentRow(
+                    year = payment.year,
+                    interestPayment = payment.payment,
+                    returnTax = payment.returnTax,
+                )
+            },
+        )
+    }
+
+    private fun buildExtrasSet(
+        loanCalendar: LoanCalendar,
+        loan: Loan,
+        domainExtras: List<Extra>,
+    ): TreeSet<CalcExtra> {
+        val extras = TreeSet<CalcExtra>()
+        val firstPaymentDate = loan.firstPaymentDate ?: Date(0)
+        val (firstDay, firstMonth, firstYear) = firstPaymentDate.toYmd()
+
+        for (extra in domainExtras) {
+            val extraDate = extra.date ?: continue
+            val calcType = ExtraTypeMapper.toCalculatorType(extra.type)
+            val extraAmount = extra.amount.toDouble()
+
+            when (extra.type) {
+                ExtraType.PAYMENT_FOR_DECREASE_LOAN_AMOUNT_MONTHLY,
+                ExtraType.PAYMENT_FOR_DECREASE_TERM_MONTHLY,
+                -> {
+                    val startCredit = loanCalendar.date(firstYear, firstMonth, firstDay)
+                    val endCredit = addMonths(startCredit, loan.term)
+                    var currentDate = extraDate
+                    while (currentDate.time in startCredit.time..endCredit.time) {
+                        val (day, month, year) = currentDate.toYmd()
+                        val normalizedDate = loanCalendar.date(year, month, day)
+                        addOrAccumulateExtra(extras, calcType, extraAmount, normalizedDate)
+                        currentDate = addMonths(currentDate, 1)
+                    }
+                }
+                else -> {
+                    val (day, month, year) = extraDate.toYmd()
+                    val normalizedDate = loanCalendar.date(year, month, day)
+                    addOrAccumulateExtra(extras, calcType, extraAmount, normalizedDate)
+                }
+            }
+        }
+        return extras
+    }
+
     private fun createCalendar(loan: Loan): LoanCalendar {
         return LoanCalendar().apply {
             lastDayFlag = loan.payOnLastDayOfMonth

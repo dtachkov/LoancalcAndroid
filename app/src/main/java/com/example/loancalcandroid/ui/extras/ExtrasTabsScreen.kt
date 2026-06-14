@@ -1,8 +1,9 @@
 package com.example.loancalcandroid.ui.extras
 
+import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
-import androidx.compose.foundation.clickable
+import androidx.compose.foundation.combinedClickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -11,10 +12,12 @@ import androidx.compose.foundation.layout.RowScope
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
+import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.CircularProgressIndicator
@@ -26,9 +29,11 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.PrimaryTabRow
 import androidx.compose.material3.Tab
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
@@ -108,6 +113,30 @@ private fun ExtrasListContent(
 ) {
     val viewModel: ExtrasListViewModel = extrasListViewModel(loanId, category, ::ExtrasListViewModel)
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
+    var extraToDelete by remember { mutableStateOf<ExtraListItem?>(null) }
+
+    extraToDelete?.let { item ->
+        AlertDialog(
+            onDismissRequest = { extraToDelete = null },
+            title = { Text(stringResource(R.string.delete_extra_title)) },
+            text = { Text(stringResource(R.string.delete_extra_message)) },
+            confirmButton = {
+                TextButton(
+                    onClick = {
+                        viewModel.deleteExtra(item.extra.id)
+                        extraToDelete = null
+                    },
+                ) {
+                    Text(stringResource(R.string.delete))
+                }
+            },
+            dismissButton = {
+                TextButton(onClick = { extraToDelete = null }) {
+                    Text(stringResource(R.string.cancel))
+                }
+            },
+        )
+    }
 
     if (uiState.isLoading) {
         Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
@@ -137,7 +166,11 @@ private fun ExtrasListContent(
         } else {
             LazyColumn(modifier = Modifier.weight(1f)) {
                 items(uiState.items, key = { it.extra.id }) { item ->
-                    ExtrasTableRow(item = item, onClick = { onEditExtra(item.extra.id) })
+                    ExtrasTableRow(
+                        item = item,
+                        onClick = { onEditExtra(item.extra.id) },
+                        onLongClick = { extraToDelete = item },
+                    )
                     HorizontalDivider(color = Color.LightGray.copy(alpha = 0.5f))
                 }
             }
@@ -213,15 +246,20 @@ private fun ExtrasTableHeader() {
     }
 }
 
+@OptIn(ExperimentalMaterial3Api::class, ExperimentalFoundationApi::class)
 @Composable
 private fun ExtrasTableRow(
     item: ExtraListItem,
     onClick: () -> Unit,
+    onLongClick: () -> Unit,
 ) {
     Row(
         modifier = Modifier
             .fillMaxWidth()
-            .clickable(onClick = onClick)
+            .combinedClickable(
+                onClick = onClick,
+                onLongClick = onLongClick,
+            )
             .padding(vertical = 10.dp, horizontal = 4.dp),
         verticalAlignment = Alignment.CenterVertically,
     ) {
@@ -232,7 +270,7 @@ private fun ExtrasTableRow(
             Image(
                 painter = painterResource(ExtraTypeIcons.icon(item.extra.type)),
                 contentDescription = item.typeLabel,
-                modifier = Modifier.padding(2.dp),
+                modifier = Modifier.size(32.dp),
             )
         }
         ExtrasTableCell(

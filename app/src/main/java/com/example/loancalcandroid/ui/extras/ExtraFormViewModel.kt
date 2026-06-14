@@ -2,7 +2,9 @@ package com.example.loancalcandroid.ui.extras
 
 import android.app.Application
 import androidx.lifecycle.AndroidViewModel
+import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.viewModelScope
+import com.example.loancalcandroid.navigation.Route
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -13,6 +15,12 @@ import ru.kredit.calculator.data.calculation.ExtraTypeUtils
 import ru.kredit.calculator.data.model.Extra
 import ru.kredit.calculator.data.model.ExtraType
 import java.util.Date
+
+data class ExtraFormPrefill(
+    val amount: String = "",
+    val dateMillis: Long = 0L,
+    val extraType: ExtraType? = null,
+)
 
 data class ExtraFormUiState(
     val isLoading: Boolean = true,
@@ -32,10 +40,12 @@ data class ExtraFormUiState(
 
 class ExtraFormViewModel(
     application: Application,
-    private val loanId: Long,
+    savedStateHandle: SavedStateHandle,
     private val extraId: Long?,
     category: ExtraCategory,
+    prefill: ExtraFormPrefill = ExtraFormPrefill(),
 ) : AndroidViewModel(application) {
+    private val loanId: Long = savedStateHandle.get<Long>(Route.ARG_LOAN_ID) ?: 0L
     private val extraRepository = LoanCalcData.get().extraRepository
     private val allowedTypes = when (category) {
         ExtraCategory.EARLY -> ExtraTypeUtils.earlyPaymentTypes
@@ -47,8 +57,9 @@ class ExtraFormViewModel(
             isEditMode = extraId != null,
             category = category,
             allowedTypes = allowedTypes,
-            selectedType = allowedTypes.first(),
-            date = Date(),
+            selectedType = prefill.extraType ?: allowedTypes.first(),
+            amount = prefill.amount,
+            date = if (prefill.dateMillis > 0L) Date(prefill.dateMillis) else Date(),
         ),
     )
     val uiState: StateFlow<ExtraFormUiState> = _uiState.asStateFlow()
@@ -69,6 +80,10 @@ class ExtraFormViewModel(
     fun save() {
         val state = _uiState.value
         if (!validate(state)) return
+        if (loanId == 0L) {
+            _uiState.update { it.copy(saveError = "Не выбран кредит для сохранения") }
+            return
+        }
 
         viewModelScope.launch {
             _uiState.update { it.copy(isSaving = true, saveError = null) }

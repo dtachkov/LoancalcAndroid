@@ -8,7 +8,7 @@ import androidx.room.util.performInTransactionSuspending
 import androidx.room.util.performSuspending
 import androidx.sqlite.SQLiteStatement
 import javax.`annotation`.processing.Generated
-import kotlin.Double
+import kotlin.Float
 import kotlin.Int
 import kotlin.Long
 import kotlin.String
@@ -33,10 +33,15 @@ public class OfferDao_Impl(
     this.__db = __db
     this.__insertAdapterOfOfferEntity = object : EntityInsertAdapter<OfferEntity>() {
       protected override fun createQuery(): String =
-          "INSERT OR REPLACE INTO `Offers` (`_id`,`name`,`org_name`,`term`,`rate_type`,`rate`,`logo_color`,`logo_image`,`link`,`amount_limit`,`requirements`,`extra_payment_rules`,`docs`) VALUES (nullif(?, 0),?,?,?,?,?,?,?,?,?,?,?,?)"
+          "INSERT OR REPLACE INTO `Offers` (`_id`,`name`,`org_name`,`term`,`rate_type`,`rate`,`logo_color`,`logo_image`,`link`,`amount_limit`,`requirements`,`extra_payment_rules`,`docs`) VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?)"
 
       protected override fun bind(statement: SQLiteStatement, entity: OfferEntity) {
-        statement.bindLong(1, entity.id)
+        val _tmpId: Long? = entity.id
+        if (_tmpId == null) {
+          statement.bindNull(1)
+        } else {
+          statement.bindLong(1, _tmpId)
+        }
         val _tmpName: String? = entity.name
         if (_tmpName == null) {
           statement.bindNull(2)
@@ -85,11 +90,11 @@ public class OfferDao_Impl(
         } else {
           statement.bindText(9, _tmpLink)
         }
-        val _tmpAmountLimit: Double? = entity.amountLimit
+        val _tmpAmountLimit: Float? = entity.amountLimit
         if (_tmpAmountLimit == null) {
           statement.bindNull(10)
         } else {
-          statement.bindDouble(10, _tmpAmountLimit)
+          statement.bindDouble(10, _tmpAmountLimit.toDouble())
         }
         val _tmpRequirements: String? = entity.requirements
         if (_tmpRequirements == null) {
@@ -145,8 +150,12 @@ public class OfferDao_Impl(
         val _result: MutableList<OfferEntity> = mutableListOf()
         while (_stmt.step()) {
           val _item: OfferEntity
-          val _tmpId: Long
-          _tmpId = _stmt.getLong(_columnIndexOfId)
+          val _tmpId: Long?
+          if (_stmt.isNull(_columnIndexOfId)) {
+            _tmpId = null
+          } else {
+            _tmpId = _stmt.getLong(_columnIndexOfId)
+          }
           val _tmpName: String?
           if (_stmt.isNull(_columnIndexOfName)) {
             _tmpName = null
@@ -195,11 +204,11 @@ public class OfferDao_Impl(
           } else {
             _tmpLink = _stmt.getText(_columnIndexOfLink)
           }
-          val _tmpAmountLimit: Double?
+          val _tmpAmountLimit: Float?
           if (_stmt.isNull(_columnIndexOfAmountLimit)) {
             _tmpAmountLimit = null
           } else {
-            _tmpAmountLimit = _stmt.getDouble(_columnIndexOfAmountLimit)
+            _tmpAmountLimit = _stmt.getDouble(_columnIndexOfAmountLimit).toFloat()
           }
           val _tmpRequirements: String?
           if (_stmt.isNull(_columnIndexOfRequirements)) {
@@ -252,8 +261,12 @@ public class OfferDao_Impl(
         val _result: MutableList<OfferEntity> = mutableListOf()
         while (_stmt.step()) {
           val _item: OfferEntity
-          val _tmpId: Long
-          _tmpId = _stmt.getLong(_columnIndexOfId)
+          val _tmpId: Long?
+          if (_stmt.isNull(_columnIndexOfId)) {
+            _tmpId = null
+          } else {
+            _tmpId = _stmt.getLong(_columnIndexOfId)
+          }
           val _tmpName: String?
           if (_stmt.isNull(_columnIndexOfName)) {
             _tmpName = null
@@ -302,11 +315,11 @@ public class OfferDao_Impl(
           } else {
             _tmpLink = _stmt.getText(_columnIndexOfLink)
           }
-          val _tmpAmountLimit: Double?
+          val _tmpAmountLimit: Float?
           if (_stmt.isNull(_columnIndexOfAmountLimit)) {
             _tmpAmountLimit = null
           } else {
-            _tmpAmountLimit = _stmt.getDouble(_columnIndexOfAmountLimit)
+            _tmpAmountLimit = _stmt.getDouble(_columnIndexOfAmountLimit).toFloat()
           }
           val _tmpRequirements: String?
           if (_stmt.isNull(_columnIndexOfRequirements)) {

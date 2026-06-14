@@ -2,17 +2,16 @@
   "formatVersion": 1,
   "database": {
     "version": 7,
-    "identityHash": "b53702c28a70ce249398259d5ff3924c",
+    "identityHash": "98974e8ce5981b83c4327760e0e136b7",
     "entities": [
       {
         "tableName": "Loans",
-        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`_id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `creation_date` TEXT, `title` TEXT, `amount` REAL, `rate` REAL, `term` INTEGER, `type` INTEGER, `first_payment_date` TEXT, `date_of_issue` TEXT, `monthly_payment` REAL, `consider_days_off` INTEGER, `pay_on_last_day_of_month` INTEGER, `apply_extras_immediately` INTEGER, `interest_only_after_principal_paid_by_extra` INTEGER, `ignore_passed_periods_after_rate_change` INTEGER, `extra_day_in_month` INTEGER, `is_forecast_active` INTEGER, `forecast_montly_pay` REAL, `forecast_days_before` INTEGER, `forecast_start_date` TEXT, `forecast_extra_type` INTEGER)",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`_id` INTEGER PRIMARY KEY AUTOINCREMENT, `creation_date` TEXT, `title` TEXT, `amount` REAL, `rate` REAL, `term` INTEGER, `type` INTEGER, `first_payment_date` TEXT, `date_of_issue` TEXT, `monthly_payment` REAL, `consider_days_off` INTEGER, `pay_on_last_day_of_month` INTEGER, `apply_extras_immediately` INTEGER DEFAULT 0, `interest_only_after_principal_paid_by_extra` INTEGER DEFAULT 1, `ignore_passed_periods_after_rate_change` INTEGER DEFAULT 0, `extra_day_in_month` INTEGER DEFAULT 0, `is_forecast_active` INTEGER DEFAULT 0, `forecast_montly_pay` REAL, `forecast_days_before` INTEGER, `forecast_start_date` TEXT, `forecast_extra_type` INTEGER)",
         "fields": [
           {
             "fieldPath": "id",
             "columnName": "_id",
-            "affinity": "INTEGER",
-            "notNull": true
+            "affinity": "INTEGER"
           },
           {
             "fieldPath": "creationDate",
@@ -72,27 +71,32 @@
           {
             "fieldPath": "applyExtrasImmediately",
             "columnName": "apply_extras_immediately",
-            "affinity": "INTEGER"
+            "affinity": "INTEGER",
+            "defaultValue": "0"
           },
           {
             "fieldPath": "calculateExtrasByTermLikeSberbank",
             "columnName": "interest_only_after_principal_paid_by_extra",
-            "affinity": "INTEGER"
+            "affinity": "INTEGER",
+            "defaultValue": "1"
           },
           {
             "fieldPath": "ignorePassedPeriodsAfterRateChange",
             "columnName": "ignore_passed_periods_after_rate_change",
-            "affinity": "INTEGER"
+            "affinity": "INTEGER",
+            "defaultValue": "0"
           },
           {
             "fieldPath": "extraDayInMonth",
             "columnName": "extra_day_in_month",
-            "affinity": "INTEGER"
+            "affinity": "INTEGER",
+            "defaultValue": "0"
           },
           {
             "fieldPath": "isForecastActive",
             "columnName": "is_forecast_active",
-            "affinity": "INTEGER"
+            "affinity": "INTEGER",
+            "defaultValue": "0"
           },
           {
             "fieldPath": "forecastMonthlyPay",
@@ -124,13 +128,12 @@
       },
       {
         "tableName": "extras",
-        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`_id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `document_number` TEXT, `type` INTEGER, `date` TEXT, `amount` REAL, `loanId` INTEGER)",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`_id` INTEGER PRIMARY KEY AUTOINCREMENT, `document_number` TEXT, `type` INTEGER, `date` TEXT, `amount` REAL, `loanId` INTEGER)",
         "fields": [
           {
             "fieldPath": "id",
             "columnName": "_id",
-            "affinity": "INTEGER",
-            "notNull": true
+            "affinity": "INTEGER"
           },
           {
             "fieldPath": "documentNumber",
@@ -167,13 +170,12 @@
       },
       {
         "tableName": "Offers",
-        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`_id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `name` TEXT, `org_name` TEXT, `term` INTEGER, `rate_type` TEXT, `rate` TEXT, `logo_color` TEXT, `logo_image` TEXT, `link` TEXT, `amount_limit` REAL, `requirements` TEXT, `extra_payment_rules` TEXT, `docs` TEXT)",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`_id` INTEGER PRIMARY KEY AUTOINCREMENT, `name` TEXT, `org_name` TEXT, `term` INTEGER, `rate_type` TEXT, `rate` TEXT, `logo_color` TEXT, `logo_image` TEXT, `link` TEXT, `amount_limit` REAL, `requirements` TEXT, `extra_payment_rules` TEXT, `docs` TEXT)",
         "fields": [
           {
             "fieldPath": "id",
             "columnName": "_id",
-            "affinity": "INTEGER",
-            "notNull": true
+            "affinity": "INTEGER"
           },
           {
             "fieldPath": "name",
@@ -246,7 +248,7 @@
     ],
     "setupQueries": [
       "CREATE TABLE IF NOT EXISTS room_master_table (id INTEGER PRIMARY KEY,identity_hash TEXT)",
-      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, 'b53702c28a70ce249398259d5ff3924c')"
+      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, '98974e8ce5981b83c4327760e0e136b7')"
     ]
   }
 }

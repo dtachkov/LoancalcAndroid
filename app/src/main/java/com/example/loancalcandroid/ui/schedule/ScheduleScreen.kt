@@ -20,11 +20,15 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.HelpOutline
+import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.KeyboardArrowUp
+import androidx.compose.material.icons.filled.Share
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.PrimaryTabRow
 import androidx.compose.material3.Tab
@@ -36,6 +40,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.rotate
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
@@ -43,6 +48,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import android.widget.Toast
 import com.example.loancalcandroid.R
 import com.example.loancalcandroid.ui.common.LoanCalcScaffold
 import com.example.loancalcandroid.ui.loanViewModel
@@ -60,13 +66,52 @@ import com.example.loancalcandroid.util.Formatters
 fun ScheduleScreen(
     loanId: Long,
     onBack: () -> Unit,
+    onAddExtra: () -> Unit,
+    onHelp: () -> Unit,
+    onPaymentClick: (listIndex: Int, previousPaymentDateMillis: Long) -> Unit,
+    refreshTrigger: Boolean = false,
+    onRefreshHandled: () -> Unit = {},
 ) {
     val viewModel: ScheduleViewModel = loanViewModel(loanId, ::ScheduleViewModel)
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
+    val context = LocalContext.current
+
+    LaunchedEffect(refreshTrigger) {
+        if (refreshTrigger) {
+            viewModel.load()
+            onRefreshHandled()
+        }
+    }
 
     LoanCalcScaffold(
         title = stringResource(R.string.quick_schedule),
         onBack = onBack,
+        actions = {
+            IconButton(onClick = onAddExtra) {
+                Icon(
+                    imageVector = Icons.Default.Add,
+                    contentDescription = stringResource(R.string.add_extra),
+                )
+            }
+            IconButton(
+                onClick = {
+                    viewModel.share { message ->
+                        Toast.makeText(context, message, Toast.LENGTH_LONG).show()
+                    }
+                },
+            ) {
+                Icon(
+                    imageVector = Icons.Default.Share,
+                    contentDescription = stringResource(R.string.menu_share),
+                )
+            }
+            IconButton(onClick = onHelp) {
+                Icon(
+                    imageVector = Icons.AutoMirrored.Filled.HelpOutline,
+                    contentDescription = stringResource(R.string.help_title),
+                )
+            }
+        },
     ) { innerPadding ->
         when {
             uiState.isLoading -> {
@@ -111,12 +156,17 @@ fun ScheduleScreen(
                     when (uiState.selectedTab) {
                         0 -> BriefScheduleTab(
                             rows = uiState.visibleRows,
+                            allRows = uiState.rows,
                             summary = uiState.summary,
                             showPreviousPayments = uiState.showPreviousPayments,
                             hasHiddenRows = uiState.hasHiddenRows,
                             onTogglePrevious = viewModel::toggleShowPreviousPayments,
+                            onPaymentClick = onPaymentClick,
                         )
-                        1 -> DetailedScheduleTab(rows = uiState.rows)
+                        1 -> DetailedScheduleTab(
+                            rows = uiState.rows,
+                            onPaymentClick = onPaymentClick,
+                        )
                     }
                 }
             }
@@ -127,10 +177,12 @@ fun ScheduleScreen(
 @Composable
 private fun BriefScheduleTab(
     rows: List<ScheduleRow>,
+    allRows: List<ScheduleRow>,
     summary: ScheduleSummary?,
     showPreviousPayments: Boolean,
     hasHiddenRows: Boolean,
     onTogglePrevious: () -> Unit,
+    onPaymentClick: (listIndex: Int, previousPaymentDateMillis: Long) -> Unit,
 ) {
     val listState = rememberLazyListState()
     val arrowRotation by animateFloatAsState(
@@ -170,10 +222,11 @@ private fun BriefScheduleTab(
             state = listState,
         ) {
             items(rows, key = { "${it.listIndex}_${it.type}" }) { row ->
+                val previousDateMillis = previousPaymentDateMillis(allRows, row)
                 when (row.type) {
-                    ScheduleRowType.PAYMENT -> BriefPaymentRow(row)
-                    ScheduleRowType.EXTRA -> BriefExtraRow(row, isRateChange = false)
-                    ScheduleRowType.CHANGE_RATE -> BriefExtraRow(row, isRateChange = true)
+                    ScheduleRowType.PAYMENT -> BriefPaymentRow(row, onPaymentClick, previousDateMillis)
+                    ScheduleRowType.EXTRA -> BriefExtraRow(row, isRateChange = false, onPaymentClick, previousDateMillis)
+                    ScheduleRowType.CHANGE_RATE -> BriefExtraRow(row, isRateChange = true, onPaymentClick, previousDateMillis)
                 }
             }
         }
@@ -189,7 +242,10 @@ private fun BriefScheduleTab(
 }
 
 @Composable
-private fun DetailedScheduleTab(rows: List<ScheduleRow>) {
+private fun DetailedScheduleTab(
+    rows: List<ScheduleRow>,
+    onPaymentClick: (listIndex: Int, previousPaymentDateMillis: Long) -> Unit,
+) {
     val listState = rememberLazyListState()
     val currentIndex = rows.indexOfFirst { it.isCurrent }.coerceAtLeast(0)
 
@@ -200,9 +256,15 @@ private fun DetailedScheduleTab(rows: List<ScheduleRow>) {
             state = listState,
         ) {
             items(rows, key = { "${it.listIndex}_${it.type}" }) { row ->
+                val previousDateMillis = previousPaymentDateMillis(rows, row)
                 when (row.type) {
-                    ScheduleRowType.CHANGE_RATE -> DetailedRateChangeRow(row)
-                    else -> DetailedPaymentRow(row, isExtra = row.type == ScheduleRowType.EXTRA)
+                    ScheduleRowType.CHANGE_RATE -> DetailedRateChangeRow(row, onPaymentClick, previousDateMillis)
+                    else -> DetailedPaymentRow(
+                        row,
+                        isExtra = row.type == ScheduleRowType.EXTRA,
+                        onPaymentClick = onPaymentClick,
+                        previousPaymentDateMillis = previousDateMillis,
+                    )
                 }
             }
         }
@@ -251,11 +313,16 @@ private fun DetailedHeaderRow() {
 }
 
 @Composable
-private fun BriefPaymentRow(row: ScheduleRow) {
+private fun BriefPaymentRow(
+    row: ScheduleRow,
+    onPaymentClick: (listIndex: Int, previousPaymentDateMillis: Long) -> Unit,
+    previousPaymentDateMillis: Long,
+) {
     Row(
         modifier = Modifier
             .fillMaxWidth()
             .background(rowBackground(row, isExtra = false))
+            .clickable { onPaymentClick(row.listIndex, previousPaymentDateMillis) }
             .padding(vertical = 8.dp),
         verticalAlignment = Alignment.CenterVertically,
     ) {
@@ -287,7 +354,12 @@ private fun BriefPaymentRow(row: ScheduleRow) {
 }
 
 @Composable
-private fun BriefExtraRow(row: ScheduleRow, isRateChange: Boolean) {
+private fun BriefExtraRow(
+    row: ScheduleRow,
+    isRateChange: Boolean,
+    onPaymentClick: (listIndex: Int, previousPaymentDateMillis: Long) -> Unit,
+    previousPaymentDateMillis: Long,
+) {
     val amountText = if (isRateChange) {
         Formatters.schedulePercent(row.rateExtra)
     } else {
@@ -303,6 +375,7 @@ private fun BriefExtraRow(row: ScheduleRow, isRateChange: Boolean) {
         modifier = Modifier
             .fillMaxWidth()
             .background(rowBackground(row, isExtra = true))
+            .clickable { onPaymentClick(row.listIndex, previousPaymentDateMillis) }
             .padding(vertical = 8.dp),
         verticalAlignment = Alignment.CenterVertically,
     ) {
@@ -323,11 +396,17 @@ private fun BriefExtraRow(row: ScheduleRow, isRateChange: Boolean) {
 }
 
 @Composable
-private fun DetailedPaymentRow(row: ScheduleRow, isExtra: Boolean) {
+private fun DetailedPaymentRow(
+    row: ScheduleRow,
+    isExtra: Boolean,
+    onPaymentClick: (listIndex: Int, previousPaymentDateMillis: Long) -> Unit,
+    previousPaymentDateMillis: Long,
+) {
     Column(
         modifier = Modifier
             .fillMaxWidth()
-            .background(rowBackground(row, isExtra = isExtra)),
+            .background(rowBackground(row, isExtra = isExtra))
+            .clickable { onPaymentClick(row.listIndex, previousPaymentDateMillis) },
     ) {
         if (row.isNewYear) {
             Text(
@@ -378,11 +457,16 @@ private fun DetailedPaymentRow(row: ScheduleRow, isExtra: Boolean) {
 }
 
 @Composable
-private fun DetailedRateChangeRow(row: ScheduleRow) {
+private fun DetailedRateChangeRow(
+    row: ScheduleRow,
+    onPaymentClick: (listIndex: Int, previousPaymentDateMillis: Long) -> Unit,
+    previousPaymentDateMillis: Long,
+) {
     Column(
         modifier = Modifier
             .fillMaxWidth()
-            .background(ScheduleRowExtra),
+            .background(ScheduleRowExtra)
+            .clickable { onPaymentClick(row.listIndex, previousPaymentDateMillis) },
     ) {
         if (row.isNewYear) {
             Text(
@@ -539,4 +623,10 @@ private fun rowBackground(row: ScheduleRow, isExtra: Boolean): Color {
         row.isOdd -> ScheduleRowOdd
         else -> LoanCardSurface
     }
+}
+
+private fun previousPaymentDateMillis(rows: List<ScheduleRow>, row: ScheduleRow): Long {
+    val index = rows.indexOfFirst { it.listIndex == row.listIndex }
+    if (index <= 0) return 0L
+    return rows[index - 1].date.time
 }

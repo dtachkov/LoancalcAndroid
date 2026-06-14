@@ -9,7 +9,7 @@ import ru.kredit.calculator.database.DatabaseContract
 data class ExtraEntity(
     @PrimaryKey(autoGenerate = true)
     @ColumnInfo(name = DatabaseContract.ExtraColumns.ID)
-    val id: Long = 0,
+    val id: Long? = null,
     @ColumnInfo(name = DatabaseContract.ExtraColumns.DOCUMENT_NUMBER)
     val documentNumber: String? = null,
     @ColumnInfo(name = DatabaseContract.ExtraColumns.TYPE)
@@ -17,7 +17,7 @@ data class ExtraEntity(
     @ColumnInfo(name = DatabaseContract.ExtraColumns.DATE)
     val date: String? = null,
     @ColumnInfo(name = DatabaseContract.ExtraColumns.AMOUNT)
-    val amount: Double? = null,
+    val amount: Float? = null,
     @ColumnInfo(name = DatabaseContract.ExtraColumns.LOAN_ID)
     val loanId: Long? = null,
 )

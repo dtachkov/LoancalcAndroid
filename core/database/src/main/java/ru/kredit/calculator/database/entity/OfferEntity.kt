@@ -9,7 +9,7 @@ import ru.kredit.calculator.database.DatabaseContract
 data class OfferEntity(
     @PrimaryKey(autoGenerate = true)
     @ColumnInfo(name = DatabaseContract.OfferColumns.ID)
-    val id: Long = 0,
+    val id: Long? = null,
     @ColumnInfo(name = DatabaseContract.OfferColumns.NAME)
     val name: String? = null,
     @ColumnInfo(name = DatabaseContract.OfferColumns.ORG_NAME)
@@ -27,7 +27,7 @@ data class OfferEntity(
     @ColumnInfo(name = DatabaseContract.OfferColumns.LINK)
     val link: String? = null,
     @ColumnInfo(name = DatabaseContract.OfferColumns.LIMIT)
-    val amountLimit: Double? = null,
+    val amountLimit: Float? = null,
     @ColumnInfo(name = DatabaseContract.OfferColumns.REQUIREMENTS)
     val requirements: String? = null,
     @ColumnInfo(name = DatabaseContract.OfferColumns.EXTRA_PAYMENT_RULES)

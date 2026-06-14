@@ -1,16 +1,16 @@
 -- Merging decision tree log ---
 manifest
-ADDED from /Users/dtachkov/Project/LoancalcAndroid/core/database/build/intermediates/tmp/ProcessLibraryManifest/debug/tempAndroidManifest7347822994844219798.xml:2:13-83
-INJECTED from /Users/dtachkov/Project/LoancalcAndroid/core/database/build/intermediates/tmp/ProcessLibraryManifest/debug/tempAndroidManifest7347822994844219798.xml:2:13-83
+ADDED from /Users/dtachkov/Project/LoancalcAndroid/core/database/build/intermediates/tmp/ProcessLibraryManifest/debug/tempAndroidManifest9010902998296056368.xml:2:13-83
+INJECTED from /Users/dtachkov/Project/LoancalcAndroid/core/database/build/intermediates/tmp/ProcessLibraryManifest/debug/tempAndroidManifest9010902998296056368.xml:2:13-83
 	package
-		INJECTED from /Users/dtachkov/Project/LoancalcAndroid/core/database/build/intermediates/tmp/ProcessLibraryManifest/debug/tempAndroidManifest7347822994844219798.xml
+		INJECTED from /Users/dtachkov/Project/LoancalcAndroid/core/database/build/intermediates/tmp/ProcessLibraryManifest/debug/tempAndroidManifest9010902998296056368.xml
 	xmlns:android
-		ADDED from /Users/dtachkov/Project/LoancalcAndroid/core/database/build/intermediates/tmp/ProcessLibraryManifest/debug/tempAndroidManifest7347822994844219798.xml:2:23-81
+		ADDED from /Users/dtachkov/Project/LoancalcAndroid/core/database/build/intermediates/tmp/ProcessLibraryManifest/debug/tempAndroidManifest9010902998296056368.xml:2:23-81
 uses-sdk
-INJECTED from /Users/dtachkov/Project/LoancalcAndroid/core/database/build/intermediates/tmp/ProcessLibraryManifest/debug/tempAndroidManifest7347822994844219798.xml reason: use-sdk injection requested
-INJECTED from /Users/dtachkov/Project/LoancalcAndroid/core/database/build/intermediates/tmp/ProcessLibraryManifest/debug/tempAndroidManifest7347822994844219798.xml
-INJECTED from /Users/dtachkov/Project/LoancalcAndroid/core/database/build/intermediates/tmp/ProcessLibraryManifest/debug/tempAndroidManifest7347822994844219798.xml
+INJECTED from /Users/dtachkov/Project/LoancalcAndroid/core/database/build/intermediates/tmp/ProcessLibraryManifest/debug/tempAndroidManifest9010902998296056368.xml reason: use-sdk injection requested
+INJECTED from /Users/dtachkov/Project/LoancalcAndroid/core/database/build/intermediates/tmp/ProcessLibraryManifest/debug/tempAndroidManifest9010902998296056368.xml
+INJECTED from /Users/dtachkov/Project/LoancalcAndroid/core/database/build/intermediates/tmp/ProcessLibraryManifest/debug/tempAndroidManifest9010902998296056368.xml
 	android:targetSdkVersion
-		INJECTED from /Users/dtachkov/Project/LoancalcAndroid/core/database/build/intermediates/tmp/ProcessLibraryManifest/debug/tempAndroidManifest7347822994844219798.xml
+		INJECTED from /Users/dtachkov/Project/LoancalcAndroid/core/database/build/intermediates/tmp/ProcessLibraryManifest/debug/tempAndroidManifest9010902998296056368.xml
 	android:minSdkVersion
-		INJECTED from /Users/dtachkov/Project/LoancalcAndroid/core/database/build/intermediates/tmp/ProcessLibraryManifest/debug/tempAndroidManifest7347822994844219798.xml
+		INJECTED from /Users/dtachkov/Project/LoancalcAndroid/core/database/build/intermediates/tmp/ProcessLibraryManifest/debug/tempAndroidManifest9010902998296056368.xml

@@ -47,13 +47,13 @@ public class LoancalcDatabase_Impl : LoancalcDatabase() {
 
   protected override fun createOpenDelegate(): RoomOpenDelegate {
     val _openDelegate: RoomOpenDelegate = object : RoomOpenDelegate(7,
-        "b53702c28a70ce249398259d5ff3924c", "28c4d873400b61bff0ada8105c780018") {
+        "98974e8ce5981b83c4327760e0e136b7", "df97aac265103bce3f4ea06fb7f3cc9f") {
       public override fun createAllTables(connection: SQLiteConnection) {
-        connection.execSQL("CREATE TABLE IF NOT EXISTS `Loans` (`_id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `creation_date` TEXT, `title` TEXT, `amount` REAL, `rate` REAL, `term` INTEGER, `type` INTEGER, `first_payment_date` TEXT, `date_of_issue` TEXT, `monthly_payment` REAL, `consider_days_off` INTEGER, `pay_on_last_day_of_month` INTEGER, `apply_extras_immediately` INTEGER, `interest_only_after_principal_paid_by_extra` INTEGER, `ignore_passed_periods_after_rate_change` INTEGER, `extra_day_in_month` INTEGER, `is_forecast_active` INTEGER, `forecast_montly_pay` REAL, `forecast_days_before` INTEGER, `forecast_start_date` TEXT, `forecast_extra_type` INTEGER)")
-        connection.execSQL("CREATE TABLE IF NOT EXISTS `extras` (`_id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `document_number` TEXT, `type` INTEGER, `date` TEXT, `amount` REAL, `loanId` INTEGER)")
-        connection.execSQL("CREATE TABLE IF NOT EXISTS `Offers` (`_id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `name` TEXT, `org_name` TEXT, `term` INTEGER, `rate_type` TEXT, `rate` TEXT, `logo_color` TEXT, `logo_image` TEXT, `link` TEXT, `amount_limit` REAL, `requirements` TEXT, `extra_payment_rules` TEXT, `docs` TEXT)")
+        connection.execSQL("CREATE TABLE IF NOT EXISTS `Loans` (`_id` INTEGER PRIMARY KEY AUTOINCREMENT, `creation_date` TEXT, `title` TEXT, `amount` REAL, `rate` REAL, `term` INTEGER, `type` INTEGER, `first_payment_date` TEXT, `date_of_issue` TEXT, `monthly_payment` REAL, `consider_days_off` INTEGER, `pay_on_last_day_of_month` INTEGER, `apply_extras_immediately` INTEGER DEFAULT 0, `interest_only_after_principal_paid_by_extra` INTEGER DEFAULT 1, `ignore_passed_periods_after_rate_change` INTEGER DEFAULT 0, `extra_day_in_month` INTEGER DEFAULT 0, `is_forecast_active` INTEGER DEFAULT 0, `forecast_montly_pay` REAL, `forecast_days_before` INTEGER, `forecast_start_date` TEXT, `forecast_extra_type` INTEGER)")
+        connection.execSQL("CREATE TABLE IF NOT EXISTS `extras` (`_id` INTEGER PRIMARY KEY AUTOINCREMENT, `document_number` TEXT, `type` INTEGER, `date` TEXT, `amount` REAL, `loanId` INTEGER)")
+        connection.execSQL("CREATE TABLE IF NOT EXISTS `Offers` (`_id` INTEGER PRIMARY KEY AUTOINCREMENT, `name` TEXT, `org_name` TEXT, `term` INTEGER, `rate_type` TEXT, `rate` TEXT, `logo_color` TEXT, `logo_image` TEXT, `link` TEXT, `amount_limit` REAL, `requirements` TEXT, `extra_payment_rules` TEXT, `docs` TEXT)")
         connection.execSQL("CREATE TABLE IF NOT EXISTS room_master_table (id INTEGER PRIMARY KEY,identity_hash TEXT)")
-        connection.execSQL("INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, 'b53702c28a70ce249398259d5ff3924c')")
+        connection.execSQL("INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, '98974e8ce5981b83c4327760e0e136b7')")
       }
 
       public override fun dropAllTables(connection: SQLiteConnection) {
@@ -79,7 +79,7 @@ public class LoancalcDatabase_Impl : LoancalcDatabase() {
       public override fun onValidateSchema(connection: SQLiteConnection):
           RoomOpenDelegate.ValidationResult {
         val _columnsLoans: MutableMap<String, TableInfo.Column> = mutableMapOf()
-        _columnsLoans.put("_id", TableInfo.Column("_id", "INTEGER", true, 1, null,
+        _columnsLoans.put("_id", TableInfo.Column("_id", "INTEGER", false, 1, null,
             TableInfo.CREATED_FROM_ENTITY))
         _columnsLoans.put("creation_date", TableInfo.Column("creation_date", "TEXT", false, 0, null,
             TableInfo.CREATED_FROM_ENTITY))
@@ -104,17 +104,17 @@ public class LoancalcDatabase_Impl : LoancalcDatabase() {
         _columnsLoans.put("pay_on_last_day_of_month", TableInfo.Column("pay_on_last_day_of_month",
             "INTEGER", false, 0, null, TableInfo.CREATED_FROM_ENTITY))
         _columnsLoans.put("apply_extras_immediately", TableInfo.Column("apply_extras_immediately",
-            "INTEGER", false, 0, null, TableInfo.CREATED_FROM_ENTITY))
+            "INTEGER", false, 0, "0", TableInfo.CREATED_FROM_ENTITY))
         _columnsLoans.put("interest_only_after_principal_paid_by_extra",
             TableInfo.Column("interest_only_after_principal_paid_by_extra", "INTEGER", false, 0,
-            null, TableInfo.CREATED_FROM_ENTITY))
+            "1", TableInfo.CREATED_FROM_ENTITY))
         _columnsLoans.put("ignore_passed_periods_after_rate_change",
-            TableInfo.Column("ignore_passed_periods_after_rate_change", "INTEGER", false, 0, null,
+            TableInfo.Column("ignore_passed_periods_after_rate_change", "INTEGER", false, 0, "0",
             TableInfo.CREATED_FROM_ENTITY))
         _columnsLoans.put("extra_day_in_month", TableInfo.Column("extra_day_in_month", "INTEGER",
-            false, 0, null, TableInfo.CREATED_FROM_ENTITY))
+            false, 0, "0", TableInfo.CREATED_FROM_ENTITY))
         _columnsLoans.put("is_forecast_active", TableInfo.Column("is_forecast_active", "INTEGER",
-            false, 0, null, TableInfo.CREATED_FROM_ENTITY))
+            false, 0, "0", TableInfo.CREATED_FROM_ENTITY))
         _columnsLoans.put("forecast_montly_pay", TableInfo.Column("forecast_montly_pay", "REAL",
             false, 0, null, TableInfo.CREATED_FROM_ENTITY))
         _columnsLoans.put("forecast_days_before", TableInfo.Column("forecast_days_before",
@@ -138,7 +138,7 @@ public class LoancalcDatabase_Impl : LoancalcDatabase() {
               |""".trimMargin() + _existingLoans)
         }
         val _columnsExtras: MutableMap<String, TableInfo.Column> = mutableMapOf()
-        _columnsExtras.put("_id", TableInfo.Column("_id", "INTEGER", true, 1, null,
+        _columnsExtras.put("_id", TableInfo.Column("_id", "INTEGER", false, 1, null,
             TableInfo.CREATED_FROM_ENTITY))
         _columnsExtras.put("document_number", TableInfo.Column("document_number", "TEXT", false, 0,
             null, TableInfo.CREATED_FROM_ENTITY))
@@ -165,7 +165,7 @@ public class LoancalcDatabase_Impl : LoancalcDatabase() {
               |""".trimMargin() + _existingExtras)
         }
         val _columnsOffers: MutableMap<String, TableInfo.Column> = mutableMapOf()
-        _columnsOffers.put("_id", TableInfo.Column("_id", "INTEGER", true, 1, null,
+        _columnsOffers.put("_id", TableInfo.Column("_id", "INTEGER", false, 1, null,
             TableInfo.CREATED_FROM_ENTITY))
         _columnsOffers.put("name", TableInfo.Column("name", "TEXT", false, 0, null,
             TableInfo.CREATED_FROM_ENTITY))

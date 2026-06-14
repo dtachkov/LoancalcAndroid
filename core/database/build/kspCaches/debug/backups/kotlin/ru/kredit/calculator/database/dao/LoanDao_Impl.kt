@@ -9,7 +9,7 @@ import androidx.room.util.getColumnIndexOrThrow
 import androidx.room.util.performSuspending
 import androidx.sqlite.SQLiteStatement
 import javax.`annotation`.processing.Generated
-import kotlin.Double
+import kotlin.Float
 import kotlin.Int
 import kotlin.Long
 import kotlin.String
@@ -37,10 +37,15 @@ public class LoanDao_Impl(
     this.__db = __db
     this.__insertAdapterOfLoanEntity = object : EntityInsertAdapter<LoanEntity>() {
       protected override fun createQuery(): String =
-          "INSERT OR ABORT INTO `Loans` (`_id`,`creation_date`,`title`,`amount`,`rate`,`term`,`type`,`first_payment_date`,`date_of_issue`,`monthly_payment`,`consider_days_off`,`pay_on_last_day_of_month`,`apply_extras_immediately`,`interest_only_after_principal_paid_by_extra`,`ignore_passed_periods_after_rate_change`,`extra_day_in_month`,`is_forecast_active`,`forecast_montly_pay`,`forecast_days_before`,`forecast_start_date`,`forecast_extra_type`) VALUES (nullif(?, 0),?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)"
+          "INSERT OR ABORT INTO `Loans` (`_id`,`creation_date`,`title`,`amount`,`rate`,`term`,`type`,`first_payment_date`,`date_of_issue`,`monthly_payment`,`consider_days_off`,`pay_on_last_day_of_month`,`apply_extras_immediately`,`interest_only_after_principal_paid_by_extra`,`ignore_passed_periods_after_rate_change`,`extra_day_in_month`,`is_forecast_active`,`forecast_montly_pay`,`forecast_days_before`,`forecast_start_date`,`forecast_extra_type`) VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)"
 
       protected override fun bind(statement: SQLiteStatement, entity: LoanEntity) {
-        statement.bindLong(1, entity.id)
+        val _tmpId: Long? = entity.id
+        if (_tmpId == null) {
+          statement.bindNull(1)
+        } else {
+          statement.bindLong(1, _tmpId)
+        }
         val _tmpCreationDate: String? = entity.creationDate
         if (_tmpCreationDate == null) {
           statement.bindNull(2)
@@ -53,17 +58,17 @@ public class LoanDao_Impl(
         } else {
           statement.bindText(3, _tmpTitle)
         }
-        val _tmpAmount: Double? = entity.amount
+        val _tmpAmount: Float? = entity.amount
         if (_tmpAmount == null) {
           statement.bindNull(4)
         } else {
-          statement.bindDouble(4, _tmpAmount)
+          statement.bindDouble(4, _tmpAmount.toDouble())
         }
-        val _tmpRate: Double? = entity.rate
+        val _tmpRate: Float? = entity.rate
         if (_tmpRate == null) {
           statement.bindNull(5)
         } else {
-          statement.bindDouble(5, _tmpRate)
+          statement.bindDouble(5, _tmpRate.toDouble())
         }
         val _tmpTerm: Int? = entity.term
         if (_tmpTerm == null) {
@@ -89,11 +94,11 @@ public class LoanDao_Impl(
         } else {
           statement.bindText(9, _tmpDateOfIssue)
         }
-        val _tmpMonthlyPayment: Double? = entity.monthlyPayment
+        val _tmpMonthlyPayment: Float? = entity.monthlyPayment
         if (_tmpMonthlyPayment == null) {
           statement.bindNull(10)
         } else {
-          statement.bindDouble(10, _tmpMonthlyPayment)
+          statement.bindDouble(10, _tmpMonthlyPayment.toDouble())
         }
         val _tmpConsiderDaysOff: Int? = entity.considerDaysOff
         if (_tmpConsiderDaysOff == null) {
@@ -137,11 +142,11 @@ public class LoanDao_Impl(
         } else {
           statement.bindLong(17, _tmpIsForecastActive.toLong())
         }
-        val _tmpForecastMonthlyPay: Double? = entity.forecastMonthlyPay
+        val _tmpForecastMonthlyPay: Float? = entity.forecastMonthlyPay
         if (_tmpForecastMonthlyPay == null) {
           statement.bindNull(18)
         } else {
-          statement.bindDouble(18, _tmpForecastMonthlyPay)
+          statement.bindDouble(18, _tmpForecastMonthlyPay.toDouble())
         }
         val _tmpForecastDaysBefore: Int? = entity.forecastDaysBefore
         if (_tmpForecastDaysBefore == null) {
@@ -168,7 +173,12 @@ public class LoanDao_Impl(
           "UPDATE OR ABORT `Loans` SET `_id` = ?,`creation_date` = ?,`title` = ?,`amount` = ?,`rate` = ?,`term` = ?,`type` = ?,`first_payment_date` = ?,`date_of_issue` = ?,`monthly_payment` = ?,`consider_days_off` = ?,`pay_on_last_day_of_month` = ?,`apply_extras_immediately` = ?,`interest_only_after_principal_paid_by_extra` = ?,`ignore_passed_periods_after_rate_change` = ?,`extra_day_in_month` = ?,`is_forecast_active` = ?,`forecast_montly_pay` = ?,`forecast_days_before` = ?,`forecast_start_date` = ?,`forecast_extra_type` = ? WHERE `_id` = ?"
 
       protected override fun bind(statement: SQLiteStatement, entity: LoanEntity) {
-        statement.bindLong(1, entity.id)
+        val _tmpId: Long? = entity.id
+        if (_tmpId == null) {
+          statement.bindNull(1)
+        } else {
+          statement.bindLong(1, _tmpId)
+        }
         val _tmpCreationDate: String? = entity.creationDate
         if (_tmpCreationDate == null) {
           statement.bindNull(2)
@@ -181,17 +191,17 @@ public class LoanDao_Impl(
         } else {
           statement.bindText(3, _tmpTitle)
         }
-        val _tmpAmount: Double? = entity.amount
+        val _tmpAmount: Float? = entity.amount
         if (_tmpAmount == null) {
           statement.bindNull(4)
         } else {
-          statement.bindDouble(4, _tmpAmount)
+          statement.bindDouble(4, _tmpAmount.toDouble())
         }
-        val _tmpRate: Double? = entity.rate
+        val _tmpRate: Float? = entity.rate
         if (_tmpRate == null) {
           statement.bindNull(5)
         } else {
-          statement.bindDouble(5, _tmpRate)
+          statement.bindDouble(5, _tmpRate.toDouble())
         }
         val _tmpTerm: Int? = entity.term
         if (_tmpTerm == null) {
@@ -217,11 +227,11 @@ public class LoanDao_Impl(
         } else {
           statement.bindText(9, _tmpDateOfIssue)
         }
-        val _tmpMonthlyPayment: Double? = entity.monthlyPayment
+        val _tmpMonthlyPayment: Float? = entity.monthlyPayment
         if (_tmpMonthlyPayment == null) {
           statement.bindNull(10)
         } else {
-          statement.bindDouble(10, _tmpMonthlyPayment)
+          statement.bindDouble(10, _tmpMonthlyPayment.toDouble())
         }
         val _tmpConsiderDaysOff: Int? = entity.considerDaysOff
         if (_tmpConsiderDaysOff == null) {
@@ -265,11 +275,11 @@ public class LoanDao_Impl(
         } else {
           statement.bindLong(17, _tmpIsForecastActive.toLong())
         }
-        val _tmpForecastMonthlyPay: Double? = entity.forecastMonthlyPay
+        val _tmpForecastMonthlyPay: Float? = entity.forecastMonthlyPay
         if (_tmpForecastMonthlyPay == null) {
           statement.bindNull(18)
         } else {
-          statement.bindDouble(18, _tmpForecastMonthlyPay)
+          statement.bindDouble(18, _tmpForecastMonthlyPay.toDouble())
         }
         val _tmpForecastDaysBefore: Int? = entity.forecastDaysBefore
         if (_tmpForecastDaysBefore == null) {
@@ -289,7 +299,12 @@ public class LoanDao_Impl(
         } else {
           statement.bindLong(21, _tmpForecastExtraType.toLong())
         }
-        statement.bindLong(22, entity.id)
+        val _tmpId_1: Long? = entity.id
+        if (_tmpId_1 == null) {
+          statement.bindNull(22)
+        } else {
+          statement.bindLong(22, _tmpId_1)
+        }
       }
     }
   }
@@ -342,8 +357,12 @@ public class LoanDao_Impl(
         val _result: MutableList<LoanEntity> = mutableListOf()
         while (_stmt.step()) {
           val _item: LoanEntity
-          val _tmpId: Long
-          _tmpId = _stmt.getLong(_columnIndexOfId)
+          val _tmpId: Long?
+          if (_stmt.isNull(_columnIndexOfId)) {
+            _tmpId = null
+          } else {
+            _tmpId = _stmt.getLong(_columnIndexOfId)
+          }
           val _tmpCreationDate: String?
           if (_stmt.isNull(_columnIndexOfCreationDate)) {
             _tmpCreationDate = null
@@ -356,17 +375,17 @@ public class LoanDao_Impl(
           } else {
             _tmpTitle = _stmt.getText(_columnIndexOfTitle)
           }
-          val _tmpAmount: Double?
+          val _tmpAmount: Float?
           if (_stmt.isNull(_columnIndexOfAmount)) {
             _tmpAmount = null
           } else {
-            _tmpAmount = _stmt.getDouble(_columnIndexOfAmount)
+            _tmpAmount = _stmt.getDouble(_columnIndexOfAmount).toFloat()
           }
-          val _tmpRate: Double?
+          val _tmpRate: Float?
           if (_stmt.isNull(_columnIndexOfRate)) {
             _tmpRate = null
           } else {
-            _tmpRate = _stmt.getDouble(_columnIndexOfRate)
+            _tmpRate = _stmt.getDouble(_columnIndexOfRate).toFloat()
           }
           val _tmpTerm: Int?
           if (_stmt.isNull(_columnIndexOfTerm)) {
@@ -392,11 +411,11 @@ public class LoanDao_Impl(
           } else {
             _tmpDateOfIssue = _stmt.getText(_columnIndexOfDateOfIssue)
           }
-          val _tmpMonthlyPayment: Double?
+          val _tmpMonthlyPayment: Float?
           if (_stmt.isNull(_columnIndexOfMonthlyPayment)) {
             _tmpMonthlyPayment = null
           } else {
-            _tmpMonthlyPayment = _stmt.getDouble(_columnIndexOfMonthlyPayment)
+            _tmpMonthlyPayment = _stmt.getDouble(_columnIndexOfMonthlyPayment).toFloat()
           }
           val _tmpConsiderDaysOff: Int?
           if (_stmt.isNull(_columnIndexOfConsiderDaysOff)) {
@@ -442,11 +461,11 @@ public class LoanDao_Impl(
           } else {
             _tmpIsForecastActive = _stmt.getLong(_columnIndexOfIsForecastActive).toInt()
           }
-          val _tmpForecastMonthlyPay: Double?
+          val _tmpForecastMonthlyPay: Float?
           if (_stmt.isNull(_columnIndexOfForecastMonthlyPay)) {
             _tmpForecastMonthlyPay = null
           } else {
-            _tmpForecastMonthlyPay = _stmt.getDouble(_columnIndexOfForecastMonthlyPay)
+            _tmpForecastMonthlyPay = _stmt.getDouble(_columnIndexOfForecastMonthlyPay).toFloat()
           }
           val _tmpForecastDaysBefore: Int?
           if (_stmt.isNull(_columnIndexOfForecastDaysBefore)) {
@@ -514,8 +533,12 @@ public class LoanDao_Impl(
         val _result: MutableList<LoanEntity> = mutableListOf()
         while (_stmt.step()) {
           val _item: LoanEntity
-          val _tmpId: Long
-          _tmpId = _stmt.getLong(_columnIndexOfId)
+          val _tmpId: Long?
+          if (_stmt.isNull(_columnIndexOfId)) {
+            _tmpId = null
+          } else {
+            _tmpId = _stmt.getLong(_columnIndexOfId)
+          }
           val _tmpCreationDate: String?
           if (_stmt.isNull(_columnIndexOfCreationDate)) {
             _tmpCreationDate = null
@@ -528,17 +551,17 @@ public class LoanDao_Impl(
           } else {
             _tmpTitle = _stmt.getText(_columnIndexOfTitle)
           }
-          val _tmpAmount: Double?
+          val _tmpAmount: Float?
           if (_stmt.isNull(_columnIndexOfAmount)) {
             _tmpAmount = null
           } else {
-            _tmpAmount = _stmt.getDouble(_columnIndexOfAmount)
+            _tmpAmount = _stmt.getDouble(_columnIndexOfAmount).toFloat()
           }
-          val _tmpRate: Double?
+          val _tmpRate: Float?
           if (_stmt.isNull(_columnIndexOfRate)) {
             _tmpRate = null
           } else {
-            _tmpRate = _stmt.getDouble(_columnIndexOfRate)
+            _tmpRate = _stmt.getDouble(_columnIndexOfRate).toFloat()
           }
           val _tmpTerm: Int?
           if (_stmt.isNull(_columnIndexOfTerm)) {
@@ -564,11 +587,11 @@ public class LoanDao_Impl(
           } else {
             _tmpDateOfIssue = _stmt.getText(_columnIndexOfDateOfIssue)
           }
-          val _tmpMonthlyPayment: Double?
+          val _tmpMonthlyPayment: Float?
           if (_stmt.isNull(_columnIndexOfMonthlyPayment)) {
             _tmpMonthlyPayment = null
           } else {
-            _tmpMonthlyPayment = _stmt.getDouble(_columnIndexOfMonthlyPayment)
+            _tmpMonthlyPayment = _stmt.getDouble(_columnIndexOfMonthlyPayment).toFloat()
           }
           val _tmpConsiderDaysOff: Int?
           if (_stmt.isNull(_columnIndexOfConsiderDaysOff)) {
@@ -614,11 +637,11 @@ public class LoanDao_Impl(
           } else {
             _tmpIsForecastActive = _stmt.getLong(_columnIndexOfIsForecastActive).toInt()
           }
-          val _tmpForecastMonthlyPay: Double?
+          val _tmpForecastMonthlyPay: Float?
           if (_stmt.isNull(_columnIndexOfForecastMonthlyPay)) {
             _tmpForecastMonthlyPay = null
           } else {
-            _tmpForecastMonthlyPay = _stmt.getDouble(_columnIndexOfForecastMonthlyPay)
+            _tmpForecastMonthlyPay = _stmt.getDouble(_columnIndexOfForecastMonthlyPay).toFloat()
           }
           val _tmpForecastDaysBefore: Int?
           if (_stmt.isNull(_columnIndexOfForecastDaysBefore)) {
@@ -687,8 +710,12 @@ public class LoanDao_Impl(
             "forecast_extra_type")
         val _result: LoanEntity?
         if (_stmt.step()) {
-          val _tmpId: Long
-          _tmpId = _stmt.getLong(_columnIndexOfId)
+          val _tmpId: Long?
+          if (_stmt.isNull(_columnIndexOfId)) {
+            _tmpId = null
+          } else {
+            _tmpId = _stmt.getLong(_columnIndexOfId)
+          }
           val _tmpCreationDate: String?
           if (_stmt.isNull(_columnIndexOfCreationDate)) {
             _tmpCreationDate = null
@@ -701,17 +728,17 @@ public class LoanDao_Impl(
           } else {
             _tmpTitle = _stmt.getText(_columnIndexOfTitle)
           }
-          val _tmpAmount: Double?
+          val _tmpAmount: Float?
           if (_stmt.isNull(_columnIndexOfAmount)) {
             _tmpAmount = null
           } else {
-            _tmpAmount = _stmt.getDouble(_columnIndexOfAmount)
+            _tmpAmount = _stmt.getDouble(_columnIndexOfAmount).toFloat()
           }
-          val _tmpRate: Double?
+          val _tmpRate: Float?
           if (_stmt.isNull(_columnIndexOfRate)) {
             _tmpRate = null
           } else {
-            _tmpRate = _stmt.getDouble(_columnIndexOfRate)
+            _tmpRate = _stmt.getDouble(_columnIndexOfRate).toFloat()
           }
           val _tmpTerm: Int?
           if (_stmt.isNull(_columnIndexOfTerm)) {
@@ -737,11 +764,11 @@ public class LoanDao_Impl(
           } else {
             _tmpDateOfIssue = _stmt.getText(_columnIndexOfDateOfIssue)
           }
-          val _tmpMonthlyPayment: Double?
+          val _tmpMonthlyPayment: Float?
           if (_stmt.isNull(_columnIndexOfMonthlyPayment)) {
             _tmpMonthlyPayment = null
           } else {
-            _tmpMonthlyPayment = _stmt.getDouble(_columnIndexOfMonthlyPayment)
+            _tmpMonthlyPayment = _stmt.getDouble(_columnIndexOfMonthlyPayment).toFloat()
           }
           val _tmpConsiderDaysOff: Int?
           if (_stmt.isNull(_columnIndexOfConsiderDaysOff)) {
@@ -787,11 +814,11 @@ public class LoanDao_Impl(
           } else {
             _tmpIsForecastActive = _stmt.getLong(_columnIndexOfIsForecastActive).toInt()
           }
-          val _tmpForecastMonthlyPay: Double?
+          val _tmpForecastMonthlyPay: Float?
           if (_stmt.isNull(_columnIndexOfForecastMonthlyPay)) {
             _tmpForecastMonthlyPay = null
           } else {
-            _tmpForecastMonthlyPay = _stmt.getDouble(_columnIndexOfForecastMonthlyPay)
+            _tmpForecastMonthlyPay = _stmt.getDouble(_columnIndexOfForecastMonthlyPay).toFloat()
           }
           val _tmpForecastDaysBefore: Int?
           if (_stmt.isNull(_columnIndexOfForecastDaysBefore)) {
@@ -870,8 +897,12 @@ public class LoanDao_Impl(
         val _result: MutableList<LoanEntity> = mutableListOf()
         while (_stmt.step()) {
           val _item_1: LoanEntity
-          val _tmpId: Long
-          _tmpId = _stmt.getLong(_columnIndexOfId)
+          val _tmpId: Long?
+          if (_stmt.isNull(_columnIndexOfId)) {
+            _tmpId = null
+          } else {
+            _tmpId = _stmt.getLong(_columnIndexOfId)
+          }
           val _tmpCreationDate: String?
           if (_stmt.isNull(_columnIndexOfCreationDate)) {
             _tmpCreationDate = null
@@ -884,17 +915,17 @@ public class LoanDao_Impl(
           } else {
             _tmpTitle = _stmt.getText(_columnIndexOfTitle)
           }
-          val _tmpAmount: Double?
+          val _tmpAmount: Float?
           if (_stmt.isNull(_columnIndexOfAmount)) {
             _tmpAmount = null
           } else {
-            _tmpAmount = _stmt.getDouble(_columnIndexOfAmount)
+            _tmpAmount = _stmt.getDouble(_columnIndexOfAmount).toFloat()
           }
-          val _tmpRate: Double?
+          val _tmpRate: Float?
           if (_stmt.isNull(_columnIndexOfRate)) {
             _tmpRate = null
           } else {
-            _tmpRate = _stmt.getDouble(_columnIndexOfRate)
+            _tmpRate = _stmt.getDouble(_columnIndexOfRate).toFloat()
           }
           val _tmpTerm: Int?
           if (_stmt.isNull(_columnIndexOfTerm)) {
@@ -920,11 +951,11 @@ public class LoanDao_Impl(
           } else {
             _tmpDateOfIssue = _stmt.getText(_columnIndexOfDateOfIssue)
           }
-          val _tmpMonthlyPayment: Double?
+          val _tmpMonthlyPayment: Float?
           if (_stmt.isNull(_columnIndexOfMonthlyPayment)) {
             _tmpMonthlyPayment = null
           } else {
-            _tmpMonthlyPayment = _stmt.getDouble(_columnIndexOfMonthlyPayment)
+            _tmpMonthlyPayment = _stmt.getDouble(_columnIndexOfMonthlyPayment).toFloat()
           }
           val _tmpConsiderDaysOff: Int?
           if (_stmt.isNull(_columnIndexOfConsiderDaysOff)) {
@@ -970,11 +1001,11 @@ public class LoanDao_Impl(
           } else {
             _tmpIsForecastActive = _stmt.getLong(_columnIndexOfIsForecastActive).toInt()
           }
-          val _tmpForecastMonthlyPay: Double?
+          val _tmpForecastMonthlyPay: Float?
           if (_stmt.isNull(_columnIndexOfForecastMonthlyPay)) {
             _tmpForecastMonthlyPay = null
           } else {
-            _tmpForecastMonthlyPay = _stmt.getDouble(_columnIndexOfForecastMonthlyPay)
+            _tmpForecastMonthlyPay = _stmt.getDouble(_columnIndexOfForecastMonthlyPay).toFloat()
           }
           val _tmpForecastDaysBefore: Int?
           if (_stmt.isNull(_columnIndexOfForecastDaysBefore)) {

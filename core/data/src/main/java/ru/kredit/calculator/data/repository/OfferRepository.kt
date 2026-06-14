@@ -7,9 +7,12 @@ import kotlinx.coroutines.withContext
 import ru.kredit.calculator.data.mapper.toDomain
 import ru.kredit.calculator.data.mapper.toEntity
 import ru.kredit.calculator.data.model.Offer
+import ru.kredit.calculator.data.network.OffersApi
+import ru.kredit.calculator.data.network.OffersRequest
 
 class OfferRepository(
     private val offerDao: ru.kredit.calculator.database.dao.OfferDao,
+    private val offersApi: OffersApi,
     private val ioDispatcher: CoroutineDispatcher,
 ) {
 
@@ -23,5 +26,12 @@ class OfferRepository(
 
     suspend fun replaceOffers(offers: List<Offer>) = withContext(ioDispatcher) {
         offerDao.replaceAll(offers.map { it.toEntity() })
+    }
+
+    suspend fun refreshOffers(languageCode: String): Result<Unit> = withContext(ioDispatcher) {
+        runCatching {
+            val offers = offersApi.getAdvertisedLoans(OffersRequest(languageCode))
+            replaceOffers(offers)
+        }
     }
 }

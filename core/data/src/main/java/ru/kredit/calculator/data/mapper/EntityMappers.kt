@@ -10,17 +10,19 @@ import ru.kredit.calculator.database.entity.ExtraEntity
 import ru.kredit.calculator.database.entity.LoanEntity
 import ru.kredit.calculator.database.entity.OfferEntity
 
+private fun Long.toEntityId(): Long? = takeIf { it != 0L }
+
 fun LoanEntity.toDomain(): Loan {
     return Loan(
-        id = id,
+        id = id ?: 0,
         creationDate = DateFormats.parseDate(creationDate) ?: DateFormats.clearTime(java.util.Date()),
         title = title,
-        amount = amount?.toFloat() ?: 0f,
-        rate = rate?.toFloat() ?: 0f,
+        amount = amount ?: 0f,
+        rate = rate ?: 0f,
         term = term ?: 0,
         type = type?.let(LoanType::fromInt) ?: LoanType.ANNUITY,
         firstPaymentDate = DateFormats.parseDate(firstPaymentDate),
-        monthlyPayment = monthlyPayment?.toFloat() ?: 0f,
+        monthlyPayment = monthlyPayment ?: 0f,
         dateOfIssue = DateFormats.parseDate(dateOfIssue),
         considerDaysOff = considerDaysOff == 1,
         payOnLastDayOfMonth = payOnLastDayOfMonth == 1,
@@ -29,7 +31,7 @@ fun LoanEntity.toDomain(): Loan {
         ignorePassedPeriodsAfterRateChange = ignorePassedPeriodsAfterRateChange == 1,
         extraDayInMonth = extraDayInMonth == 1,
         isForecastActive = isForecastActive == 1,
-        forecastMonthlyPayment = forecastMonthlyPay?.toFloat() ?: 0f,
+        forecastMonthlyPayment = forecastMonthlyPay ?: 0f,
         forecastDaysBefore = forecastDaysBefore ?: 0,
         forecastStartDate = DateFormats.parseDate(forecastStartDate),
         forecastExtraType = forecastExtraType?.let(ExtraType::fromInt)
@@ -39,16 +41,16 @@ fun LoanEntity.toDomain(): Loan {
 
 fun Loan.toEntity(): LoanEntity {
     return LoanEntity(
-        id = id,
+        id = id.toEntityId(),
         creationDate = DateFormats.formatDate(creationDate),
         title = title,
-        amount = amount.toDouble(),
-        rate = rate.toDouble(),
+        amount = amount,
+        rate = rate,
         term = term,
         type = type.toInt(),
         firstPaymentDate = DateFormats.formatDate(firstPaymentDate),
         dateOfIssue = DateFormats.formatDate(dateOfIssue),
-        monthlyPayment = monthlyPayment.toDouble(),
+        monthlyPayment = monthlyPayment,
         considerDaysOff = if (considerDaysOff) 1 else 0,
         payOnLastDayOfMonth = if (payOnLastDayOfMonth) 1 else 0,
         applyExtrasImmediately = if (applyExtrasImmediately) 1 else 0,
@@ -56,7 +58,7 @@ fun Loan.toEntity(): LoanEntity {
         ignorePassedPeriodsAfterRateChange = if (ignorePassedPeriodsAfterRateChange) 1 else 0,
         extraDayInMonth = if (extraDayInMonth) 1 else 0,
         isForecastActive = if (isForecastActive) 1 else 0,
-        forecastMonthlyPay = if (isForecastActive) forecastMonthlyPayment.toDouble() else null,
+        forecastMonthlyPay = if (isForecastActive) forecastMonthlyPayment else null,
         forecastDaysBefore = if (isForecastActive) forecastDaysBefore else null,
         forecastStartDate = if (isForecastActive) DateFormats.formatDate(forecastStartDate) else null,
         forecastExtraType = if (isForecastActive) forecastExtraType.toInt() else null,
@@ -65,8 +67,8 @@ fun Loan.toEntity(): LoanEntity {
 
 fun ExtraEntity.toDomain(): Extra {
     return Extra(
-        id = id,
-        amount = amount?.toFloat() ?: 0f,
+        id = id ?: 0,
+        amount = amount ?: 0f,
         documentNumber = documentNumber,
         type = type?.let(ExtraType::fromInt) ?: ExtraType.PAYMENT_FOR_DECREASE_LOAN_AMOUNT,
         date = DateFormats.parseDate(date),
@@ -76,8 +78,8 @@ fun ExtraEntity.toDomain(): Extra {
 
 fun Extra.toEntity(): ExtraEntity {
     return ExtraEntity(
-        id = id,
-        amount = amount.toDouble(),
+        id = id.toEntityId(),
+        amount = amount,
         documentNumber = documentNumber,
         type = type.toInt(),
         date = DateFormats.formatDate(date),
@@ -88,13 +90,13 @@ fun Extra.toEntity(): ExtraEntity {
 fun OfferEntity.toDomain(): Offer {
     val rateType = Offer.decodeRateType(rateType)
     return Offer(
-        id = id,
+        id = id ?: 0,
         name = name,
         organizationName = orgName,
         documents = docs,
         requirements = requirements,
         extraPaymentRules = extraPaymentRules,
-        limit = amountLimit ?: 0.0,
+        limit = amountLimit?.toDouble() ?: 0.0,
         term = term ?: 0,
         link = link,
         logoImage = logoImage,
@@ -106,13 +108,13 @@ fun OfferEntity.toDomain(): Offer {
 fun Offer.toEntity(): OfferEntity {
     val rateType = Offer.rateTypeOf(rate)
     return OfferEntity(
-        id = id,
+        id = id.toEntityId(),
         name = name,
         orgName = organizationName,
         docs = documents,
         requirements = requirements,
         extraPaymentRules = extraPaymentRules,
-        amountLimit = limit,
+        amountLimit = limit.toFloat(),
         term = term,
         link = link,
         logoImage = logoImage,

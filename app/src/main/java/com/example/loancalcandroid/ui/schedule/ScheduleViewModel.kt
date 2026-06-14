@@ -4,6 +4,7 @@ import android.app.Application
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.loancalcandroid.util.Formatters
+import com.example.loancalcandroid.util.ShareScheduleUtil
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -12,6 +13,7 @@ import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import ru.kredit.calculator.data.LoanCalcData
+import ru.kredit.calculator.data.calculation.CalculationErrors
 import ru.kredit.calculator.data.calculation.LoanCalculationResult
 import ru.kredit.calculator.data.model.Loan
 
@@ -53,6 +55,20 @@ class ScheduleViewModel(
 
     fun toggleShowPreviousPayments() {
         _uiState.update { it.copy(showPreviousPayments = !it.showPreviousPayments) }
+    }
+
+    fun share(onError: (String) -> Unit) {
+        if (loanId == 0L) {
+            onError("Сначала сохраните кредит")
+            return
+        }
+        viewModelScope.launch {
+            try {
+                ShareScheduleUtil.share(getApplication(), loanId)
+            } catch (e: Exception) {
+                onError(CalculationErrors.format(e))
+            }
+        }
     }
 
     fun load() {
