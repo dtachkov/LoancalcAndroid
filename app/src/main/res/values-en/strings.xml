@@ -293,7 +293,7 @@
     <string name="premium_title">Premium доступен</string>
     <string name="all_features_available">Вам доступны все возможности</string>
     <string name="menu_item_contact_developer">Contact developer</string>
-    <string name="menu_item_contact_developer_hint">Send email with billing log and loans export</string>
+    <string name="menu_item_contact_developer_hint">Send email with billing log and loans export as separate attachments</string>
     <string name="developer_email_android_version">Android version: %1$s</string>
     <string name="developer_email_billing_log_header">Billing log:</string>
     <string name="developer_email_chooser_title">Contact developer</string>

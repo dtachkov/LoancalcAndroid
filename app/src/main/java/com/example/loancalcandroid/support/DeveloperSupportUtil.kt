@@ -16,32 +16,46 @@ object DeveloperSupportUtil {
     fun sendDeveloperEmail(
         context: Context,
         loansExportFile: File?,
+        billingLogFile: File?,
     ): Boolean {
         val subject = context.getString(
             R.string.developer_email_subject,
             BuildConfig.VERSION_NAME,
         )
-        val body = buildString {
-            appendLine(
-                context.getString(
-                    R.string.developer_email_android_version,
-                    Build.VERSION.RELEASE.orEmpty(),
-                ),
-            )
-            appendLine()
-            appendLine(context.getString(R.string.developer_email_billing_log_header))
-            appendLine(BillingLogger.getBillingEventsLog())
+        val body = context.getString(
+            R.string.developer_email_android_version,
+            Build.VERSION.RELEASE.orEmpty(),
+        )
+
+        val attachmentUris = buildList {
+            billingLogFile?.takeIf { it.exists() && it.length() > 0L }?.let { add(fileUri(context, it)) }
+            loansExportFile?.takeIf { it.exists() && it.length() > 0L }?.let { add(fileUri(context, it)) }
         }
 
-        val sendIntent = Intent(Intent.ACTION_SEND).apply {
-            type = "message/rfc822"
-            putExtra(Intent.EXTRA_EMAIL, arrayOf(context.getString(R.string.support_email)))
-            putExtra(Intent.EXTRA_SUBJECT, subject)
-            putExtra(Intent.EXTRA_TEXT, body)
-            loansExportFile?.takeIf { it.exists() && it.length() > 0L }?.let { file ->
-                val uri = fileUri(context, file)
-                putExtra(Intent.EXTRA_STREAM, uri)
-                clipData = ClipData.newRawUri("", uri)
+        val sendIntent = if (attachmentUris.size <= 1) {
+            Intent(Intent.ACTION_SEND).apply {
+                type = "message/rfc822"
+                putExtra(Intent.EXTRA_EMAIL, arrayOf(context.getString(R.string.support_email)))
+                putExtra(Intent.EXTRA_SUBJECT, subject)
+                putExtra(Intent.EXTRA_TEXT, body)
+                attachmentUris.singleOrNull()?.let { uri ->
+                    putExtra(Intent.EXTRA_STREAM, uri)
+                    clipData = ClipData.newRawUri("", uri)
+                    addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
+                }
+            }
+        } else {
+            Intent(Intent.ACTION_SEND_MULTIPLE).apply {
+                type = "message/rfc822"
+                putExtra(Intent.EXTRA_EMAIL, arrayOf(context.getString(R.string.support_email)))
+                putExtra(Intent.EXTRA_SUBJECT, subject)
+                putExtra(Intent.EXTRA_TEXT, body)
+                putParcelableArrayListExtra(Intent.EXTRA_STREAM, ArrayList(attachmentUris))
+                clipData = ClipData.newRawUri("", attachmentUris.first()).apply {
+                    attachmentUris.drop(1).forEach { uri ->
+                        addItem(ClipData.Item(uri))
+                    }
+                }
                 addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
             }
         }

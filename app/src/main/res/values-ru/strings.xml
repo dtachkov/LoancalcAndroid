@@ -307,7 +307,7 @@
     <string name="send_support">Отправить информацию в поддержку</string>
     <string name="support_log_chooser_title">Лог работы платежной системы…</string>
     <string name="menu_item_contact_developer">Написать разработчику</string>
-    <string name="menu_item_contact_developer_hint">Отправить письмо с логом биллинга и экспортом кредитов</string>
+    <string name="menu_item_contact_developer_hint">Отправить письмо с логом биллинга и экспортом кредитов в отдельных файлах</string>
     <string name="developer_email_android_version">Версия Android: %1$s</string>
     <string name="developer_email_billing_log_header">Лог биллинга:</string>
     <string name="developer_email_chooser_title">Написать разработчику</string>

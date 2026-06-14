@@ -4,6 +4,7 @@ import android.os.Build
 import android.text.format.DateFormat
 import android.util.Log
 import com.example.loancalcandroid.analytics.AnalyticsHelper
+import java.io.File
 import java.util.ArrayList
 import java.util.Date
 
@@ -30,6 +31,10 @@ object BillingLogger {
 
     fun getLogAsString(): String {
         return "${getBillingEventsLog()}\n${getDeviceInfo()}"
+    }
+
+    fun writeLogToFile(file: File) {
+        file.writeText(getLogAsString())
     }
 
     fun getDeviceInfo(): String {

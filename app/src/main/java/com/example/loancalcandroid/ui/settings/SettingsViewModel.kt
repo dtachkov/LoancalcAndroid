@@ -14,6 +14,7 @@ import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import com.example.loancalcandroid.LoanCalcApplication
+import com.example.loancalcandroid.billing.BillingLogger
 import com.example.loancalcandroid.notification.NotificationScheduler
 import com.example.loancalcandroid.support.DeveloperSupportUtil
 import ru.kredit.calculator.data.LoanCalcData
@@ -217,13 +218,16 @@ class SettingsViewModel(
                     } else {
                         exportFile.delete()
                     }
-                    exportFile.takeIf { it.exists() }
+                    val billingLogFile = File(context.cacheDir, "developer_support_billing_log.txt")
+                    BillingLogger.writeLogToFile(billingLogFile)
+                    Pair(exportFile.takeIf { it.exists() }, billingLogFile)
                 }
             }
-            val exportFile = result.getOrNull()
+            val (exportFile, billingLogFile) = result.getOrNull() ?: Pair(null, null)
             val sent = DeveloperSupportUtil.sendDeveloperEmail(
                 context = context,
                 loansExportFile = exportFile,
+                billingLogFile = billingLogFile,
             )
             _uiState.update {
                 it.copy(
