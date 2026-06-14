@@ -1,5 +1,7 @@
 package com.example.loancalcandroid.navigation
 
+import com.example.loancalcandroid.ui.extras.ExtraCategory
+
 object Route {
     const val HOME = "home"
     const val SETTINGS = "settings"
@@ -10,7 +12,7 @@ object Route {
     const val SCHEDULE = "loans/{loanId}/schedule"
     const val REQUISITES = "loans/{loanId}/requisites"
     const val EXTRAS_LIST = "loans/{loanId}/extras"
-    const val EXTRA_FORM = "loans/{loanId}/extras/add"
+    const val EXTRA_FORM = "loans/{loanId}/extras/add?category={category}"
     const val EDIT_EXTRA = "loans/{loanId}/extras/{extraId}/edit"
     const val FORECAST = "loans/{loanId}/forecast"
     const val BEST_DATE = "loans/{loanId}/best-date"
@@ -20,12 +22,14 @@ object Route {
 
     const val ARG_LOAN_ID = "loanId"
     const val ARG_EXTRA_ID = "extraId"
+    const val ARG_EXTRA_CATEGORY = "category"
 
     fun editLoan(loanId: Long) = "loans/$loanId/edit"
     fun schedule(loanId: Long) = "loans/$loanId/schedule"
     fun requisites(loanId: Long) = "loans/$loanId/requisites"
     fun extrasList(loanId: Long) = "loans/$loanId/extras"
-    fun extraForm(loanId: Long) = "loans/$loanId/extras/add"
+    fun extraForm(loanId: Long, category: ExtraCategory = ExtraCategory.EARLY) =
+        "loans/$loanId/extras/add?category=${category.name}"
     fun editExtra(loanId: Long, extraId: Long) = "loans/$loanId/extras/$extraId/edit"
     fun forecast(loanId: Long) = "loans/$loanId/forecast"
     fun bestDate(loanId: Long) = "loans/$loanId/best-date"

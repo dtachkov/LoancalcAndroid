@@ -22,6 +22,9 @@
     <string name="total_commission">Итого комиссия</string>
     <string name="total_insurance">Итого страховка</string>
     <string name="menu_extras_list">Список досрочных погашений</string>
+    <string name="extras_tab_early">Досрочные</string>
+    <string name="extras_tab_commission">Комиссии</string>
+    <string name="add_commission">Комиссия / страховка</string>
     <string name="menu_extras_savings">Экономия %1$s</string>
     <string name="menu_forecast">Прогноз досрочного погашения</string>
     <string name="menu_forecast_disabled">Отключен</string>
@@ -93,4 +96,13 @@
     <string name="schedule_forecast_label">Прогноз:</string>
     <string name="schedule_forecast_off">Отключен</string>
     <string name="schedule_paid_of">%1$s из %2$s</string>
+    <string name="forecast_enable">Включить прогноз</string>
+    <string name="forecast_monthly_payment">Сумма досрочного платежа</string>
+    <string name="forecast_days_before">Дней до платежа</string>
+    <string name="forecast_start_date">Дата начала прогноза</string>
+    <string name="forecast_extra_type">Тип досрочного погашения</string>
+    <string name="forecast_type_amount">Уменьшение суммы кредита</string>
+    <string name="forecast_type_term">Уменьшение срока</string>
+    <string name="forecast_result_title">Результат прогноза</string>
+    <string name="forecast_calculate">Рассчитать прогноз</string>
 </resources>

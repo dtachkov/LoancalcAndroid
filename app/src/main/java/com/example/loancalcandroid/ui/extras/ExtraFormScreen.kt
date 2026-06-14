@@ -30,7 +30,8 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.example.loancalcandroid.R
 import com.example.loancalcandroid.ui.common.DatePickerField
 import com.example.loancalcandroid.ui.common.LoanCalcScaffold
-import com.example.loancalcandroid.ui.loanExtraViewModel
+import com.example.loancalcandroid.ui.extraFormViewModel
+import ru.kredit.calculator.data.calculation.ExtraTypeUtils
 import ru.kredit.calculator.data.model.ExtraType
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -38,11 +39,12 @@ import ru.kredit.calculator.data.model.ExtraType
 fun ExtraFormScreen(
     loanId: Long,
     extraId: Long?,
+    category: ExtraCategory,
     onBack: () -> Unit,
     onSaved: () -> Unit,
 ) {
-    val viewModel: ExtraFormViewModel = loanExtraViewModel(loanId, extraId ?: 0L) { app, lId, eId ->
-        ExtraFormViewModel(app, lId, extraId)
+    val viewModel: ExtraFormViewModel = extraFormViewModel(loanId, extraId, category) { app, lId, eId, cat ->
+        ExtraFormViewModel(app, lId, eId, cat)
     }
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
 
@@ -50,10 +52,10 @@ fun ExtraFormScreen(
         if (uiState.saved) onSaved()
     }
 
-    val title = if (uiState.isEditMode) {
-        stringResource(R.string.edit_extra)
-    } else {
-        stringResource(R.string.quick_early_payment)
+    val title = when {
+        uiState.isEditMode -> stringResource(R.string.edit_extra)
+        uiState.category == ExtraCategory.COMMISSION -> stringResource(R.string.add_commission)
+        else -> stringResource(R.string.quick_early_payment)
     }
 
     LoanCalcScaffold(title = title, onBack = onBack) { innerPadding ->
@@ -142,7 +144,7 @@ private fun ExtraTypeDropdown(
         onExpandedChange = { expanded = it },
     ) {
         OutlinedTextField(
-            value = ExtraTypeLabels.label(selected),
+            value = ExtraTypeUtils.label(selected),
             onValueChange = {},
             readOnly = true,
             label = { Text(stringResource(R.string.extra_type)) },
@@ -157,7 +159,7 @@ private fun ExtraTypeDropdown(
         ) {
             types.forEach { type ->
                 DropdownMenuItem(
-                    text = { Text(ExtraTypeLabels.label(type)) },
+                    text = { Text(ExtraTypeUtils.label(type)) },
                     onClick = {
                         onSelect(type)
                         expanded = false

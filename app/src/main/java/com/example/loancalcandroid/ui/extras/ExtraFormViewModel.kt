@@ -9,6 +9,7 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import ru.kredit.calculator.data.LoanCalcData
+import ru.kredit.calculator.data.calculation.ExtraTypeUtils
 import ru.kredit.calculator.data.model.Extra
 import ru.kredit.calculator.data.model.ExtraType
 import java.util.Date
@@ -17,7 +18,8 @@ data class ExtraFormUiState(
     val isLoading: Boolean = true,
     val isSaving: Boolean = false,
     val isEditMode: Boolean = false,
-    val allowedTypes: List<ExtraType> = ExtraTypeLabels.earlyPaymentTypes,
+    val category: ExtraCategory = ExtraCategory.EARLY,
+    val allowedTypes: List<ExtraType> = ExtraTypeUtils.earlyPaymentTypes,
     val selectedType: ExtraType = ExtraType.PAYMENT_FOR_DECREASE_LOAN_AMOUNT,
     val amount: String = "",
     val date: Date? = null,
@@ -31,12 +33,20 @@ class ExtraFormViewModel(
     application: Application,
     private val loanId: Long,
     private val extraId: Long?,
+    category: ExtraCategory,
 ) : AndroidViewModel(application) {
     private val extraRepository = LoanCalcData.get().extraRepository
+    private val allowedTypes = when (category) {
+        ExtraCategory.EARLY -> ExtraTypeUtils.earlyPaymentTypes
+        ExtraCategory.COMMISSION -> ExtraTypeUtils.commissionTypes
+    }
 
     private val _uiState = MutableStateFlow(
         ExtraFormUiState(
             isEditMode = extraId != null,
+            category = category,
+            allowedTypes = allowedTypes,
+            selectedType = allowedTypes.first(),
             date = Date(),
         ),
     )
@@ -83,12 +93,23 @@ class ExtraFormViewModel(
             val extras = extraRepository.getExtras(loanId)
             val extra = extras.firstOrNull { it.id == id }
             if (extra == null) {
-                _uiState.update { it.copy(isLoading = false, saveError = "Досрочка не найдена") }
+                _uiState.update { it.copy(isLoading = false, saveError = "Запись не найдена") }
                 return@launch
+            }
+            val category = if (ExtraTypeUtils.isCommission(extra.type)) {
+                ExtraCategory.COMMISSION
+            } else {
+                ExtraCategory.EARLY
+            }
+            val types = when (category) {
+                ExtraCategory.EARLY -> ExtraTypeUtils.earlyPaymentTypes
+                ExtraCategory.COMMISSION -> ExtraTypeUtils.commissionTypes
             }
             _uiState.update {
                 it.copy(
                     isLoading = false,
+                    category = category,
+                    allowedTypes = types,
                     selectedType = extra.type,
                     amount = formatAmount(extra),
                     date = extra.date,
