@@ -40,7 +40,7 @@
     <string name="quick_requisites">Details</string>
     <string name="paid_label">Paid:</string>
     <string name="debt_label">Owing amount:</string>
-    <string name="current_payment">القسط الشهري الحالي</string>
+    <string name="nearest_payment">القسط الشهري الحالي</string>
     <string name="pay_until">Pay until %1$s</string>
     <string name="interest_paid">Already paid interest:</string>
     <string name="remaining_to_pay">Total overpay:</string>

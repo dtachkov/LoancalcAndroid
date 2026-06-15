@@ -241,6 +241,7 @@ fun LoanCalcNavGraph(
             val loanId = backStackEntry.arguments?.getLong(Route.ARG_LOAN_ID) ?: return@composable
             ExtrasTabsScreen(
                 loanId = loanId,
+                savedStateHandle = backStackEntry.savedStateHandle,
                 onBack = { navController.popBackStack() },
                 onAddExtra = { category ->
                     navController.navigateWithLicenseCheck(
@@ -288,10 +289,15 @@ fun LoanCalcNavGraph(
                 ),
                 viewModelStoreOwner = backStackEntry,
                 onBack = { navController.popBackStack() },
-                onSaved = {
+                onSaved = { category ->
                     runCatching {
                         navController.getBackStackEntry(Route.schedule(loanId))
                             .savedStateHandle["refresh_schedule"] = true
+                    }
+                    runCatching {
+                        navController.getBackStackEntry(Route.extrasList(loanId))
+                            .savedStateHandle[Route.EXTRAS_TAB_KEY] =
+                            if (category == ExtraCategory.COMMISSION) 1 else 0
                     }
                     navController.popBackStack()
                 },
@@ -316,7 +322,14 @@ fun LoanCalcNavGraph(
                 category = ExtraCategory.EARLY,
                 viewModelStoreOwner = backStackEntry,
                 onBack = { navController.popBackStack() },
-                onSaved = { navController.popBackStack() },
+                onSaved = { category ->
+                    runCatching {
+                        navController.getBackStackEntry(Route.extrasList(loanId))
+                            .savedStateHandle[Route.EXTRAS_TAB_KEY] =
+                            if (category == ExtraCategory.COMMISSION) 1 else 0
+                    }
+                    navController.popBackStack()
+                },
                 onExtraTypesHelpClick = {
                     navController.navigate(Route.helpTopic(Route.HELP_TOPIC_EXTRA_TYPES))
                 },

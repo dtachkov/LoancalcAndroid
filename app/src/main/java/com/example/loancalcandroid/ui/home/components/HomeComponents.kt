@@ -1,6 +1,7 @@
 package com.example.loancalcandroid.ui.home.components
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -32,10 +33,12 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.loancalcandroid.R
 import com.example.loancalcandroid.ui.common.AutoShrinkText
+import com.example.loancalcandroid.util.copyMetricValueToClipboard
 import com.example.loancalcandroid.ui.theme.LoanBlueDark
 import com.example.loancalcandroid.ui.theme.LoanBlueEnd
 import com.example.loancalcandroid.ui.theme.LoanBlueStart
@@ -123,6 +126,7 @@ fun LoanCardStat(
         color = Color.White,
         fontWeight = FontWeight.SemiBold,
     )
+    val context = LocalContext.current
 
     Column(modifier = modifier) {
         if (shrinkLabel) {
@@ -142,6 +146,7 @@ fun LoanCardStat(
         }
         AutoShrinkText(
             text = value,
+            modifier = Modifier.clickable { copyMetricValueToClipboard(context, value) },
             style = valueStyle,
             minFontSize = 11.sp,
             maxLines = 1,

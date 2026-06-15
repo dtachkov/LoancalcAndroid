@@ -39,6 +39,8 @@ data class LoanDetailsUiModel(
     val totalInterest: String,
     val totalCommission: String,
     val totalInsurance: String,
+    val totalOverpay: String,
+    val totalToPay: String,
     val extrasSavings: String,
     val extrasCount: Int,
     val forecastEnabled: Boolean,

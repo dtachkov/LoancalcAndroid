@@ -40,7 +40,7 @@
     <string name="quick_requisites">Details</string>
     <string name="paid_label">Paid:</string>
     <string name="debt_label">Rückzahlung:</string>
-    <string name="current_payment">Laufender Kredit</string>
+    <string name="nearest_payment">Laufender Kredit</string>
     <string name="pay_until">Pay until %1$s</string>
     <string name="interest_paid">Zinsen gezahlt:</string>
     <string name="remaining_to_pay">Gesamtsumme:</string>

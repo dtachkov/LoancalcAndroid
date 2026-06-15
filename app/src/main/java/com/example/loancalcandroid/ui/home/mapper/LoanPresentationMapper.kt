@@ -71,10 +71,15 @@ object LoanPresentationMapper {
         val totalPrincipal = paidPrincipal + debt
         val interestPaid = calculation.alreadyPaidInterest
         val totalInterest = calculation.totalInterest
-        val remaining = debt + max(0.0, totalInterest - interestPaid)
+        val remainingInterest = max(0.0, totalInterest - interestPaid)
         val earlyExtras = extras.count {
             it.type != ExtraType.FEE && it.type != ExtraType.INSURANCE
         }
+
+        val fees = calculation.fees
+        val insurance = calculation.insurance
+        val overpay = calculation.totalInterest + fees + insurance
+        val totalToPay = loan.amount + overpay
 
         return LoanDetailsUiModel(
             loanId = loan.id,
@@ -85,10 +90,12 @@ object LoanPresentationMapper {
             currentPayment = Formatters.money(calculation.currentPayment),
             paymentDueDate = Formatters.date(calculation.currentPaymentDate),
             interestPaid = Formatters.money(interestPaid),
-            remainingToPay = Formatters.money(remaining),
+            remainingToPay = Formatters.money(remainingInterest),
             totalInterest = Formatters.money(totalInterest),
-            totalCommission = Formatters.money(calculation.fees),
-            totalInsurance = Formatters.money(calculation.insurance),
+            totalCommission = Formatters.money(fees),
+            totalInsurance = Formatters.money(insurance),
+            totalOverpay = Formatters.money(overpay),
+            totalToPay = Formatters.money(totalToPay),
             extrasSavings = Formatters.money(calculation.savedMoney),
             extrasCount = earlyExtras,
             forecastEnabled = loan.isForecastActive,

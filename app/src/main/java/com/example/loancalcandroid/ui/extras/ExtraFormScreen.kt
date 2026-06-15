@@ -69,7 +69,7 @@ fun ExtraFormScreen(
     prefill: ExtraFormPrefill = ExtraFormPrefill(),
     viewModelStoreOwner: ViewModelStoreOwner,
     onBack: () -> Unit,
-    onSaved: () -> Unit,
+    onSaved: (ExtraCategory) -> Unit,
     onExtraTypesHelpClick: () -> Unit = {},
 ) {
     val viewModel: ExtraFormViewModel = extraFormViewModel(viewModelStoreOwner, loanId, extraId, category, prefill) { app, handle, eId, cat, pre ->
@@ -81,7 +81,7 @@ fun ExtraFormScreen(
     RequestRuStoreReviewEffect(uiState.reviewRequestTrigger)
 
     LaunchedEffect(uiState.saved) {
-        if (uiState.saved) onSaved()
+        if (uiState.saved) onSaved(uiState.category)
     }
 
     val title = when {

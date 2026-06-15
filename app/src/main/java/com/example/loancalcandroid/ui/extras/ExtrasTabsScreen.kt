@@ -30,6 +30,7 @@ import com.example.loancalcandroid.ui.common.LoanTabRow
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
@@ -44,8 +45,10 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.example.loancalcandroid.R
+import com.example.loancalcandroid.navigation.Route
 import com.example.loancalcandroid.ui.common.LoanCalcScaffold
 import com.example.loancalcandroid.ui.extrasListViewModel
 import com.example.loancalcandroid.ui.theme.LoanBlueDark
@@ -62,9 +65,17 @@ fun ExtrasTabsScreen(
     onAddExtra: (ExtraCategory) -> Unit,
     onEditExtra: (Long) -> Unit,
     onBestDateClick: () -> Unit,
+    savedStateHandle: SavedStateHandle? = null,
     initialTab: Int = 0,
 ) {
-    var selectedTab by remember { mutableIntStateOf(initialTab) }
+    var selectedTab by remember { mutableIntStateOf(initialTab.coerceIn(0, 1)) }
+    val tabToRestore = savedStateHandle?.get<Int>(Route.EXTRAS_TAB_KEY)
+    LaunchedEffect(tabToRestore) {
+        if (tabToRestore != null) {
+            selectedTab = tabToRestore.coerceIn(0, 1)
+            savedStateHandle.remove<Int>(Route.EXTRAS_TAB_KEY)
+        }
+    }
     val category = if (selectedTab == 0) ExtraCategory.EARLY else ExtraCategory.COMMISSION
 
     LoanCalcScaffold(

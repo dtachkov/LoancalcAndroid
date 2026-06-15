@@ -31,7 +31,8 @@ import com.example.loancalcandroid.ui.home.components.LoanActionsSection
 import com.example.loancalcandroid.ui.home.components.LoanCardsPager
 import com.example.loancalcandroid.ui.home.components.NavigationMenuSection
 import com.example.loancalcandroid.ui.home.components.QuickActionsRow
-import com.example.loancalcandroid.ui.home.components.StatsSection
+import com.example.loancalcandroid.ui.home.components.InterestStatsSection
+import com.example.loancalcandroid.ui.home.components.OverpayStatsSection
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -148,6 +149,10 @@ fun HomeScreen(
                     Spacer(modifier = Modifier.height(24.dp))
                 }
                 item {
+                    OverpayStatsSection(details = details)
+                    Spacer(modifier = Modifier.height(16.dp))
+                }
+                item {
                     DebtProgressSection(
                         details = details,
                         onCurrentPaymentClick = { onScheduleClick(selectedLoanId) },
@@ -155,7 +160,7 @@ fun HomeScreen(
                     Spacer(modifier = Modifier.height(16.dp))
                 }
                 item {
-                    StatsSection(details = details)
+                    InterestStatsSection(details = details)
                     Spacer(modifier = Modifier.height(16.dp))
                 }
                 item {

@@ -35,6 +35,7 @@ object Route {
     const val ARG_LIST_INDEX = "listIndex"
     const val ARG_PREV_DATE_MILLIS = "prevDateMillis"
     const val ARG_HELP_TOPIC = "topic"
+    const val EXTRAS_TAB_KEY = "extras_tab"
 
     const val HELP_TOPIC_SCHEDULE = "schedule"
     const val HELP_TOPIC_EXTRA_TYPES = "extra_types"

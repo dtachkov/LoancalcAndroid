@@ -42,21 +42,6 @@ object AnalyticsHelper {
         logEvent("PRESS_LEAD", offerName.orEmpty())
     }
 
-    fun logPurchase(success: Boolean) {
-        Log.d(TAG, "purchase: success=$success")
-        if (!isAnalyticsEnabled) return
-        val params = mapOf("is_success" to success.toString())
-        runCatching {
-            AppMetrica.reportEvent("purchase", params)
-        }.onFailure {
-            Log.w(TAG, "Failed to report purchase", it)
-        }
-    }
-
-    fun logStartCheckout(source: String) {
-        logEvent("start_checkout", source)
-    }
-
     fun openOfferLink(context: Context, offerName: String?, link: String) {
         logOfferOpening(offerName)
         val intent = Intent(Intent.ACTION_VIEW, Uri.parse(link))

@@ -68,10 +68,28 @@ class LoanCalculator {
             forecastDate = loan.forecastStartDate,
             forecastExtraType = loan.forecastExtraType.toInt(),
             calculationMode = calculationMode,
-        ).copy(
-            loanId = loan.id,
-            loanTitle = loan.title.orEmpty(),
-        )
+        ).let { result ->
+            val (fees, insurance) = commissionTotalsFromExtras(extras)
+            result.copy(
+                loanId = loan.id,
+                loanTitle = loan.title.orEmpty(),
+                fees = fees,
+                insurance = insurance,
+            )
+        }
+    }
+
+    private fun commissionTotalsFromExtras(extras: List<Extra>): Pair<Double, Double> {
+        var fees = 0.0
+        var insurance = 0.0
+        for (extra in extras) {
+            when (extra.type) {
+                ExtraType.FEE -> fees += extra.amount
+                ExtraType.INSURANCE -> insurance += extra.amount
+                else -> Unit
+            }
+        }
+        return fees to insurance
     }
 
     @Throws(InfiniteLoanException::class, ExtraForecastException::class, LoanException::class)

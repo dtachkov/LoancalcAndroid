@@ -5,6 +5,7 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.ColumnScope
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxHeight
@@ -41,6 +42,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import com.example.loancalcandroid.R
+import com.example.loancalcandroid.ui.common.CopyableMetricValue
 import com.example.loancalcandroid.ui.home.model.AllLoanPaymentRowUiModel
 import com.example.loancalcandroid.ui.home.model.AllLoansSummaryUiModel
 import com.example.loancalcandroid.ui.home.model.LoanCardUiModel
@@ -52,6 +54,7 @@ import com.example.loancalcandroid.ui.theme.LoanGreen
 import com.example.loancalcandroid.ui.theme.LoanRed
 import com.example.loancalcandroid.ui.theme.LoanTextSecondary
 import com.example.loancalcandroid.util.Formatters
+import kotlin.math.roundToInt
 
 @Composable
 fun LoanCardsPager(
@@ -230,11 +233,11 @@ private fun AllLoanPaymentRow(
                 modifier = Modifier.padding(top = 2.dp),
             )
         }
-        Text(
+        CopyableMetricValue(
             text = loan.nextPaymentAmount,
+            modifier = Modifier.padding(start = 12.dp),
             style = MaterialTheme.typography.titleMedium,
             fontWeight = FontWeight.SemiBold,
-            modifier = Modifier.padding(start = 12.dp),
         )
     }
 }
@@ -400,6 +403,7 @@ fun DebtProgressSection(
 private fun DebtProgressCard(details: LoanDetailsUiModel) {
     val paidFraction = details.paidFraction.coerceIn(0f, 1f)
     val debtFraction = (1f - paidFraction).coerceAtLeast(0f)
+    val paidPercentLabel = "(${(paidFraction * 100f).roundToInt()}%)"
 
     Surface(
         modifier = Modifier.fillMaxWidth(),
@@ -410,15 +414,28 @@ private fun DebtProgressCard(details: LoanDetailsUiModel) {
             Row(
                 modifier = Modifier.fillMaxWidth(),
                 horizontalArrangement = Arrangement.SpaceBetween,
-                verticalAlignment = Alignment.Bottom,
+                verticalAlignment = Alignment.CenterVertically,
             ) {
-                Text(
-                    text = details.paidAmount,
-                    style = MaterialTheme.typography.titleMedium,
-                    fontWeight = FontWeight.SemiBold,
-                )
-                Text(
+                Row(
+                    modifier = Modifier.weight(1f),
+                    horizontalArrangement = Arrangement.spacedBy(4.dp),
+                    verticalAlignment = Alignment.CenterVertically,
+                ) {
+                    CopyableMetricValue(
+                        text = details.paidAmount,
+                        style = MaterialTheme.typography.titleMedium,
+                        fontWeight = FontWeight.SemiBold,
+                    )
+                    Text(
+                        text = paidPercentLabel,
+                        style = MaterialTheme.typography.titleMedium,
+                        color = LoanTextSecondary,
+                    )
+                }
+                CopyableMetricValue(
                     text = details.debtAmount,
+                    modifier = Modifier.weight(1f),
+                    textAlign = TextAlign.End,
                     style = MaterialTheme.typography.titleMedium,
                     fontWeight = FontWeight.SemiBold,
                 )
@@ -481,11 +498,11 @@ private fun CurrentPaymentCard(
     ) {
         Column(modifier = Modifier.padding(horizontal = 16.dp, vertical = 14.dp)) {
             Text(
-                text = stringResource(R.string.current_payment),
+                text = stringResource(R.string.nearest_payment),
                 style = MaterialTheme.typography.bodyMedium,
                 color = LoanTextSecondary,
             )
-            Text(
+            CopyableMetricValue(
                 text = details.currentPayment,
                 style = MaterialTheme.typography.headlineMedium,
                 fontWeight = FontWeight.Bold,
@@ -500,25 +517,64 @@ private fun CurrentPaymentCard(
 }
 
 @Composable
+fun OverpayStatsSection(details: LoanDetailsUiModel) {
+    StatsCard {
+        StatRow(
+            label = stringResource(R.string.total_to_pay),
+            value = details.totalToPay,
+            emphasized = true,
+        )
+        StatRow(
+            label = stringResource(R.string.total_overpay),
+            value = details.totalOverpay,
+            emphasized = true,
+        )
+        HorizontalDivider(modifier = Modifier.padding(vertical = 8.dp))
+        StatRow(stringResource(R.string.total_commission), details.totalCommission)
+        StatRow(stringResource(R.string.total_insurance), details.totalInsurance)
+    }
+}
+
+@Composable
+fun InterestStatsSection(details: LoanDetailsUiModel) {
+    StatsCard {
+        StatRow(stringResource(R.string.interest_paid), details.interestPaid)
+        StatRow(stringResource(R.string.remaining_to_pay), details.remainingToPay)
+        StatRow(stringResource(R.string.total_interest), details.totalInterest)
+    }
+}
+
+@Composable
 fun StatsSection(details: LoanDetailsUiModel) {
+    Column(
+        modifier = Modifier.fillMaxWidth(),
+        verticalArrangement = Arrangement.spacedBy(12.dp),
+    ) {
+        OverpayStatsSection(details)
+        InterestStatsSection(details)
+    }
+}
+
+@Composable
+private fun StatsCard(content: @Composable ColumnScope.() -> Unit) {
     Surface(
         modifier = Modifier.fillMaxWidth(),
         shape = RoundedCornerShape(12.dp),
         color = LoanCardSurface,
     ) {
-        Column(modifier = Modifier.padding(horizontal = 16.dp, vertical = 8.dp)) {
-            StatRow(stringResource(R.string.interest_paid), details.interestPaid)
-            StatRow(stringResource(R.string.remaining_to_pay), details.remainingToPay)
-            StatRow(stringResource(R.string.total_interest), details.totalInterest)
-            HorizontalDivider(modifier = Modifier.padding(vertical = 8.dp))
-            StatRow(stringResource(R.string.total_commission), details.totalCommission)
-            StatRow(stringResource(R.string.total_insurance), details.totalInsurance)
-        }
+        Column(
+            modifier = Modifier.padding(horizontal = 16.dp, vertical = 8.dp),
+            content = content,
+        )
     }
 }
 
 @Composable
-private fun StatRow(label: String, value: String) {
+private fun StatRow(
+    label: String,
+    value: String,
+    emphasized: Boolean = false,
+) {
     Row(
         modifier = Modifier
             .fillMaxWidth()
@@ -526,10 +582,10 @@ private fun StatRow(label: String, value: String) {
         horizontalArrangement = Arrangement.SpaceBetween,
     ) {
         Text(text = label, style = MaterialTheme.typography.bodyLarge)
-        Text(
+        CopyableMetricValue(
             text = value,
             style = MaterialTheme.typography.bodyLarge,
-            fontWeight = FontWeight.Medium,
+            fontWeight = if (emphasized) FontWeight.SemiBold else FontWeight.Medium,
         )
     }
 }

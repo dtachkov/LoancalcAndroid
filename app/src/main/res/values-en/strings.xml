@@ -52,13 +52,16 @@
     <string name="requisites_payment_comment_placeholder">Credit monthly payment. VAT is not applied</string>
     <string name="paid_label">Paid:</string>
     <string name="debt_label">Owing amount:</string>
-    <string name="current_payment">Next payment:</string>
+    <string name="nearest_payment">Next payment:</string>
     <string name="pay_until">Pay until %1$s</string>
     <string name="interest_paid">Already paid interest:</string>
     <string name="remaining_to_pay">Total overpay:</string>
     <string name="total_interest">Total interest</string>
     <string name="total_commission">Fee</string>
     <string name="total_insurance">Insurance</string>
+    <string name="total_overpay">Total overpay:</string>
+    <string name="total_to_pay">Total to pay</string>
+    <string name="metric_value_copied">Number copied to clipboard</string>
     <string name="menu_extras_list">Early payments</string>
     <string name="extras_screen_title">Early payments</string>
     <string name="extras_tab_list">List</string>

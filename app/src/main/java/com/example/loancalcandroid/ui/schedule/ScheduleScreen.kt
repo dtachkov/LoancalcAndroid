@@ -46,6 +46,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import kotlinx.coroutines.delay
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import android.widget.Toast
 import com.example.loancalcandroid.R
@@ -242,8 +243,12 @@ private fun BriefScheduleTab(
         summary?.let { ScheduleSummaryBlock(it) }
     }
 
-    LaunchedEffect(rows) {
-        if (rows.isNotEmpty()) {
+    LaunchedEffect(showPreviousPayments, rows) {
+        if (rows.isEmpty()) return@LaunchedEffect
+        if (showPreviousPayments) {
+            delay(100)
+            listState.animateScrollToItem(0)
+        } else {
             val currentIndex = rows.indexOfFirst { it.isCurrent }.coerceAtLeast(0)
             listState.animateScrollToItem(currentIndex.coerceAtMost(rows.lastIndex))
         }

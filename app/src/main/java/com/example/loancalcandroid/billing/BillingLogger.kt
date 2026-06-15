@@ -3,7 +3,6 @@ package com.example.loancalcandroid.billing
 import android.os.Build
 import android.text.format.DateFormat
 import android.util.Log
-import com.example.loancalcandroid.analytics.AnalyticsHelper
 import java.io.File
 import java.util.ArrayList
 import java.util.Date
@@ -20,7 +19,6 @@ object BillingLogger {
     fun logEvent(message: String) {
         Log.d(TAG, message)
         messages += BillingEvent(Date(), message)
-        AnalyticsHelper.logEvent("BILLING_LOG", message)
     }
 
     fun getBillingEventsLog(): String {

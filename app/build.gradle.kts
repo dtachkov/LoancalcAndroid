@@ -12,8 +12,8 @@ android {
         applicationId = "ru.kredit.calculator"
         minSdk = 30
         targetSdk = 35
-        versionCode = 56
-        versionName = "2.3"
+        versionCode = 57
+        versionName = "2.4"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }

@@ -4,7 +4,6 @@ import android.app.Application
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.loancalcandroid.LoanCalcApplication
-import com.example.loancalcandroid.analytics.AnalyticsHelper
 import com.example.loancalcandroid.billing.BillingProducts
 import com.example.loancalcandroid.billing.RuStoreLicenseManager
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -69,17 +68,6 @@ class PurchaseViewModel(
         onError: (String) -> Unit,
         onCancelled: () -> Unit,
     ) {
-        val featureTitle = _uiState.value.featureTitle
-        when (productId) {
-            BillingProducts.SKU_LICENSE_FOREVER ->
-                AnalyticsHelper.logEvent("START_BUY_FULL", featureTitle)
-            BillingProducts.SKU_LICENSE_MONTH ->
-                AnalyticsHelper.logEvent("START_BUY_1month", featureTitle)
-            BillingProducts.SKU_LICENSE_YEAR ->
-                AnalyticsHelper.logEvent("START_BUY_1year", featureTitle)
-        }
-        AnalyticsHelper.logStartCheckout(featureTitle)
-
         val activity = getApplication<LoanCalcApplication>().currentActivity ?: return
         _uiState.update { it.copy(purchaseInProgress = productId, message = null) }
         licenseManager.purchase(

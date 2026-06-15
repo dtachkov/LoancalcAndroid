@@ -3,7 +3,6 @@ package com.example.loancalcandroid.billing
 import android.app.Activity
 import android.content.Context
 import com.example.loancalcandroid.BuildConfig
-import com.example.loancalcandroid.analytics.AnalyticsHelper
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -75,7 +74,6 @@ class RuStoreLicenseManager(
                 BillingLogger.logEvent(
                     "Error. getSKUDetails When getting products list with message: ${throwable.localizedMessage}",
                 )
-                AnalyticsHelper.logEvent("ERROR_BILLING", throwable.localizedMessage.orEmpty())
             }
     }
 
@@ -97,7 +95,6 @@ class RuStoreLicenseManager(
                 BillingLogger.logEvent(
                     "Error. getPurchasedItems When getting purchased items with message ${error.localizedMessage}",
                 )
-                AnalyticsHelper.logEvent("ERROR_BILLING", error.localizedMessage.orEmpty())
             }
     }
 
@@ -120,9 +117,6 @@ class RuStoreLicenseManager(
     ) {
         RuStorePayHelper.checkPurchaseAvailability(
             onUnavailable = onUnavailableMessage,
-            onError = { message ->
-                AnalyticsHelper.logEvent("ERROR_BILLING", message)
-            },
         )
     }
 
@@ -149,7 +143,6 @@ class RuStoreLicenseManager(
                 onError(message.ifBlank { "products_unavailable" })
             },
             onError = { message ->
-                AnalyticsHelper.logEvent("ERROR_BILLING", message)
                 onError(message.ifBlank { "products_unavailable" })
             },
         )
@@ -178,7 +171,6 @@ class RuStoreLicenseManager(
                         else -> {
                             val message = throwable.localizedMessage.orEmpty()
                             BillingLogger.logEvent("Error. launchBillingFlow When start purchase $message")
-                            AnalyticsHelper.logEvent("ERROR_BILLING", message)
                             onError(message)
                         }
                     }
@@ -200,18 +192,15 @@ class RuStoreLicenseManager(
                     licenseFromNewBilling = true
                     refreshLicenseState()
                     refreshOldPurchases()
-                    AnalyticsHelper.logPurchase(success = true)
                     onSuccess()
                 } else {
                     BillingLogger.logEvent("Error. handlePaymentResult Purchase not confirmed")
-                    AnalyticsHelper.logPurchase(success = false)
                     onError("purchase_not_confirmed")
                 }
             }
             .addOnFailureListener { throwable ->
                 val message = throwable.localizedMessage.orEmpty()
                 BillingLogger.logEvent("Error. handlePaymentResult $message")
-                AnalyticsHelper.logEvent("ERROR_BILLING", message)
                 onError(message)
             }
     }

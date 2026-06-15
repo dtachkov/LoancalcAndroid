@@ -11,6 +11,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
@@ -44,7 +45,11 @@ class HomeViewModel(
 
     init {
         viewModelScope.launch {
-            loanRepository.observeLoans().collect { loans ->
+            combine(
+                loanRepository.observeLoans(),
+                extraRepository.observeExtrasChanges(),
+            ) { loans, _ -> loans }
+                .collect { loans ->
                 val calculations = calculateLoans(loans)
                 val cards = loans.map { loan ->
                     LoanPresentationMapper.toCard(loan, calculations[loan.id])
