@@ -1,35 +1,40 @@
 package ru.kredit.calculator.data.util
 
-import java.text.ParseException
-import java.text.SimpleDateFormat
+import java.time.LocalDate
+import java.time.ZoneId
+import java.time.format.DateTimeFormatter
+import java.time.format.DateTimeParseException
 import java.util.Date
 import java.util.Locale
 
 object DateFormats {
-    private val dbDateFormat = SimpleDateFormat("yyyy-MM-dd", Locale.US)
+    private val dbDateFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd", Locale.US)
+    private val zoneId: ZoneId = ZoneId.systemDefault()
 
     fun formatDate(date: Date?): String? {
-        return date?.let { dbDateFormat.format(it) }
+        return date?.let { toLocalDate(it).format(dbDateFormatter) }
     }
 
     fun parseDate(value: String?): Date? {
         if (value.isNullOrBlank()) return null
         return try {
-            dbDateFormat.parse(value)
-        } catch (_: ParseException) {
+            toDate(LocalDate.parse(value, dbDateFormatter))
+        } catch (_: DateTimeParseException) {
             null
         }
     }
 
-    fun clearTime(date: Date): Date {
-        val formatted = dbDateFormat.format(date)
-        return dbDateFormat.parse(formatted) ?: date
-    }
+    fun clearTime(date: Date): Date = toDate(toLocalDate(date))
 
     fun addMonths(date: Date, months: Int): Date {
-        val calendar = java.util.Calendar.getInstance()
-        calendar.time = clearTime(date)
-        calendar.add(java.util.Calendar.MONTH, months)
-        return calendar.time
+        return toDate(toLocalDate(date).plusMonths(months.toLong()))
+    }
+
+    private fun toLocalDate(date: Date): LocalDate {
+        return date.toInstant().atZone(zoneId).toLocalDate()
+    }
+
+    private fun toDate(localDate: LocalDate): Date {
+        return Date.from(localDate.atStartOfDay(zoneId).toInstant())
     }
 }

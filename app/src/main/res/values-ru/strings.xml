@@ -36,6 +36,7 @@
     <string name="loan_amount">Сумма</string>
     <string name="loan_rate">Ставка</string>
     <string name="loan_issue_date">Дата выдачи</string>
+    <string name="loan_issue_date_hint">Если указана — первый период только проценты</string>
     <string name="loan_term_progress">%1$d из %2$d мес.</string>
     <string name="quick_early_payment">Досрочный платёж</string>
     <string name="quick_schedule">График платежей</string>

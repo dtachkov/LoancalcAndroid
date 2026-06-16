@@ -144,20 +144,24 @@ fun LoanEditorScreen(
                 value = uiState.firstPaymentDate,
                 onValueChange = viewModel::updateFirstPaymentDate,
             )
+
+            SwitchRow(
+                label = stringResource(R.string.loan_editor_issue_date_hint),
+                checked = uiState.firstPaymentInterestOnly,
+                onToggle = viewModel::toggleFirstPaymentInterestOnly,
+            )
+
+            if (uiState.firstPaymentInterestOnly) {
+                DatePickerField(
+                    label = stringResource(R.string.loan_issue_date),
+                    value = uiState.dateOfIssue,
+                    onValueChange = viewModel::updateDateOfIssue,
+                )
+            }
+
             uiState.dateError?.let { error ->
                 Text(text = error, color = MaterialTheme.colorScheme.error)
             }
-
-            DatePickerField(
-                label = stringResource(R.string.loan_editor_issue_date),
-                value = uiState.dateOfIssue,
-                onValueChange = viewModel::updateDateOfIssue,
-            )
-            Text(
-                text = stringResource(R.string.loan_editor_issue_date_hint),
-                style = MaterialTheme.typography.bodySmall,
-                color = MaterialTheme.colorScheme.onSurfaceVariant,
-            )
 
             TextButton(
                 onClick = viewModel::toggleAdvanced,

@@ -14,6 +14,7 @@ import kotlinx.coroutines.withContext
 import ru.kredit.calculator.data.LoanCalcData
 import ru.kredit.calculator.data.model.Loan
 import ru.kredit.calculator.data.model.LoanType
+import ru.kredit.calculator.data.util.DateFormats
 import java.util.Calendar
 import java.util.Date
 
@@ -27,6 +28,7 @@ data class LoanEditorUiState(
     val term: String = "",
     val loanType: LoanType = LoanType.ANNUITY,
     val firstPaymentDate: Date? = null,
+    val firstPaymentInterestOnly: Boolean = false,
     val dateOfIssue: Date? = null,
     val considerDaysOff: Boolean = false,
     val payOnLastDayOfMonth: Boolean = false,
@@ -59,11 +61,10 @@ class LoanEditorViewModel(
         if (loanId != null) {
             loadLoan(loanId)
         } else {
-            val today = Date()
             _uiState.update {
                 it.copy(
                     isLoading = false,
-                    firstPaymentDate = today.clearTime(),
+                    firstPaymentDate = Date().clearTime(),
                 )
             }
         }
@@ -74,8 +75,24 @@ class LoanEditorViewModel(
     fun updateRate(value: String) = _uiState.update { it.copy(rate = value, rateError = null) }
     fun updateTerm(value: String) = _uiState.update { it.copy(term = value, termError = null) }
     fun updateLoanType(type: LoanType) = _uiState.update { it.copy(loanType = type) }
-    fun updateFirstPaymentDate(date: Date) = _uiState.update { it.copy(firstPaymentDate = date, dateError = null) }
-    fun updateDateOfIssue(date: Date?) = _uiState.update { it.copy(dateOfIssue = date) }
+    fun updateFirstPaymentDate(date: Date) = _uiState.update { it.copy(firstPaymentDate = date.clearTime(), dateError = null) }
+    fun updateDateOfIssue(date: Date) = _uiState.update { it.copy(dateOfIssue = date.clearTime(), dateError = null) }
+
+    fun toggleFirstPaymentInterestOnly() = _uiState.update { state ->
+        val enabled = !state.firstPaymentInterestOnly
+        if (!enabled) {
+            state.copy(firstPaymentInterestOnly = false, dateOfIssue = null, dateError = null)
+        } else {
+            val defaultIssueDate = state.dateOfIssue
+                ?: state.firstPaymentDate?.let { DateFormats.addMonths(it, -1) }
+            state.copy(
+                firstPaymentInterestOnly = true,
+                dateOfIssue = defaultIssueDate,
+                dateError = null,
+            )
+        }
+    }
+
     fun toggleConsiderDaysOff() = _uiState.update { it.copy(considerDaysOff = !it.considerDaysOff) }
     fun togglePayOnLastDayOfMonth() = _uiState.update { it.copy(payOnLastDayOfMonth = !it.payOnLastDayOfMonth) }
     fun toggleApplyExtrasImmediately() = _uiState.update { it.copy(applyExtrasImmediately = !it.applyExtrasImmediately) }
@@ -132,6 +149,7 @@ class LoanEditorViewModel(
                     term = loan.term.toString(),
                     loanType = loan.type,
                     firstPaymentDate = loan.firstPaymentDate,
+                    firstPaymentInterestOnly = loan.dateOfIssue != null,
                     dateOfIssue = loan.dateOfIssue,
                     considerDaysOff = loan.considerDaysOff,
                     payOnLastDayOfMonth = loan.payOnLastDayOfMonth,
@@ -170,6 +188,10 @@ class LoanEditorViewModel(
             dateError = "Укажите дату первого платежа"
             valid = false
         }
+        if (state.firstPaymentInterestOnly && state.dateOfIssue == null) {
+            dateError = "Укажите дату выдачи кредита"
+            valid = false
+        }
 
         _uiState.update {
             it.copy(
@@ -191,7 +213,7 @@ class LoanEditorViewModel(
             term = com.example.loancalcandroid.util.Formatters.parseInt(state.term),
             type = state.loanType,
             firstPaymentDate = state.firstPaymentDate,
-            dateOfIssue = state.dateOfIssue,
+            dateOfIssue = if (state.firstPaymentInterestOnly) state.dateOfIssue else null,
             considerDaysOff = state.considerDaysOff,
             payOnLastDayOfMonth = state.payOnLastDayOfMonth,
             applyExtrasImmediately = state.applyExtrasImmediately,

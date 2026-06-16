@@ -18,7 +18,8 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import com.example.loancalcandroid.R
 import com.example.loancalcandroid.util.Formatters
-import java.util.Calendar
+import com.example.loancalcandroid.util.toDatePickerMillis
+import com.example.loancalcandroid.util.toLocalDateFromDatePicker
 import java.util.Date
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -51,7 +52,7 @@ fun DatePickerField(
     )
 
     if (showDialog) {
-        val initialMillis = value?.time ?: System.currentTimeMillis()
+        val initialMillis = value?.toDatePickerMillis() ?: Date().toDatePickerMillis()
         val datePickerState = rememberDatePickerState(initialSelectedDateMillis = initialMillis)
         DatePickerDialog(
             onDismissRequest = { showDialog = false },
@@ -59,7 +60,7 @@ fun DatePickerField(
                 TextButton(
                     onClick = {
                         datePickerState.selectedDateMillis?.let { millis ->
-                            onValueChange(millis.toLocalDate())
+                            onValueChange(millis.toLocalDateFromDatePicker())
                         }
                         showDialog = false
                     },
@@ -76,14 +77,4 @@ fun DatePickerField(
             DatePicker(state = datePickerState)
         }
     }
-}
-
-private fun Long.toLocalDate(): Date {
-    val calendar = Calendar.getInstance()
-    calendar.timeInMillis = this
-    calendar.set(Calendar.HOUR_OF_DAY, 0)
-    calendar.set(Calendar.MINUTE, 0)
-    calendar.set(Calendar.SECOND, 0)
-    calendar.set(Calendar.MILLISECOND, 0)
-    return calendar.time
 }

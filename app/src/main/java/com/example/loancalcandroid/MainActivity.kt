@@ -8,12 +8,10 @@ import androidx.activity.enableEdgeToEdge
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.ui.Modifier
-import com.example.loancalcandroid.analytics.AnalyticsHelper
 import com.example.loancalcandroid.billing.RuStorePayHelper
 import com.example.loancalcandroid.navigation.LoanCalcNavGraph
 import com.example.loancalcandroid.notification.NotificationActions
 import com.example.loancalcandroid.ui.theme.LoanCalcAndroidTheme
-import com.example.loancalcandroid.BuildConfig
 import ru.kredit.calculator.data.LoanCalcData
 import java.util.Date
 
@@ -24,7 +22,6 @@ class MainActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
         RuStorePayHelper.proceedPaymentIntent(this, intent)
         handleNotificationIntent(intent)
-        AnalyticsHelper.logEvent("APP_OPEN", BuildConfig.VERSION_NAME)
         enableEdgeToEdge()
         setContent {
             LoanCalcAndroidTheme {

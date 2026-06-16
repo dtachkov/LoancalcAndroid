@@ -53,9 +53,10 @@ import com.example.loancalcandroid.ui.common.LoanOutlinedTextField
 import com.example.loancalcandroid.ui.extraFormViewModel
 import com.example.loancalcandroid.ui.theme.LoanTextSecondary
 import com.example.loancalcandroid.util.Formatters
+import com.example.loancalcandroid.util.toDatePickerMillis
+import com.example.loancalcandroid.util.toLocalDateFromDatePicker
 import ru.kredit.calculator.data.calculation.ExtraTypeUtils
 import ru.kredit.calculator.data.model.ExtraType
-import java.util.Calendar
 import java.util.Date
 
 private val ExtraRulesHeaderColor = Color(0xFFE8F7FA)
@@ -202,7 +203,7 @@ fun ExtraFormScreen(
     }
 
     if (showDatePicker) {
-        val initialMillis = uiState.date?.time ?: System.currentTimeMillis()
+        val initialMillis = uiState.date?.toDatePickerMillis() ?: Date().toDatePickerMillis()
         val datePickerState = rememberDatePickerState(initialSelectedDateMillis = initialMillis)
         DatePickerDialog(
             onDismissRequest = { showDatePicker = false },
@@ -210,7 +211,7 @@ fun ExtraFormScreen(
                 TextButton(
                     onClick = {
                         datePickerState.selectedDateMillis?.let { millis ->
-                            viewModel.updateDate(millis.toLocalDate())
+                            viewModel.updateDate(millis.toLocalDateFromDatePicker())
                         }
                         showDatePicker = false
                     },
@@ -352,14 +353,4 @@ private fun ExtraRulesSection(
             }
         }
     }
-}
-
-private fun Long.toLocalDate(): Date {
-    val calendar = Calendar.getInstance()
-    calendar.timeInMillis = this
-    calendar.set(Calendar.HOUR_OF_DAY, 0)
-    calendar.set(Calendar.MINUTE, 0)
-    calendar.set(Calendar.SECOND, 0)
-    calendar.set(Calendar.MILLISECOND, 0)
-    return calendar.time
 }
