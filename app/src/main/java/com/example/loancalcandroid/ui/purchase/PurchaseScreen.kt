@@ -9,6 +9,7 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.defaultMinSize
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -69,17 +70,19 @@ import com.example.loancalcandroid.ui.theme.PaywallPlanButton
 import com.example.loancalcandroid.ui.theme.PaywallSocialProof
 
 private val PaywallFeatureCardHeight = 88.dp
-private val PaywallPlanBodyHeight = 196.dp
-private val PaywallRecommendedExtraTop = 22.dp
+private val PaywallCenterCardHeight = 228.dp
+private val PaywallSideCardHeight = 196.dp
 private val PaywallPlanButtonHeight = 56.dp
 private val PaywallCrownSlotHeight = 20.dp
 private val PaywallCrownButtonGap = 12.dp
 private val PaywallPlanTitleSlotHeight = 32.dp
 private val PaywallPlanPriceSlotHeight = 34.dp
-private val PaywallPlanContentPadding = 10.dp
+private val PaywallPlanHorizontalPadding = 6.dp
 private val PaywallBadgeOverlap = 14.dp
 private val PaywallCrownWidth = 34.dp
 private val PaywallCrownHeight = 18.dp
+private val PaywallContentTop =
+    (PaywallCenterCardHeight - PaywallSideCardHeight) / 2 + 10.dp
 
 private data class PaywallFeatureItem(
     val iconRes: Int,
@@ -349,17 +352,19 @@ private fun PaywallPlansRow(
     Row(
         modifier = Modifier
             .fillMaxWidth()
+            .height(PaywallCenterCardHeight)
             .graphicsLayer { clip = false }
             .padding(top = PaywallBadgeOverlap),
         horizontalArrangement = Arrangement.spacedBy(6.dp),
-        verticalAlignment = Alignment.Bottom,
     ) {
         options.forEach { option ->
             PaywallPlanCard(
                 option = option,
                 isLoading = purchaseInProgress == option.productId,
                 onBuy = { onBuy(option.productId) },
-                modifier = Modifier.weight(1f),
+                modifier = Modifier
+                    .weight(1f)
+                    .fillMaxHeight(),
             )
         }
     }
@@ -373,25 +378,19 @@ private fun PaywallPlanCard(
     modifier: Modifier = Modifier,
 ) {
     val cardShape = RoundedCornerShape(16.dp)
-    val shellHeight = if (option.isRecommended) {
-        PaywallPlanBodyHeight + PaywallRecommendedExtraTop
-    } else {
-        PaywallPlanBodyHeight
-    }
+    val isRecommended = option.isRecommended
+    val cardHeight = if (isRecommended) PaywallCenterCardHeight else PaywallSideCardHeight
 
     Box(
-        modifier = modifier
-            .height(shellHeight)
-            .fillMaxWidth()
-            .graphicsLayer { clip = false },
+        modifier = modifier.graphicsLayer { clip = false },
     ) {
         Surface(
             modifier = Modifier
-                .align(Alignment.BottomCenter)
-                .height(PaywallPlanBodyHeight)
+                .align(if (isRecommended) Alignment.TopCenter else Alignment.Center)
+                .height(cardHeight)
                 .fillMaxWidth()
                 .then(
-                    if (option.isRecommended) {
+                    if (isRecommended) {
                         Modifier
                             .shadow(10.dp, cardShape, ambientColor = PaywallOrange, spotColor = PaywallOrange)
                             .border(2.5.dp, PaywallOrange, cardShape)
@@ -401,50 +400,42 @@ private fun PaywallPlanCard(
                 ),
             shape = cardShape,
             color = PaywallFeatureCard,
+        ) {}
+
+        Column(
+            modifier = Modifier
+                .align(Alignment.TopCenter)
+                .fillMaxWidth()
+                .padding(
+                    top = PaywallContentTop,
+                    start = PaywallPlanHorizontalPadding,
+                    end = PaywallPlanHorizontalPadding,
+                ),
+            horizontalAlignment = Alignment.CenterHorizontally,
         ) {
-            PaywallPlanContent(
-                option = option,
+            PaywallPlanTitleSlot(text = stringResource(option.planTitleRes))
+            PaywallPlanPriceSlot(text = option.price)
+            PaywallPlanCrownSlot(filled = option.crownFilled)
+            Spacer(modifier = Modifier.height(PaywallCrownButtonGap))
+            PaywallPlanButton(
+                text = stringResource(option.buttonTextRes),
+                isRecommended = isRecommended,
                 isLoading = isLoading,
-                onBuy = onBuy,
+                onClick = onBuy,
+                modifier = Modifier.height(PaywallPlanButtonHeight),
             )
         }
 
-        if (option.isRecommended && option.discountPercent != null) {
+        if (isRecommended && option.discountPercent != null) {
             PaywallBadge(
                 modifier = Modifier
                     .align(Alignment.TopCenter)
-                    .offset(y = (PaywallRecommendedExtraTop - PaywallBadgeOverlap).coerceAtLeast(0.dp))
+                    .offset(y = (-PaywallBadgeOverlap))
                     .zIndex(2f),
                 text = stringResource(R.string.paywall_discount, option.discountPercent),
                 backgroundColor = PaywallBadgeGrey,
             )
         }
-    }
-}
-
-@Composable
-private fun PaywallPlanContent(
-    option: PurchaseOptionUi,
-    isLoading: Boolean,
-    onBuy: () -> Unit,
-) {
-    Column(
-        modifier = Modifier
-            .fillMaxSize()
-            .padding(PaywallPlanContentPadding),
-        horizontalAlignment = Alignment.CenterHorizontally,
-    ) {
-        PaywallPlanTitleSlot(text = stringResource(option.planTitleRes))
-        PaywallPlanPriceSlot(text = option.price)
-        PaywallPlanCrownSlot(filled = option.crownFilled)
-        Spacer(modifier = Modifier.height(PaywallCrownButtonGap))
-        PaywallPlanButton(
-            text = stringResource(option.buttonTextRes),
-            isRecommended = option.isRecommended,
-            isLoading = isLoading,
-            onClick = onBuy,
-            modifier = Modifier.height(PaywallPlanButtonHeight),
-        )
     }
 }
 
