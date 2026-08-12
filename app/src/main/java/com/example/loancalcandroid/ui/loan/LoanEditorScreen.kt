@@ -9,6 +9,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.foundation.layout.size
+import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -41,6 +42,7 @@ fun LoanEditorScreen(
     loanId: Long?,
     onBack: () -> Unit,
     onSaved: (Long) -> Unit,
+    onOpenInfiniteLoanHelp: () -> Unit = {},
 ) {
     val viewModel: LoanEditorViewModel = loanEditorViewModel(loanId) { app, id ->
         LoanEditorViewModel(app, id)
@@ -48,6 +50,28 @@ fun LoanEditorScreen(
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
 
     RequestRuStoreReviewEffect(uiState.reviewRequestTrigger)
+
+    if (uiState.showInfiniteLoanDialog) {
+        AlertDialog(
+            onDismissRequest = viewModel::dismissInfiniteLoanDialog,
+            text = { Text(stringResource(R.string.error_infinite_loan)) },
+            confirmButton = {
+                TextButton(
+                    onClick = {
+                        viewModel.dismissInfiniteLoanDialog()
+                        onOpenInfiniteLoanHelp()
+                    },
+                ) {
+                    Text(stringResource(R.string.infinite_loan_learn_more))
+                }
+            },
+            dismissButton = {
+                TextButton(onClick = viewModel::dismissInfiniteLoanDialog) {
+                    Text(stringResource(R.string.ok))
+                }
+            },
+        )
+    }
 
     LaunchedEffect(uiState.savedLoanId) {
         uiState.savedLoanId?.let { onSaved(it) }

@@ -12,6 +12,7 @@ import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import ru.kredit.calculator.data.LoanCalcData
+import ru.kredit.calculator.data.calculation.CalculationErrors
 import ru.kredit.calculator.data.model.Loan
 import ru.kredit.calculator.data.model.LoanType
 import ru.kredit.calculator.data.util.DateFormats
@@ -42,6 +43,7 @@ data class LoanEditorUiState(
     val termError: String? = null,
     val dateError: String? = null,
     val saveError: String? = null,
+    val showInfiniteLoanDialog: Boolean = false,
     val savedLoanId: Long? = null,
     val reviewRequestTrigger: Int = 0,
 )
@@ -103,18 +105,21 @@ class LoanEditorViewModel(
     fun toggleExtraDayInMonth() = _uiState.update { it.copy(extraDayInMonth = !it.extraDayInMonth) }
     fun toggleAdvanced() = _uiState.update { it.copy(showAdvanced = !it.showAdvanced) }
 
+    fun dismissInfiniteLoanDialog() {
+        _uiState.update { it.copy(showInfiniteLoanDialog = false) }
+    }
+
     fun save() {
         val state = _uiState.value
         if (!validate(state)) return
 
         viewModelScope.launch {
-            _uiState.update { it.copy(isSaving = true, saveError = null) }
+            _uiState.update { it.copy(isSaving = true, saveError = null, showInfiniteLoanDialog = false) }
             try {
                 val loan = buildLoan(state)
                 val extras = if (loan.id != 0L) extraRepository.getExtras(loan.id) else emptyList()
                 val monthlyPayment = withContext(Dispatchers.Default) {
-                    runCatching { loanCalculator.calculate(loan, extras).currentPayment.toFloat() }
-                        .getOrDefault(0f)
+                    loanCalculator.calculate(loan, extras).currentPayment.toFloat()
                 }
                 val saved = loanRepository.saveLoan(loan.copy(monthlyPayment = monthlyPayment))
                 AnalyticsHelper.logCalculation(loan.amount, "LoanEditorViewModel")
@@ -126,8 +131,14 @@ class LoanEditorViewModel(
                     )
                 }
             } catch (e: Exception) {
-                _uiState.update {
-                    it.copy(isSaving = false, saveError = e.message ?: "Ошибка сохранения")
+                if (CalculationErrors.isInfiniteLoan(e)) {
+                    _uiState.update {
+                        it.copy(isSaving = false, showInfiniteLoanDialog = true)
+                    }
+                } else {
+                    _uiState.update {
+                        it.copy(isSaving = false, saveError = CalculationErrors.format(e))
+                    }
                 }
             }
         }

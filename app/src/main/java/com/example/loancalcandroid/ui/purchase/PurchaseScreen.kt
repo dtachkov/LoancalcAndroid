@@ -1,17 +1,18 @@
 package com.example.loancalcandroid.ui.purchase
 
-import androidx.compose.animation.AnimatedVisibility
-import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.defaultMinSize
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
@@ -20,11 +21,8 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
-import androidx.compose.material.icons.automirrored.filled.KeyboardArrowRight
-import androidx.compose.material3.CenterAlignedTopAppBar
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
@@ -33,18 +31,18 @@ import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
+import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.saveable.rememberSaveable
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.rotate
+import androidx.compose.ui.draw.clip
+import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
@@ -56,19 +54,36 @@ import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.compose.ui.zIndex
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.loancalcandroid.R
 import com.example.loancalcandroid.billing.BillingSupportUtil
-import com.example.loancalcandroid.ui.theme.LoanCardSurface
 import com.example.loancalcandroid.ui.theme.LoanTextSecondary
-import com.example.loancalcandroid.ui.theme.PremiumBuyButton
-import com.example.loancalcandroid.ui.theme.PremiumDivider
-import com.example.loancalcandroid.ui.theme.PremiumFeaturesBackground
+import com.example.loancalcandroid.ui.theme.PaywallBackground
+import com.example.loancalcandroid.ui.theme.PaywallBadgeGrey
+import com.example.loancalcandroid.ui.theme.PaywallFeatureCard
+import com.example.loancalcandroid.ui.theme.PaywallOrange
+import com.example.loancalcandroid.ui.theme.PaywallOrangeDark
+import com.example.loancalcandroid.ui.theme.PaywallPlanButton
+import com.example.loancalcandroid.ui.theme.PaywallSocialProof
 
-private data class PremiumFeatureItem(
+private val PaywallFeatureCardHeight = 88.dp
+private val PaywallPlanBodyHeight = 196.dp
+private val PaywallRecommendedExtraTop = 22.dp
+private val PaywallPlanButtonHeight = 56.dp
+private val PaywallCrownSlotHeight = 20.dp
+private val PaywallCrownButtonGap = 12.dp
+private val PaywallPlanTitleSlotHeight = 32.dp
+private val PaywallPlanPriceSlotHeight = 34.dp
+private val PaywallPlanContentPadding = 10.dp
+private val PaywallBadgeOverlap = 14.dp
+private val PaywallCrownWidth = 34.dp
+private val PaywallCrownHeight = 18.dp
+
+private data class PaywallFeatureItem(
+    val iconRes: Int,
     val titleRes: Int,
-    val descriptionRes: Int,
 )
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -99,17 +114,12 @@ fun PurchaseScreen(
         viewModel.clearMessage()
     }
 
-    val screenTitle = if (uiState.isLicensed) {
-        stringResource(R.string.premium_title)
-    } else {
-        stringResource(R.string.feature_request_title)
-    }
-
     Scaffold(
         snackbarHost = { SnackbarHost(snackbarHostState) },
+        containerColor = PaywallBackground,
         topBar = {
-            CenterAlignedTopAppBar(
-                title = { Text(screenTitle) },
+            TopAppBar(
+                title = {},
                 navigationIcon = {
                     IconButton(onClick = onBack) {
                         Icon(
@@ -118,8 +128,8 @@ fun PurchaseScreen(
                         )
                     }
                 },
-                colors = TopAppBarDefaults.centerAlignedTopAppBarColors(
-                    containerColor = MaterialTheme.colorScheme.background,
+                colors = TopAppBarDefaults.topAppBarColors(
+                    containerColor = PaywallBackground,
                 ),
             )
         },
@@ -128,31 +138,37 @@ fun PurchaseScreen(
             modifier = Modifier
                 .fillMaxSize()
                 .padding(innerPadding)
-                .verticalScroll(rememberScrollState()),
+                .verticalScroll(rememberScrollState())
+                .padding(horizontal = 16.dp),
         ) {
-            PremiumStatusSection(
-                isLicensed = uiState.isLicensed,
-                featureTitle = uiState.featureTitle,
-            )
-
-            if (uiState.isLoadingProducts) {
-                Box(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(vertical = 32.dp),
-                    contentAlignment = Alignment.Center,
-                ) {
-                    CircularProgressIndicator()
-                }
+            if (uiState.isLicensed) {
+                LicensedBanner()
+                Spacer(modifier = Modifier.height(16.dp))
             } else {
-                uiState.options.forEach { option ->
-                    PurchaseOptionRow(
-                        title = option.title,
-                        price = option.price,
-                        isLoading = uiState.purchaseInProgress == option.productId,
-                        onBuy = {
+                PaywallHeader()
+                Spacer(modifier = Modifier.height(12.dp))
+            }
+
+            PaywallFeaturesGrid()
+            Spacer(modifier = Modifier.height(20.dp))
+
+            if (!uiState.isLicensed) {
+                if (uiState.isLoadingProducts) {
+                    Box(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(vertical = 32.dp),
+                        contentAlignment = Alignment.Center,
+                    ) {
+                        CircularProgressIndicator(color = PaywallPlanButton)
+                    }
+                } else {
+                    PaywallPlansRow(
+                        options = uiState.options,
+                        purchaseInProgress = uiState.purchaseInProgress,
+                        onBuy = { productId ->
                             viewModel.purchase(
-                                productId = option.productId,
+                                productId = productId,
                                 onSuccess = onPurchased,
                                 onError = {},
                                 onCancelled = {},
@@ -160,17 +176,19 @@ fun PurchaseScreen(
                         },
                     )
                 }
+                Spacer(modifier = Modifier.height(20.dp))
             }
 
-            PremiumFeaturesSection()
+            PaywallSocialProof()
+            Spacer(modifier = Modifier.height(8.dp))
 
             Text(
                 text = stringResource(R.string.send_support),
                 modifier = Modifier
                     .fillMaxWidth()
                     .clickable { BillingSupportUtil.shareBillingLog(context) }
-                    .padding(horizontal = 16.dp, vertical = 12.dp),
-                style = MaterialTheme.typography.bodyMedium.copy(
+                    .padding(vertical = 12.dp),
+                style = MaterialTheme.typography.bodySmall.copy(
                     color = LoanTextSecondary,
                     textDecoration = TextDecoration.Underline,
                 ),
@@ -183,212 +201,400 @@ fun PurchaseScreen(
 }
 
 @Composable
-private fun PremiumStatusSection(
-    isLicensed: Boolean,
-    featureTitle: String,
-) {
+private fun LicensedBanner() {
+    val premiumExistText = stringResource(R.string.premium_exist)
+    val premiumLabel = "Premium"
+    val premiumIndex = premiumExistText.indexOf(premiumLabel)
+
     Surface(
         modifier = Modifier.fillMaxWidth(),
-        color = LoanCardSurface,
+        shape = RoundedCornerShape(16.dp),
+        color = PaywallFeatureCard,
     ) {
         Column(
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(horizontal = 16.dp, vertical = 20.dp),
+                .padding(horizontal = 20.dp, vertical = 24.dp),
             horizontalAlignment = Alignment.CenterHorizontally,
         ) {
-            if (isLicensed) {
-                val premiumExistText = stringResource(R.string.premium_exist)
-                val premiumLabel = "Premium"
-                val premiumIndex = premiumExistText.indexOf(premiumLabel)
-                Text(
-                    text = if (premiumIndex >= 0) {
-                        buildAnnotatedString {
-                            append(premiumExistText.substring(0, premiumIndex))
-                            withStyle(SpanStyle(fontWeight = FontWeight.Bold)) {
-                                append(premiumLabel)
-                            }
-                            append(premiumExistText.substring(premiumIndex + premiumLabel.length))
+            Text(
+                text = if (premiumIndex >= 0) {
+                    buildAnnotatedString {
+                        append(premiumExistText.substring(0, premiumIndex))
+                        withStyle(SpanStyle(fontWeight = FontWeight.Bold)) {
+                            append(premiumLabel)
                         }
-                    } else {
-                        buildAnnotatedString { append(premiumExistText) }
-                    },
-                    style = MaterialTheme.typography.titleMedium,
-                    textAlign = TextAlign.Center,
-                )
-                Spacer(modifier = Modifier.height(12.dp))
-                Text(
-                    text = stringResource(R.string.all_features_available),
-                    style = MaterialTheme.typography.headlineSmall.copy(
-                        fontWeight = FontWeight.Bold,
-                    ),
-                    textAlign = TextAlign.Center,
-                )
-            } else {
-                Text(
-                    text = stringResource(R.string.you_are_try_function, featureTitle),
-                    style = MaterialTheme.typography.titleMedium,
-                    textAlign = TextAlign.Center,
-                )
-                Spacer(modifier = Modifier.height(12.dp))
-                Text(
-                    text = stringResource(R.string.trying_to_use_only_paid),
-                    style = MaterialTheme.typography.bodyMedium,
-                    color = LoanTextSecondary,
-                    textAlign = TextAlign.Center,
-                    lineHeight = 22.sp,
-                )
-            }
+                        append(premiumExistText.substring(premiumIndex + premiumLabel.length))
+                    }
+                } else {
+                    buildAnnotatedString { append(premiumExistText) }
+                },
+                style = MaterialTheme.typography.titleMedium,
+                textAlign = TextAlign.Center,
+            )
+            Spacer(modifier = Modifier.height(8.dp))
+            Text(
+                text = stringResource(R.string.all_features_available),
+                style = MaterialTheme.typography.headlineSmall.copy(fontWeight = FontWeight.Bold),
+                textAlign = TextAlign.Center,
+            )
         }
     }
 }
 
 @Composable
-private fun PurchaseOptionRow(
-    title: String,
-    price: String,
-    isLoading: Boolean,
-    onBuy: () -> Unit,
-) {
-    Column(modifier = Modifier.fillMaxWidth()) {
-        HorizontalDivider(
-            modifier = Modifier.fillMaxWidth(),
-            thickness = 2.dp,
-            color = PremiumDivider,
+private fun PaywallHeader() {
+    Text(
+        text = stringResource(R.string.paywall_headline),
+        modifier = Modifier.fillMaxWidth(),
+        style = MaterialTheme.typography.headlineSmall.copy(
+            fontWeight = FontWeight.Bold,
+            lineHeight = 30.sp,
+        ),
+        textAlign = TextAlign.Center,
+    )
+    Spacer(modifier = Modifier.height(8.dp))
+    Text(
+        text = stringResource(R.string.paywall_subheadline),
+        modifier = Modifier.fillMaxWidth(),
+        style = MaterialTheme.typography.bodyMedium,
+        color = LoanTextSecondary,
+        textAlign = TextAlign.Center,
+        lineHeight = 22.sp,
+    )
+}
+
+@Composable
+private fun PaywallFeaturesGrid() {
+    val features = remember {
+        listOf(
+            PaywallFeatureItem(R.drawable.ic_paywall_forecast, R.string.paywall_feature_forecast),
+            PaywallFeatureItem(R.drawable.ic_paywall_extra_payments, R.string.paywall_feature_extra_payments),
+            PaywallFeatureItem(R.drawable.ic_paywall_best_date, R.string.paywall_feature_best_date),
+            PaywallFeatureItem(R.drawable.ic_paywall_reminder, R.string.paywall_feature_reminder),
+            PaywallFeatureItem(R.drawable.ic_paywall_profit, R.string.paywall_feature_profit),
+            PaywallFeatureItem(R.drawable.ic_paywall_best_loan, R.string.paywall_feature_best_loan),
         )
-        Row(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(horizontal = 10.dp, vertical = 10.dp),
-            verticalAlignment = Alignment.CenterVertically,
-        ) {
-            Icon(
-                painter = painterResource(R.drawable.ic_premium),
-                contentDescription = null,
-                modifier = Modifier.size(width = 22.dp, height = 11.dp),
-                tint = Color.Unspecified,
-            )
-            Spacer(modifier = Modifier.width(10.dp))
-            Column(modifier = Modifier.weight(1f)) {
-                Text(
-                    text = title,
-                    style = MaterialTheme.typography.bodyLarge,
-                )
-                Text(
-                    text = price,
-                    style = MaterialTheme.typography.bodyLarge,
-                    fontWeight = FontWeight.Bold,
-                )
-            }
-            if (isLoading) {
-                CircularProgressIndicator(modifier = Modifier.size(28.dp))
-            } else {
-                Surface(
-                    modifier = Modifier.clickable(onClick = onBuy),
-                    shape = RoundedCornerShape(4.dp),
-                    color = PremiumBuyButton,
-                ) {
-                    Text(
-                        text = stringResource(R.string.buy_button_title).uppercase(),
-                        modifier = Modifier.padding(horizontal = 16.dp, vertical = 10.dp),
-                        style = MaterialTheme.typography.labelLarge.copy(
-                            color = Color.White,
-                            fontWeight = FontWeight.Medium,
-                        ),
+    }
+
+    Column(modifier = Modifier.fillMaxWidth()) {
+        features.chunked(2).forEach { rowFeatures ->
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(bottom = 8.dp),
+                horizontalArrangement = Arrangement.spacedBy(8.dp),
+            ) {
+                rowFeatures.forEach { feature ->
+                    PaywallFeatureCard(
+                        iconRes = feature.iconRes,
+                        title = stringResource(feature.titleRes),
+                        modifier = Modifier.weight(1f),
                     )
+                }
+                if (rowFeatures.size == 1) {
+                    Spacer(modifier = Modifier.weight(1f))
                 }
             }
         }
-        HorizontalDivider(
-            modifier = Modifier.fillMaxWidth(),
-            thickness = 2.dp,
-            color = PremiumDivider,
-        )
     }
 }
 
 @Composable
-private fun PremiumFeaturesSection() {
-    val features = remember {
-        listOf(
-            PremiumFeatureItem(R.string.feature_extra_forecast, R.string.feature_forecast_description),
-            PremiumFeatureItem(R.string.feature_extra_payments, R.string.feature_extra_payments_description),
-            PremiumFeatureItem(R.string.feature_best_date, R.string.feature_best_date_description),
-            PremiumFeatureItem(R.string.feature_reminder, R.string.feature_reminder_description),
-            PremiumFeatureItem(R.string.feature_extra_profit, R.string.feature_extra_profit_description),
-            PremiumFeatureItem(R.string.feature_best_loan, R.string.feature_best_loan_description),
-        )
-    }
-
-    Column(
-        modifier = Modifier
-            .fillMaxWidth()
-            .padding(top = 8.dp)
-            .background(PremiumFeaturesBackground),
-    ) {
-        Text(
-            text = stringResource(R.string.all_features_title),
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(horizontal = 16.dp, vertical = 16.dp),
-            style = MaterialTheme.typography.titleMedium,
-            textAlign = TextAlign.Center,
-        )
-        features.forEach { feature ->
-            PremiumFeatureRow(
-                title = stringResource(feature.titleRes),
-                description = stringResource(feature.descriptionRes),
-            )
-        }
-    }
-}
-
-@Composable
-private fun PremiumFeatureRow(
+private fun PaywallFeatureCard(
+    iconRes: Int,
     title: String,
-    description: String,
+    modifier: Modifier = Modifier,
 ) {
-    var expanded by rememberSaveable { mutableStateOf(false) }
-    val rotation by animateFloatAsState(
-        targetValue = if (expanded) 90f else 0f,
-        label = "featureChevron",
-    )
-
-    Column(
-        modifier = Modifier
-            .fillMaxWidth()
-            .padding(horizontal = 5.dp),
+    Surface(
+        modifier = modifier
+            .defaultMinSize(minHeight = PaywallFeatureCardHeight)
+            .height(PaywallFeatureCardHeight),
+        shape = RoundedCornerShape(14.dp),
+        color = PaywallFeatureCard,
+        shadowElevation = 2.dp,
     ) {
         Row(
             modifier = Modifier
-                .fillMaxWidth()
-                .background(PremiumFeaturesBackground)
-                .clickable { expanded = !expanded }
-                .padding(horizontal = 10.dp, vertical = 10.dp),
+                .fillMaxSize()
+                .padding(start = 10.dp, end = 8.dp, top = 10.dp, bottom = 10.dp),
             verticalAlignment = Alignment.CenterVertically,
-            horizontalArrangement = Arrangement.SpaceBetween,
         ) {
+            Icon(
+                painter = painterResource(iconRes),
+                contentDescription = null,
+                modifier = Modifier.size(40.dp),
+                tint = Color.Unspecified,
+            )
+            Spacer(modifier = Modifier.width(8.dp))
             Text(
                 text = title,
                 modifier = Modifier.weight(1f),
-                style = MaterialTheme.typography.bodyLarge,
-            )
-            Icon(
-                imageVector = Icons.AutoMirrored.Filled.KeyboardArrowRight,
-                contentDescription = null,
-                modifier = Modifier.rotate(rotation),
-                tint = LoanTextSecondary,
+                style = MaterialTheme.typography.labelMedium.copy(
+                    fontWeight = FontWeight.Medium,
+                    lineHeight = 16.sp,
+                    fontSize = 12.sp,
+                ),
             )
         }
-        AnimatedVisibility(visible = expanded) {
-            Text(
-                text = description,
+    }
+}
+
+@Composable
+private fun PaywallPlansRow(
+    options: List<PurchaseOptionUi>,
+    purchaseInProgress: String?,
+    onBuy: (String) -> Unit,
+) {
+    Row(
+        modifier = Modifier
+            .fillMaxWidth()
+            .graphicsLayer { clip = false }
+            .padding(top = PaywallBadgeOverlap),
+        horizontalArrangement = Arrangement.spacedBy(6.dp),
+        verticalAlignment = Alignment.Bottom,
+    ) {
+        options.forEach { option ->
+            PaywallPlanCard(
+                option = option,
+                isLoading = purchaseInProgress == option.productId,
+                onBuy = { onBuy(option.productId) },
+                modifier = Modifier.weight(1f),
+            )
+        }
+    }
+}
+
+@Composable
+private fun PaywallPlanCard(
+    option: PurchaseOptionUi,
+    isLoading: Boolean,
+    onBuy: () -> Unit,
+    modifier: Modifier = Modifier,
+) {
+    val cardShape = RoundedCornerShape(16.dp)
+    val shellHeight = if (option.isRecommended) {
+        PaywallPlanBodyHeight + PaywallRecommendedExtraTop
+    } else {
+        PaywallPlanBodyHeight
+    }
+
+    Box(
+        modifier = modifier
+            .height(shellHeight)
+            .fillMaxWidth()
+            .graphicsLayer { clip = false },
+    ) {
+        Surface(
+            modifier = Modifier
+                .align(Alignment.BottomCenter)
+                .height(PaywallPlanBodyHeight)
+                .fillMaxWidth()
+                .then(
+                    if (option.isRecommended) {
+                        Modifier
+                            .shadow(10.dp, cardShape, ambientColor = PaywallOrange, spotColor = PaywallOrange)
+                            .border(2.5.dp, PaywallOrange, cardShape)
+                    } else {
+                        Modifier
+                    },
+                ),
+            shape = cardShape,
+            color = PaywallFeatureCard,
+        ) {
+            PaywallPlanContent(
+                option = option,
+                isLoading = isLoading,
+                onBuy = onBuy,
+            )
+        }
+
+        if (option.isRecommended && option.discountPercent != null) {
+            PaywallBadge(
                 modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(horizontal = 10.dp, vertical = 10.dp),
-                style = MaterialTheme.typography.bodyMedium,
-                lineHeight = 22.sp,
+                    .align(Alignment.TopCenter)
+                    .offset(y = (PaywallRecommendedExtraTop - PaywallBadgeOverlap).coerceAtLeast(0.dp))
+                    .zIndex(2f),
+                text = stringResource(R.string.paywall_discount, option.discountPercent),
+                backgroundColor = PaywallBadgeGrey,
             )
         }
+    }
+}
+
+@Composable
+private fun PaywallPlanContent(
+    option: PurchaseOptionUi,
+    isLoading: Boolean,
+    onBuy: () -> Unit,
+) {
+    Column(
+        modifier = Modifier
+            .fillMaxSize()
+            .padding(PaywallPlanContentPadding),
+        horizontalAlignment = Alignment.CenterHorizontally,
+    ) {
+        PaywallPlanTitleSlot(text = stringResource(option.planTitleRes))
+        PaywallPlanPriceSlot(text = option.price)
+        PaywallPlanCrownSlot(filled = option.crownFilled)
+        Spacer(modifier = Modifier.height(PaywallCrownButtonGap))
+        PaywallPlanButton(
+            text = stringResource(option.buttonTextRes),
+            isRecommended = option.isRecommended,
+            isLoading = isLoading,
+            onClick = onBuy,
+            modifier = Modifier.height(PaywallPlanButtonHeight),
+        )
+    }
+}
+
+@Composable
+private fun PaywallPlanTitleSlot(text: String) {
+    Box(
+        modifier = Modifier
+            .fillMaxWidth()
+            .height(PaywallPlanTitleSlotHeight),
+        contentAlignment = Alignment.Center,
+    ) {
+        Text(
+            text = text,
+            style = MaterialTheme.typography.labelMedium.copy(
+                color = LoanTextSecondary,
+                textAlign = TextAlign.Center,
+                lineHeight = 14.sp,
+                fontSize = 10.sp,
+            ),
+            textAlign = TextAlign.Center,
+            maxLines = 2,
+        )
+    }
+}
+
+@Composable
+private fun PaywallPlanPriceSlot(text: String) {
+    Box(
+        modifier = Modifier
+            .fillMaxWidth()
+            .height(PaywallPlanPriceSlotHeight),
+        contentAlignment = Alignment.Center,
+    ) {
+        Text(
+            text = text,
+            style = MaterialTheme.typography.titleMedium.copy(
+                fontWeight = FontWeight.Bold,
+                fontSize = 15.sp,
+            ),
+            textAlign = TextAlign.Center,
+            maxLines = 2,
+        )
+    }
+}
+
+@Composable
+private fun PaywallPlanCrownSlot(filled: Boolean) {
+    Box(
+        modifier = Modifier
+            .fillMaxWidth()
+            .height(PaywallCrownSlotHeight),
+        contentAlignment = Alignment.Center,
+    ) {
+        Icon(
+            painter = painterResource(
+                if (filled) R.drawable.ic_crown_filled else R.drawable.ic_crown_outline,
+            ),
+            contentDescription = null,
+            modifier = Modifier.size(width = PaywallCrownWidth, height = PaywallCrownHeight),
+            tint = Color.Unspecified,
+        )
+    }
+}
+
+@Composable
+private fun PaywallBadge(
+    text: String,
+    backgroundColor: Color,
+    modifier: Modifier = Modifier,
+) {
+    Box(
+        modifier = modifier
+            .shadow(2.dp, RoundedCornerShape(14.dp))
+            .clip(RoundedCornerShape(14.dp))
+            .background(backgroundColor)
+            .padding(horizontal = 10.dp, vertical = 5.dp),
+    ) {
+        Text(
+            text = text,
+            style = MaterialTheme.typography.labelSmall.copy(
+                color = Color.White,
+                fontWeight = FontWeight.SemiBold,
+                fontSize = 10.sp,
+            ),
+        )
+    }
+}
+
+@Composable
+private fun PaywallPlanButton(
+    text: String,
+    isRecommended: Boolean,
+    isLoading: Boolean,
+    onClick: () -> Unit,
+    modifier: Modifier = Modifier,
+) {
+    val backgroundColor = if (isRecommended) PaywallOrangeDark else PaywallPlanButton
+
+    Box(
+        modifier = modifier
+            .fillMaxWidth()
+            .clip(RoundedCornerShape(10.dp))
+            .background(backgroundColor)
+            .clickable(enabled = !isLoading, onClick = onClick)
+            .padding(horizontal = 4.dp, vertical = 8.dp),
+        contentAlignment = Alignment.Center,
+    ) {
+        if (isLoading) {
+            CircularProgressIndicator(
+                modifier = Modifier.size(18.dp),
+                color = Color.White,
+                strokeWidth = 2.dp,
+            )
+        } else {
+            Text(
+                text = text,
+                style = MaterialTheme.typography.labelSmall.copy(
+                    color = Color.White,
+                    fontWeight = FontWeight.SemiBold,
+                    textAlign = TextAlign.Center,
+                    lineHeight = 13.sp,
+                    fontSize = 10.sp,
+                ),
+                textAlign = TextAlign.Center,
+                maxLines = 3,
+            )
+        }
+    }
+}
+
+@Composable
+private fun PaywallSocialProof() {
+    Row(
+        modifier = Modifier.fillMaxWidth(),
+        horizontalArrangement = Arrangement.Center,
+        verticalAlignment = Alignment.CenterVertically,
+    ) {
+        Icon(
+            painter = painterResource(R.drawable.ic_paywall_check),
+            contentDescription = null,
+            modifier = Modifier.size(20.dp),
+            tint = Color.Unspecified,
+        )
+        Spacer(modifier = Modifier.width(8.dp))
+        Text(
+            text = stringResource(R.string.paywall_social_proof),
+            style = MaterialTheme.typography.bodyMedium.copy(
+                color = PaywallSocialProof,
+                fontWeight = FontWeight.Medium,
+            ),
+        )
     }
 }

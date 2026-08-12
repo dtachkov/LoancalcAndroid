@@ -34,13 +34,14 @@ object Formatters {
 
     fun moneyFixed(value: Float): String = moneyFixed(value.toDouble())
 
-    fun moneyWithoutDecimal(value: Double): String {
-        val formatted = moneyFixedFormat.format(value).trim()
-        val dotIndex = formatted.indexOf('.')
-        return if (dotIndex >= 0) formatted.substring(0, dotIndex).trim() else formatted
-    }
+    /** Schedule amounts: drops trailing ",00"/".00", keeps fractional part when needed. */
+    fun scheduleMoney(value: Double): String = money(value)
 
-    fun moneyWithoutDecimal(value: Float): String = moneyWithoutDecimal(value.toDouble())
+    fun scheduleMoney(value: Float): String = scheduleMoney(value.toDouble())
+
+    fun moneyWithoutDecimal(value: Double): String = scheduleMoney(value)
+
+    fun moneyWithoutDecimal(value: Float): String = scheduleMoney(value.toDouble())
 
     fun percent(value: Float): String = schedulePercent(value.toDouble())
 

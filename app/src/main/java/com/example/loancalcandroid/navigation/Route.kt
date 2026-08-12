@@ -41,9 +41,11 @@ object Route {
     const val HELP_TOPIC_EXTRA_TYPES = "extra_types"
     const val HELP_TOPIC_APP = "app"
     const val HELP_TOPIC_VOTE = "vote"
+    const val HELP_TOPIC_INFINITE_LOAN = "infinite_loan"
 
     const val URL_HELP_APP = "https://mobile-testing.ru/help_kredit_calculator/"
     const val URL_VOTE = "https://mobile-testing.ru/new_features_loancalc/"
+    const val URL_INFINITE_LOAN_HELP = "https://mobile-testing.ru/chto-takoe-beskonechnyj-kredit/"
 
     fun editLoan(loanId: Long) = "loans/$loanId/edit"
     fun schedule(loanId: Long) = "loans/$loanId/schedule"

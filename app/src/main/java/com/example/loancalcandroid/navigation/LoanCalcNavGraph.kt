@@ -127,6 +127,9 @@ fun LoanCalcNavGraph(
                     homeViewModel.selectLoan(loanId)
                     navController.popBackStack()
                 },
+                onOpenInfiniteLoanHelp = {
+                    navController.navigate(Route.helpTopic(Route.HELP_TOPIC_INFINITE_LOAN))
+                },
             )
         }
 
@@ -140,6 +143,9 @@ fun LoanCalcNavGraph(
                 onBack = { navController.popBackStack() },
                 onSaved = {
                     navController.popBackStack()
+                },
+                onOpenInfiniteLoanHelp = {
+                    navController.navigate(Route.helpTopic(Route.HELP_TOPIC_INFINITE_LOAN))
                 },
             )
         }
@@ -216,6 +222,11 @@ fun LoanCalcNavGraph(
                 Route.HELP_TOPIC_VOTE -> WebViewScreen(
                     title = stringResource(R.string.label_new_features),
                     url = Route.URL_VOTE,
+                    onBack = { navController.popBackStack() },
+                )
+                Route.HELP_TOPIC_INFINITE_LOAN -> WebViewScreen(
+                    title = stringResource(R.string.label_infinite_loan),
+                    url = Route.URL_INFINITE_LOAN_HELP,
                     onBack = { navController.popBackStack() },
                 )
                 else -> FeaturePlaceholderScreen(

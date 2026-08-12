@@ -43,7 +43,6 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import kotlinx.coroutines.delay
@@ -367,9 +366,9 @@ private fun BriefPaymentRow(
             text = Formatters.date(row.date),
             showWeekendIcon = row.date.isWeekend(),
         )
-        BriefAmountCell(Formatters.moneyFixed(row.total))
+        BriefAmountCell(Formatters.scheduleMoney(row.total))
         Box(modifier = Modifier.width(BriefDummyColumnWidth))
-        BriefAmountCell(Formatters.moneyFixed(row.endBalance))
+        BriefAmountCell(Formatters.scheduleMoney(row.endBalance))
     }
 }
 
@@ -383,7 +382,7 @@ private fun BriefExtraRow(
     val amountText = if (isRateChange) {
         Formatters.schedulePercent(row.rateExtra)
     } else {
-        Formatters.moneyFixed(row.extraAmount)
+        Formatters.scheduleMoney(row.extraAmount)
     }
     val typeLabel = if (isRateChange) {
         stringResource(R.string.schedule_extra_rate_change)
@@ -399,7 +398,7 @@ private fun BriefExtraRow(
         BriefLabelCell(typeLabel)
         BriefAmountCell(amountText)
         BriefExtraDateCell(Formatters.monthDay(row.date))
-        BriefAmountCell(Formatters.moneyFixed(row.endBalance))
+        BriefAmountCell(Formatters.scheduleMoney(row.endBalance))
     }
 }
 
@@ -441,9 +440,9 @@ private fun DetailedPaymentRow(
             )
             ScheduleBodyCell(
                 text = if (isExtra) {
-                    Formatters.moneyWithoutDecimal(row.extraAmount.coerceAtLeast(row.total))
+                    Formatters.scheduleMoney(row.extraAmount.coerceAtLeast(row.total))
                 } else {
-                    Formatters.moneyFixed(row.total)
+                    Formatters.scheduleMoney(row.total)
                 },
                 weight = DetailedValueColumnWeight,
                 textAlign = TextAlign.Start,
@@ -462,15 +461,15 @@ private fun DetailedPaymentRow(
                 },
             )
             ScheduleBodyCell(
-                text = Formatters.moneyFixed(row.interest),
+                text = Formatters.scheduleMoney(row.interest),
                 weight = DetailedValueColumnWeight,
             )
             ScheduleBodyCell(
-                text = Formatters.moneyFixed(row.principal),
+                text = Formatters.scheduleMoney(row.principal),
                 weight = DetailedValueColumnWeight,
             )
             ScheduleBodyCell(
-                text = Formatters.moneyFixed(row.endBalance),
+                text = Formatters.scheduleMoney(row.endBalance),
                 weight = DetailedValueColumnWeight,
             )
         }
@@ -671,16 +670,16 @@ private fun RowScope.BriefLabelCell(text: String) {
 
 @Composable
 private fun RowScope.BriefAmountCell(text: String) {
-    Text(
+    AutoShrinkText(
         text = text,
         modifier = Modifier
             .weight(BriefAmountColumnWeight)
             .widthIn(min = BriefMinColumnWidth)
-            .padding(horizontal = 4.dp),
+            .padding(horizontal = 4.dp)
+            .fillMaxWidth(),
         style = BriefCellStyle,
         textAlign = TextAlign.Center,
-        maxLines = 1,
-        overflow = TextOverflow.Ellipsis,
+        minFontSize = 8.sp,
     )
 }
 
@@ -730,14 +729,14 @@ private fun ScheduleSummaryBlock(summary: ScheduleSummary) {
             Text(
                 text = stringResource(
                     R.string.schedule_paid_of,
-                    Formatters.moneyFixed(summary.paidPrincipal),
-                    Formatters.moneyFixed(summary.loanAmount),
+                    Formatters.scheduleMoney(summary.paidPrincipal),
+                    Formatters.scheduleMoney(summary.loanAmount),
                 ),
                 style = MaterialTheme.typography.labelMedium,
                 fontWeight = FontWeight.Bold,
             )
             Text(
-                text = Formatters.moneyFixed(summary.totalExtras),
+                text = Formatters.scheduleMoney(summary.totalExtras),
                 style = MaterialTheme.typography.labelMedium,
                 modifier = Modifier.padding(top = 4.dp),
             )

@@ -293,6 +293,9 @@
     <string name="widget_payment_label">Ожидаемый платёж</string>
     <string name="widget_select_loan">Выберите кредит</string>
     <string name="widget_infinite_loan">Бесконечный кредит</string>
+    <string name="error_infinite_loan">Введенный кредит получился бесконечным. С течением времени сумма долга больше увеличивается, чем уменьшается. Попробуйте изменить срок и ставку.</string>
+    <string name="label_infinite_loan">Бесконечный кредит</string>
+    <string name="infinite_loan_learn_more">Подробнее</string>
     <string name="widget_config_title">Выберите кредит для виджета</string>
     <string name="widget_config_no_loans">Сначала добавьте кредит в приложении</string>
     <string name="console_application_id" translatable="false">2666943</string>
@@ -311,6 +314,23 @@
     <string name="premium_title">Premium доступен</string>
     <string name="all_features_available">Вам доступны все возможности</string>
     <string name="all_features_title">Покупая полную версию вы получаете следующие возможности:</string>
+    <string name="paywall_headline">Разблокируйте суперсилы вашего кредита!</string>
+    <string name="paywall_subheadline">Экономьте десятки тысяч с полной версией.</string>
+    <string name="paywall_features_title">Покупая полную версию, вы получаете:</string>
+    <string name="paywall_feature_forecast">Точный прогноз досрочного погашения</string>
+    <string name="paywall_feature_extra_payments">Безлимитные досрочные погашения</string>
+    <string name="paywall_feature_best_date">Оптимальная дата для досрочного платежа</string>
+    <string name="paywall_feature_reminder">Умные напоминания о платежах</string>
+    <string name="paywall_feature_profit">Расчёт выгоды от досрочного погашения</string>
+    <string name="paywall_feature_best_loan">Лучший кредит для досрочки</string>
+    <string name="paywall_plan_month">Месяц за месяцем</string>
+    <string name="paywall_plan_year">Годовая выгода</string>
+    <string name="paywall_plan_forever">Безлимитная свобода</string>
+    <string name="paywall_buy_month">Попробовать на месяц</string>
+    <string name="paywall_buy_year">Выбрать этот план</string>
+    <string name="paywall_buy_forever">Купить навсегда</string>
+    <string name="paywall_discount">Экономия %1$d%%</string>
+    <string name="paywall_social_proof">Более 100 000 пользователей уже экономят!</string>
     <string name="feature_extra_forecast">Прогноз досрочного погашения</string>
     <string name="feature_forecast_description">Вы сможете понять, как быстро вы погасите кредит, если будете вносить каждый месяц фиксированную сумму</string>
     <string name="feature_extra_payments_description">Вы сможете добавлять досрочные погашения с уменьшением срока или суммы, менять дату ежемесячного платежа, изменять ставку по кредиту и добавлять ежемесячные досрочки</string>

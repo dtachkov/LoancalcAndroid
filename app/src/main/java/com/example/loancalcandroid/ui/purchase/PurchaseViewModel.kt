@@ -4,6 +4,7 @@ import android.app.Application
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.loancalcandroid.LoanCalcApplication
+import com.example.loancalcandroid.R
 import com.example.loancalcandroid.billing.BillingProducts
 import com.example.loancalcandroid.billing.RuStoreLicenseManager
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -15,8 +16,12 @@ import ru.rustore.sdk.pay.model.Product
 
 data class PurchaseOptionUi(
     val productId: String,
-    val title: String,
     val price: String,
+    val planTitleRes: Int,
+    val buttonTextRes: Int,
+    val isRecommended: Boolean = false,
+    val discountPercent: Int? = null,
+    val crownFilled: Boolean = false,
 )
 
 data class PurchaseUiState(
@@ -94,16 +99,44 @@ class PurchaseViewModel(
 
     private fun Map<String, Product>.toOptions(): List<PurchaseOptionUi> {
         return listOf(
-            BillingProducts.SKU_LICENSE_MONTH,
-            BillingProducts.SKU_LICENSE_YEAR,
-            BillingProducts.SKU_LICENSE_FOREVER,
-        ).mapNotNull { productId ->
-            val product = this[productId] ?: return@mapNotNull null
+            PlanMeta(
+                productId = BillingProducts.SKU_LICENSE_MONTH,
+                planTitleRes = R.string.paywall_plan_month,
+                buttonTextRes = R.string.paywall_buy_month,
+            ),
+            PlanMeta(
+                productId = BillingProducts.SKU_LICENSE_YEAR,
+                planTitleRes = R.string.paywall_plan_year,
+                buttonTextRes = R.string.paywall_buy_year,
+                isRecommended = true,
+                discountPercent = 60,
+                crownFilled = true,
+            ),
+            PlanMeta(
+                productId = BillingProducts.SKU_LICENSE_FOREVER,
+                planTitleRes = R.string.paywall_plan_forever,
+                buttonTextRes = R.string.paywall_buy_forever,
+            ),
+        ).mapNotNull { meta ->
+            val product = this[meta.productId] ?: return@mapNotNull null
             PurchaseOptionUi(
-                productId = productId,
-                title = product.title.value,
+                productId = meta.productId,
                 price = product.amountLabel.value,
+                planTitleRes = meta.planTitleRes,
+                buttonTextRes = meta.buttonTextRes,
+                isRecommended = meta.isRecommended,
+                discountPercent = meta.discountPercent,
+                crownFilled = meta.crownFilled,
             )
         }
     }
+
+    private data class PlanMeta(
+        val productId: String,
+        val planTitleRes: Int,
+        val buttonTextRes: Int,
+        val isRecommended: Boolean = false,
+        val discountPercent: Int? = null,
+        val crownFilled: Boolean = false,
+    )
 }
