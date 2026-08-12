@@ -13,6 +13,13 @@ class ImportExportRepository(
     private val extraRepository: ExtraRepository,
     private val ioDispatcher: CoroutineDispatcher,
 ) {
+    suspend fun countLoansInFile(file: File): Int = withContext(ioDispatcher) {
+        val json = file.readText()
+        val type = object : TypeToken<List<LoanFull>>() {}.type
+        val loans: List<LoanFull> = GsonFactory.create().fromJson(json, type)
+        loans.size
+    }
+
     suspend fun importFromFile(file: File): Int = withContext(ioDispatcher) {
         val json = file.readText()
         val type = object : TypeToken<List<LoanFull>>() {}.type

@@ -34,6 +34,9 @@ import com.example.loancalcandroid.ui.settings.SettingsScreen
 import com.example.loancalcandroid.ui.home.HomeScreen
 import com.example.loancalcandroid.ui.home.HomeViewModel
 import com.example.loancalcandroid.ui.loan.LoanEditorScreen
+import com.example.loancalcandroid.LoanCalcApplication
+import com.example.loancalcandroid.billing.LoanLicensePolicy
+import com.example.loancalcandroid.billing.navigateToAddLoanIfAllowed
 import com.example.loancalcandroid.billing.navigateToPurchase
 import com.example.loancalcandroid.billing.navigateWithLicenseCheck
 import com.example.loancalcandroid.ui.offers.OfferDetailScreen
@@ -69,10 +72,31 @@ fun LoanCalcNavGraph(
         modifier = modifier,
     ) {
         composable(Route.HOME) {
+            val homeUiState by homeViewModel.uiState.collectAsStateWithLifecycle()
+            val licenseManager = (navController.context.applicationContext as LoanCalcApplication).licenseManager
+            val isLicensed by licenseManager.isLicensed.collectAsStateWithLifecycle()
             HomeScreen(
                 viewModel = homeViewModel,
+                isLicensed = isLicensed,
                 onSettingsClick = { navController.navigate(Route.SETTINGS) },
-                onAddLoanClick = { navController.navigate(Route.ADD_LOAN) },
+                onAddLoanClick = {
+                    navController.navigateToAddLoanIfAllowed(homeUiState.loansRaw.size)
+                },
+                onDuplicateClick = {
+                    if (LoanLicensePolicy.canAddLoan(
+                            homeUiState.loansRaw.size,
+                            (navController.context.applicationContext as LoanCalcApplication)
+                                .licenseManager.isAppPurchased(),
+                        )
+                    ) {
+                        homeViewModel.duplicateSelectedLoan()
+                    } else {
+                        navController.navigateToPurchase(R.string.paywall_feature_extra_payments)
+                    }
+                },
+                onGetPremiumClick = {
+                    navController.navigateToPurchase(R.string.paywall_feature_extra_payments)
+                },
                 onEditLoanClick = { loanId -> navController.navigate(Route.editLoan(loanId)) },
                 onEarlyPaymentClick = { loanId ->
                     navController.navigateWithLicenseCheck(
@@ -102,6 +126,9 @@ fun LoanCalcNavGraph(
                 onHelpClick = { navController.navigate(Route.helpTopic(Route.HELP_TOPIC_APP)) },
                 onVoteClick = { navController.navigate(Route.helpTopic(Route.HELP_TOPIC_VOTE)) },
                 onExtraTypesHelpClick = { navController.navigate(Route.helpTopic(Route.HELP_TOPIC_EXTRA_TYPES)) },
+                onPurchaseRequired = {
+                    navController.navigateToPurchase(R.string.paywall_feature_extra_payments)
+                },
             )
         }
 
@@ -126,6 +153,10 @@ fun LoanCalcNavGraph(
                 onSaved = { loanId ->
                     homeViewModel.selectLoan(loanId)
                     navController.popBackStack()
+                },
+                onPurchaseRequired = {
+                    navController.popBackStack()
+                    navController.navigateToPurchase(R.string.paywall_feature_extra_payments)
                 },
                 onOpenInfiniteLoanHelp = {
                     navController.navigate(Route.helpTopic(Route.HELP_TOPIC_INFINITE_LOAN))
@@ -424,6 +455,9 @@ fun LoanCalcNavGraph(
             OfferDetailScreen(
                 offerId = offerId,
                 onBack = { navController.popBackStack() },
+                onPurchaseRequired = {
+                    navController.navigateToPurchase(R.string.paywall_feature_extra_payments)
+                },
             )
         }
     }

@@ -4,6 +4,8 @@ import android.app.Application
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.loancalcandroid.analytics.AnalyticsHelper
+import com.example.loancalcandroid.LoanCalcApplication
+import com.example.loancalcandroid.billing.LoanLicensePolicy
 import com.example.loancalcandroid.util.Formatters
 import java.util.Calendar
 import java.util.Date
@@ -38,6 +40,7 @@ data class OfferDetailUiState(
     val overpayText: String = "",
     val isSaving: Boolean = false,
     val savedMessage: String? = null,
+    val purchaseRequired: Boolean = false,
     val reviewRequestTrigger: Int = 0,
     val error: String? = null,
 )
@@ -49,6 +52,7 @@ class OfferDetailViewModel(
     private val offerRepository = LoanCalcData.get().offerRepository
     private val loanRepository = LoanCalcData.get().loanRepository
     private val loanCalculator = LoanCalcData.get().loanCalculator
+    private val licenseManager = (application as LoanCalcApplication).licenseManager
 
     private val _uiState = MutableStateFlow(OfferDetailUiState())
     val uiState: StateFlow<OfferDetailUiState> = _uiState.asStateFlow()
@@ -83,8 +87,13 @@ class OfferDetailViewModel(
         val offer = state.offer ?: return
 
         viewModelScope.launch {
-            _uiState.update { it.copy(isSaving = true, savedMessage = null, error = null) }
+            _uiState.update { it.copy(isSaving = true, savedMessage = null, error = null, purchaseRequired = false) }
             try {
+                val currentLoanCount = loanRepository.getLoans().size
+                if (!LoanLicensePolicy.canAddLoan(currentLoanCount, licenseManager.isAppPurchased())) {
+                    _uiState.update { it.copy(isSaving = false, purchaseRequired = true) }
+                    return@launch
+                }
                 val loan = Loan(
                     title = offer.name,
                     amount = state.selectedAmount.toFloat(),
@@ -107,6 +116,10 @@ class OfferDetailViewModel(
                 }
             }
         }
+    }
+
+    fun consumePurchaseRequired() {
+        _uiState.update { it.copy(purchaseRequired = false) }
     }
 
     private fun load() {

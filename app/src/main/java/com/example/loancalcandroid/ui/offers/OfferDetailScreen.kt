@@ -23,6 +23,7 @@ import androidx.compose.material3.Slider
 import androidx.compose.material3.SliderDefaults
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -51,6 +52,7 @@ import com.example.loancalcandroid.util.Formatters
 fun OfferDetailScreen(
     offerId: Long,
     onBack: () -> Unit,
+    onPurchaseRequired: () -> Unit = {},
 ) {
     val viewModel: OfferDetailViewModel = com.example.loancalcandroid.ui.offerDetailViewModel(offerId) { app, id ->
         OfferDetailViewModel(app, id)
@@ -60,6 +62,13 @@ fun OfferDetailScreen(
     var menuExpanded by remember { mutableStateOf(false) }
 
     RequestRuStoreReviewEffect(uiState.reviewRequestTrigger)
+
+    LaunchedEffect(uiState.purchaseRequired) {
+        if (uiState.purchaseRequired) {
+            viewModel.consumePurchaseRequired()
+            onPurchaseRequired()
+        }
+    }
 
     LoanCalcScaffold(
         title = stringResource(R.string.offer_detail_title),

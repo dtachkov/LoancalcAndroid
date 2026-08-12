@@ -15,6 +15,7 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import com.example.loancalcandroid.LoanCalcApplication
 import com.example.loancalcandroid.billing.BillingLogger
+import com.example.loancalcandroid.billing.LoanLicensePolicy
 import com.example.loancalcandroid.notification.NotificationScheduler
 import com.example.loancalcandroid.support.DeveloperSupportUtil
 import ru.kredit.calculator.data.LoanCalcData
@@ -33,6 +34,7 @@ data class SettingsUiState(
     val isImporting: Boolean = false,
     val isExporting: Boolean = false,
     val snackbarMessage: String? = null,
+    val purchaseRequired: Boolean = false,
 )
 
 class SettingsViewModel(
@@ -105,7 +107,7 @@ class SettingsViewModel(
 
     fun importFromUri(context: Context, uri: Uri, incorrectFileMessage: String) {
         viewModelScope.launch {
-            _uiState.update { it.copy(isImporting = true, snackbarMessage = null) }
+            _uiState.update { it.copy(isImporting = true, snackbarMessage = null, purchaseRequired = false) }
             val result = runCatching {
                 withContext(Dispatchers.IO) {
                     val fileName = resolveDisplayName(context, uri)
@@ -117,20 +119,28 @@ class SettingsViewModel(
                         tempFile.outputStream().use { output -> input.copyTo(output) }
                     } ?: error("Unable to read file")
                     try {
-                        importExportRepository.importFromFile(tempFile)
+                        val loansToImport = importExportRepository.countLoansInFile(tempFile)
+                        if (!canImportLoans(loansToImport)) {
+                            return@withContext ImportOutcome.PurchaseRequired
+                        }
+                        ImportOutcome.Success(importExportRepository.importFromFile(tempFile))
                     } finally {
                         tempFile.delete()
                     }
                 }
             }
             _uiState.update {
-                it.copy(
-                    isImporting = false,
-                    snackbarMessage = result.fold(
-                        onSuccess = { count -> formatImportMessage(context, count) },
-                        onFailure = { error -> error.message.orEmpty() },
-                    ),
-                )
+                when (val outcome = result.getOrNull()) {
+                    ImportOutcome.PurchaseRequired -> it.copy(isImporting = false, purchaseRequired = true)
+                    is ImportOutcome.Success -> it.copy(
+                        isImporting = false,
+                        snackbarMessage = formatImportMessage(context, outcome.count),
+                    )
+                    null -> it.copy(
+                        isImporting = false,
+                        snackbarMessage = result.exceptionOrNull()?.message.orEmpty(),
+                    )
+                }
             }
         }
     }
@@ -176,7 +186,11 @@ class SettingsViewModel(
         networkErrorMessage: String,
     ) {
         viewModelScope.launch {
-            _uiState.update { it.copy(isImporting = true, snackbarMessage = null) }
+            _uiState.update { it.copy(isImporting = true, snackbarMessage = null, purchaseRequired = false) }
+            if (!canImportLoans(loansToAdd = 1)) {
+                _uiState.update { it.copy(isImporting = false, purchaseRequired = true) }
+                return@launch
+            }
             val result = runCatching {
                 webLoanImportRepository.importFromUrl(url)
             }
@@ -197,6 +211,10 @@ class SettingsViewModel(
                 )
             }
         }
+    }
+
+    fun consumePurchaseRequired() {
+        _uiState.update { it.copy(purchaseRequired = false) }
     }
 
     fun clearSnackbarMessage() {
@@ -267,4 +285,18 @@ class SettingsViewModel(
             count,
         )
     }
+
+    private suspend fun canImportLoans(loansToAdd: Int): Boolean {
+        val currentLoanCount = loanRepository.getLoans().size
+        return LoanLicensePolicy.canAddLoans(
+            currentLoanCount = currentLoanCount,
+            loansToAdd = loansToAdd,
+            isLicensed = licenseManager.isAppPurchased(),
+        )
+    }
+}
+
+private sealed class ImportOutcome {
+    data object PurchaseRequired : ImportOutcome()
+    data class Success(val count: Int) : ImportOutcome()
 }

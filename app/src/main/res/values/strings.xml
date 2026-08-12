@@ -94,6 +94,8 @@
     <string name="add_loan">Новый кредит</string>
     <string name="feature_placeholder">Экран в разработке</string>
     <string name="no_loans_hint">Нажмите +, чтобы добавить первый кредит</string>
+    <string name="home_premium_loans_locked_message">Расчёт 2-го и более кредитов доступен с Premium</string>
+    <string name="home_get_premium">Получить Premium</string>
     <string name="select_loan_hint">Выберите кредит в карусели выше</string>
     <string name="save">Сохранить</string>
     <string name="ok">ОК</string>
@@ -318,7 +320,7 @@
     <string name="paywall_subheadline">Экономьте десятки тысяч с полной версией.</string>
     <string name="paywall_features_title">Покупая полную версию, вы получаете:</string>
     <string name="paywall_feature_forecast">Точный прогноз досрочного погашения</string>
-    <string name="paywall_feature_extra_payments">Безлимитные досрочные погашения</string>
+    <string name="paywall_feature_extra_payments">Безлимитное число кредитов и досрочек</string>
     <string name="paywall_feature_best_date">Оптимальная дата для досрочного платежа</string>
     <string name="paywall_feature_reminder">Умные напоминания о платежах</string>
     <string name="paywall_feature_profit">Расчёт выгоды от досрочного погашения</string>

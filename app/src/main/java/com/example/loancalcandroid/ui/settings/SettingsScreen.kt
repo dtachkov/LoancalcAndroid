@@ -57,6 +57,7 @@ fun SettingsScreen(
     onHelpClick: () -> Unit,
     onVoteClick: () -> Unit,
     onExtraTypesHelpClick: () -> Unit,
+    onPurchaseRequired: () -> Unit = {},
     viewModel: SettingsViewModel = viewModel(),
 ) {
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
@@ -106,6 +107,13 @@ fun SettingsScreen(
         uiState.snackbarMessage?.let { message ->
             snackbarHostState.showSnackbar(message)
             viewModel.clearSnackbarMessage()
+        }
+    }
+
+    LaunchedEffect(uiState.purchaseRequired) {
+        if (uiState.purchaseRequired) {
+            viewModel.consumePurchaseRequired()
+            onPurchaseRequired()
         }
     }
 

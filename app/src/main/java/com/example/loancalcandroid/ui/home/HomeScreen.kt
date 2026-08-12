@@ -27,6 +27,7 @@ import com.example.loancalcandroid.ui.home.components.AllLoansMenuSection
 import com.example.loancalcandroid.ui.home.components.AllLoansPaymentsSection
 import com.example.loancalcandroid.ui.home.components.DebtProgressSection
 import com.example.loancalcandroid.ui.home.components.HomeTopBar
+import com.example.loancalcandroid.ui.home.components.PremiumLockedLoanSection
 import com.example.loancalcandroid.ui.home.components.LoanActionsSection
 import com.example.loancalcandroid.ui.home.components.LoanCardsPager
 import com.example.loancalcandroid.ui.home.components.NavigationMenuSection
@@ -38,8 +39,11 @@ import com.example.loancalcandroid.ui.home.components.OverpayStatsSection
 @Composable
 fun HomeScreen(
     viewModel: HomeViewModel,
+    isLicensed: Boolean,
     onSettingsClick: () -> Unit,
     onAddLoanClick: () -> Unit,
+    onDuplicateClick: () -> Unit,
+    onGetPremiumClick: () -> Unit,
     onEditLoanClick: (Long) -> Unit,
     onEarlyPaymentClick: (Long) -> Unit,
     onScheduleClick: (Long) -> Unit,
@@ -56,6 +60,7 @@ fun HomeScreen(
     val selectedLoanId = uiState.selectedLoanId
     val details = uiState.loanDetails
     val globalFeatureLoanId = viewModel.globalFeatureLoanId()
+    val isPremiumLockedLoan = !isLicensed && uiState.pagerIndex >= 2 && selectedLoanId != null
     if (showDeleteDialog && details != null) {
         AlertDialog(
             onDismissRequest = { showDeleteDialog = false },
@@ -138,6 +143,21 @@ fun HomeScreen(
                         Spacer(modifier = Modifier.height(24.dp))
                     }
                 }
+            } else if (selectedLoanId != null && isPremiumLockedLoan) {
+                item {
+                    PremiumLockedLoanSection(onGetPremiumClick = onGetPremiumClick)
+                    Spacer(modifier = Modifier.height(16.dp))
+                }
+                item {
+                    LoanActionsSection(
+                        onEditClick = {},
+                        onDeleteClick = { showDeleteDialog = true },
+                        onDuplicateClick = {},
+                        showEdit = false,
+                        showDuplicate = false,
+                    )
+                    Spacer(modifier = Modifier.height(24.dp))
+                }
             } else if (selectedLoanId != null && details != null) {
                 item {
                     QuickActionsRow(
@@ -177,7 +197,7 @@ fun HomeScreen(
                     LoanActionsSection(
                         onEditClick = { onEditLoanClick(selectedLoanId) },
                         onDeleteClick = { showDeleteDialog = true },
-                        onDuplicateClick = viewModel::duplicateSelectedLoan,
+                        onDuplicateClick = onDuplicateClick,
                     )
                     Spacer(modifier = Modifier.height(24.dp))
                 }

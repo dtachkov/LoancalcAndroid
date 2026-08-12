@@ -42,6 +42,7 @@ fun LoanEditorScreen(
     loanId: Long?,
     onBack: () -> Unit,
     onSaved: (Long) -> Unit,
+    onPurchaseRequired: () -> Unit = {},
     onOpenInfiniteLoanHelp: () -> Unit = {},
 ) {
     val viewModel: LoanEditorViewModel = loanEditorViewModel(loanId) { app, id ->
@@ -50,6 +51,13 @@ fun LoanEditorScreen(
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
 
     RequestRuStoreReviewEffect(uiState.reviewRequestTrigger)
+
+    LaunchedEffect(uiState.purchaseRequired) {
+        if (uiState.purchaseRequired) {
+            viewModel.consumePurchaseRequired()
+            onPurchaseRequired()
+        }
+    }
 
     if (uiState.showInfiniteLoanDialog) {
         AlertDialog(

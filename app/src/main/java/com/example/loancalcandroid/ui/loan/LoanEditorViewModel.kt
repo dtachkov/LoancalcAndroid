@@ -4,6 +4,8 @@ import android.app.Application
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.loancalcandroid.analytics.AnalyticsHelper
+import com.example.loancalcandroid.LoanCalcApplication
+import com.example.loancalcandroid.billing.LoanLicensePolicy
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -45,6 +47,7 @@ data class LoanEditorUiState(
     val saveError: String? = null,
     val showInfiniteLoanDialog: Boolean = false,
     val savedLoanId: Long? = null,
+    val purchaseRequired: Boolean = false,
     val reviewRequestTrigger: Int = 0,
 )
 
@@ -55,6 +58,7 @@ class LoanEditorViewModel(
     private val loanRepository = LoanCalcData.get().loanRepository
     private val extraRepository = LoanCalcData.get().extraRepository
     private val loanCalculator = LoanCalcData.get().loanCalculator
+    private val licenseManager = (application as LoanCalcApplication).licenseManager
 
     private val _uiState = MutableStateFlow(LoanEditorUiState(isEditMode = loanId != null))
     val uiState: StateFlow<LoanEditorUiState> = _uiState.asStateFlow()
@@ -109,13 +113,24 @@ class LoanEditorViewModel(
         _uiState.update { it.copy(showInfiniteLoanDialog = false) }
     }
 
+    fun consumePurchaseRequired() {
+        _uiState.update { it.copy(purchaseRequired = false) }
+    }
+
     fun save() {
         val state = _uiState.value
         if (!validate(state)) return
 
         viewModelScope.launch {
-            _uiState.update { it.copy(isSaving = true, saveError = null, showInfiniteLoanDialog = false) }
+            _uiState.update { it.copy(isSaving = true, saveError = null, showInfiniteLoanDialog = false, purchaseRequired = false) }
             try {
+                if (!state.isEditMode) {
+                    val currentLoanCount = loanRepository.getLoans().size
+                    if (!LoanLicensePolicy.canAddLoan(currentLoanCount, licenseManager.isAppPurchased())) {
+                        _uiState.update { it.copy(isSaving = false, purchaseRequired = true) }
+                        return@launch
+                    }
+                }
                 val loan = buildLoan(state)
                 val extras = if (loan.id != 0L) extraRepository.getExtras(loan.id) else emptyList()
                 val monthlyPayment = withContext(Dispatchers.Default) {

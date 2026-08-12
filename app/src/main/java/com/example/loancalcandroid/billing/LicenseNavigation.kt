@@ -3,6 +3,7 @@ package com.example.loancalcandroid.billing
 import androidx.annotation.StringRes
 import androidx.navigation.NavHostController
 import com.example.loancalcandroid.LoanCalcApplication
+import com.example.loancalcandroid.R
 import com.example.loancalcandroid.navigation.Route
 
 fun NavHostController.navigateWithLicenseCheck(
@@ -20,4 +21,13 @@ fun NavHostController.navigateWithLicenseCheck(
 
 fun NavHostController.navigateToPurchase(@StringRes featureTitleRes: Int) {
     navigate(Route.purchase(context.getString(featureTitleRes)))
+}
+
+fun NavHostController.navigateToAddLoanIfAllowed(currentLoanCount: Int) {
+    val licenseManager = (context.applicationContext as LoanCalcApplication).licenseManager
+    if (LoanLicensePolicy.canAddLoan(currentLoanCount, licenseManager.isAppPurchased())) {
+        navigate(Route.ADD_LOAN)
+    } else {
+        navigateToPurchase(R.string.paywall_feature_extra_payments)
+    }
 }

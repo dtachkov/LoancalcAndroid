@@ -23,6 +23,8 @@ import androidx.compose.material.icons.automirrored.filled.KeyboardArrowRight
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.DateRange
 import androidx.compose.material.icons.filled.List
+import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.LinearProgressIndicator
@@ -53,6 +55,7 @@ import com.example.loancalcandroid.ui.theme.LoanCardSurface
 import com.example.loancalcandroid.ui.theme.LoanGreen
 import com.example.loancalcandroid.ui.theme.LoanRed
 import com.example.loancalcandroid.ui.theme.LoanTextSecondary
+import com.example.loancalcandroid.ui.theme.PaywallPlanButton
 import com.example.loancalcandroid.util.Formatters
 import kotlin.math.roundToInt
 
@@ -698,10 +701,53 @@ fun MenuNavigationRow(
 }
 
 @Composable
+fun PremiumLockedLoanSection(
+    onGetPremiumClick: () -> Unit,
+    modifier: Modifier = Modifier,
+) {
+    Surface(
+        modifier = modifier.fillMaxWidth(),
+        shape = RoundedCornerShape(12.dp),
+        color = LoanCardSurface,
+    ) {
+        Column(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(horizontal = 20.dp, vertical = 32.dp),
+            horizontalAlignment = Alignment.CenterHorizontally,
+            verticalArrangement = Arrangement.spacedBy(24.dp),
+        ) {
+            Text(
+                text = stringResource(R.string.home_premium_loans_locked_message),
+                style = MaterialTheme.typography.bodyLarge,
+                textAlign = TextAlign.Center,
+                fontWeight = FontWeight.Medium,
+            )
+            Button(
+                onClick = onGetPremiumClick,
+                modifier = Modifier.fillMaxWidth(),
+                shape = RoundedCornerShape(12.dp),
+                colors = ButtonDefaults.buttonColors(
+                    containerColor = PaywallPlanButton,
+                    contentColor = Color.White,
+                ),
+            ) {
+                Text(
+                    text = stringResource(R.string.home_get_premium),
+                    style = MaterialTheme.typography.titleMedium,
+                )
+            }
+        }
+    }
+}
+
+@Composable
 fun LoanActionsSection(
     onEditClick: () -> Unit,
     onDeleteClick: () -> Unit,
     onDuplicateClick: () -> Unit,
+    showEdit: Boolean = true,
+    showDuplicate: Boolean = true,
 ) {
     Surface(
         modifier = Modifier.fillMaxWidth(),
@@ -709,10 +755,12 @@ fun LoanActionsSection(
         color = LoanCardSurface,
     ) {
         Column {
-            MenuNavigationRow(
-                title = stringResource(R.string.action_edit_loan),
-                onClick = onEditClick,
-            )
+            if (showEdit) {
+                MenuNavigationRow(
+                    title = stringResource(R.string.action_edit_loan),
+                    onClick = onEditClick,
+                )
+            }
             Row(
                 modifier = Modifier
                     .fillMaxWidth()
@@ -727,17 +775,19 @@ fun LoanActionsSection(
                     modifier = Modifier.weight(1f),
                 )
             }
-            HorizontalDivider(modifier = Modifier.padding(start = 16.dp))
-            Row(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .clickable(onClick = onDuplicateClick)
-                    .padding(horizontal = 16.dp, vertical = 14.dp),
-            ) {
-                Text(
-                    text = stringResource(R.string.action_duplicate_loan),
-                    style = MaterialTheme.typography.bodyLarge,
-                )
+            if (showDuplicate) {
+                HorizontalDivider(modifier = Modifier.padding(start = 16.dp))
+                Row(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .clickable(onClick = onDuplicateClick)
+                        .padding(horizontal = 16.dp, vertical = 14.dp),
+                ) {
+                    Text(
+                        text = stringResource(R.string.action_duplicate_loan),
+                        style = MaterialTheme.typography.bodyLarge,
+                    )
+                }
             }
         }
     }
