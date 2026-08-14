@@ -12,8 +12,8 @@ android {
         applicationId = "ru.kredit.calculator"
         minSdk = 30
         targetSdk = 35
-        versionCode = 59
-        versionName = "2.6"
+        versionCode = 60
+        versionName = "2.7"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }
@@ -58,6 +58,7 @@ android {
     kotlinOptions {
         jvmTarget = "11"
     }
+
     buildFeatures {
         compose = true
         buildConfig = true

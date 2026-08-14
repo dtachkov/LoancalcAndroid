@@ -1,7 +1,7 @@
 [versions]
 agp = "8.9.2"
-kotlin = "2.0.21"
-ksp = "2.0.21-1.0.28"
+kotlin = "2.1.0"
+ksp = "2.1.0-1.0.29"
 coreKtx = "1.15.0"
 junit = "4.13.2"
 junitVersion = "1.2.1"
@@ -17,7 +17,7 @@ gson = "2.11.0"
 retrofit = "2.11.0"
 okhttp = "4.12.0"
 coil = "2.7.0"
-rustoreBom = "2026.04.01"
+rustoreBom = "2026.07.01"
 appmetrica = "7.0.0"
 
 [libraries]
