@@ -53,6 +53,8 @@ import com.example.loancalcandroid.ui.common.LoanNumberOutlinedTextField
 import com.example.loancalcandroid.ui.loanViewModel
 import com.example.loancalcandroid.ui.theme.LoanBlueDark
 import com.example.loancalcandroid.ui.theme.LoanBlueStart
+import com.example.loancalcandroid.ui.theme.LoanCardSurface
+import com.example.loancalcandroid.ui.theme.LoanDivider
 import com.example.loancalcandroid.ui.theme.LoanGreen
 import com.example.loancalcandroid.ui.theme.LoanRed
 import com.example.loancalcandroid.ui.theme.LoanTextSecondary
@@ -207,14 +209,18 @@ private fun ForecastComparisonCard(
     comparison: ForecastComparison,
     modifier: Modifier = Modifier,
 ) {
-    Surface(
+    Column(
         modifier = modifier.fillMaxWidth(),
-        shape = RoundedCornerShape(12.dp),
-        color = OfferButtonBackground,
-        border = BorderStroke(1.dp, LoanBlueStart),
+        verticalArrangement = Arrangement.spacedBy(8.dp),
     ) {
-        Column(modifier = Modifier.padding(horizontal = 16.dp, vertical = 14.dp)) {
+        Surface(
+            modifier = Modifier.fillMaxWidth(),
+            shape = RoundedCornerShape(12.dp),
+            color = OfferButtonBackground,
+            border = BorderStroke(1.dp, LoanBlueStart),
+        ) {
             Row(
+                modifier = Modifier.padding(horizontal = 16.dp, vertical = 14.dp),
                 horizontalArrangement = Arrangement.spacedBy(14.dp),
                 verticalAlignment = Alignment.CenterVertically,
             ) {
@@ -245,22 +251,41 @@ private fun ForecastComparisonCard(
                     )
                 }
             }
+        }
 
-            HorizontalDivider(
-                modifier = Modifier.padding(vertical = 12.dp),
-                color = LoanBlueStart.copy(alpha = 0.35f),
-            )
-
-            ForecastMoneyRow(
-                label = stringResource(R.string.forecast_overpay),
-                amount = comparison.overpayWithForecast,
-                percent = comparison.overpayPercentDelta,
-            )
-            ForecastMoneyRow(
-                label = stringResource(R.string.forecast_total_payout),
-                amount = comparison.totalWithForecast,
-                strikethroughAmount = comparison.totalWithoutForecast,
-            )
+        Surface(
+            modifier = Modifier.fillMaxWidth(),
+            shape = RoundedCornerShape(12.dp),
+            color = LoanCardSurface,
+        ) {
+            Column(modifier = Modifier.padding(horizontal = 16.dp, vertical = 4.dp)) {
+                ForecastMoneyRow(
+                    label = stringResource(R.string.forecast_saved),
+                    amount = comparison.interestSaved,
+                    amountColor = if (comparison.interestSaved < -0.005) LoanRed else Color.Unspecified,
+                )
+                HorizontalDivider(color = LoanDivider)
+                ForecastMoneyRow(
+                    label = stringResource(R.string.forecast_overpay),
+                    amount = comparison.overpayWithForecast,
+                    percent = comparison.overpayPercentDelta,
+                )
+                HorizontalDivider(color = LoanDivider)
+                ForecastMoneyRow(
+                    label = stringResource(R.string.forecast_total_payout),
+                    amount = comparison.totalWithForecast,
+                    strikethroughAmount = comparison.totalWithoutForecast,
+                )
+                HorizontalDivider(color = LoanDivider)
+                ForecastMoneyRow(
+                    label = stringResource(R.string.forecast_payoff_date),
+                    valueText = stringResource(
+                        R.string.forecast_date_change,
+                        Formatters.inputDate(comparison.lastPaymentDateWithoutForecast).ifBlank { "—" },
+                        Formatters.inputDate(comparison.lastPaymentDateWithForecast).ifBlank { "—" },
+                    ),
+                )
+            }
         }
     }
 }
@@ -268,11 +293,16 @@ private fun ForecastComparisonCard(
 @Composable
 private fun ForecastMoneyRow(
     label: String,
-    amount: Double,
+    amount: Double? = null,
     percent: Double? = null,
     strikethroughAmount: Double? = null,
+    valueText: String? = null,
+    amountColor: Color = Color.Unspecified,
 ) {
-    val amountText = stringResource(R.string.forecast_money, Formatters.money(amount))
+    val amountText = valueText ?: stringResource(
+        R.string.forecast_money,
+        Formatters.money(amount ?: 0.0),
+    )
     val strikethroughText = strikethroughAmount?.let {
         stringResource(R.string.forecast_money, Formatters.money(it))
     }
@@ -287,22 +317,28 @@ private fun ForecastMoneyRow(
             .padding(vertical = 6.dp),
     ) {
         val gapPx = with(density) { 8.dp.toPx() }
+        val columnPx = ((constraints.maxWidth - gapPx) / 2f).toInt().coerceAtLeast(0)
         val badgeExtraPx = with(density) { 20.dp.toPx() }
         val numbersGapPx = with(density) { 6.dp.toPx() }
-        val fontSize = remember(
-            label,
+        val labelFontSize = remember(label, columnPx, baseStyle) {
+            fittedTextSize(
+                textMeasurer = textMeasurer,
+                baseStyle = baseStyle,
+                maxWidthPx = columnPx,
+                text = label,
+            )
+        }
+        val valueFontSize = remember(
             amountText,
             strikethroughText,
             percentText,
-            constraints.maxWidth,
+            columnPx,
             baseStyle,
         ) {
-            fittedFontSize(
+            fittedValuesSize(
                 textMeasurer = textMeasurer,
                 baseStyle = baseStyle,
-                maxWidthPx = constraints.maxWidth,
-                rowGapPx = gapPx,
-                label = label,
+                maxWidthPx = columnPx,
                 amountText = amountText,
                 strikethroughText = strikethroughText,
                 percentText = percentText,
@@ -310,7 +346,8 @@ private fun ForecastMoneyRow(
                 numbersGapPx = numbersGapPx,
             )
         }
-        val textStyle = baseStyle.copy(fontSize = fontSize)
+        val labelStyle = baseStyle.copy(fontSize = labelFontSize)
+        val valueStyle = baseStyle.copy(fontSize = valueFontSize)
 
         Row(
             modifier = Modifier.fillMaxWidth(),
@@ -319,29 +356,31 @@ private fun ForecastMoneyRow(
         ) {
             Text(
                 text = label,
-                modifier = Modifier.weight(1f, fill = true),
-                style = textStyle,
+                modifier = Modifier.weight(1f),
+                style = labelStyle,
                 maxLines = 1,
                 overflow = TextOverflow.Ellipsis,
                 softWrap = false,
             )
             Row(
-                horizontalArrangement = Arrangement.spacedBy(6.dp),
+                modifier = Modifier.weight(1f),
+                horizontalArrangement = Arrangement.spacedBy(6.dp, Alignment.End),
                 verticalAlignment = Alignment.CenterVertically,
             ) {
                 Text(
                     text = amountText,
-                    style = textStyle.copy(fontWeight = FontWeight.Medium),
+                    style = valueStyle.copy(fontWeight = FontWeight.Medium),
+                    color = amountColor,
                     maxLines = 1,
                     softWrap = false,
                 )
                 if (percent != null && percentText != null) {
-                    ForecastPercentBadge(text = percentText, percent = percent, fontSize = fontSize)
+                    ForecastPercentBadge(text = percentText, percent = percent, fontSize = valueFontSize)
                 }
                 if (strikethroughText != null) {
                     Text(
                         text = strikethroughText,
-                        style = textStyle.copy(color = LoanTextSecondary),
+                        style = valueStyle.copy(color = LoanTextSecondary),
                         textDecoration = TextDecoration.LineThrough,
                         maxLines = 1,
                         overflow = TextOverflow.Clip,
@@ -377,12 +416,35 @@ private fun ForecastPercentBadge(
     }
 }
 
-private fun fittedFontSize(
+private fun fittedTextSize(
     textMeasurer: TextMeasurer,
     baseStyle: TextStyle,
     maxWidthPx: Int,
-    rowGapPx: Float,
-    label: String,
+    text: String,
+    fontWeight: FontWeight? = null,
+): TextUnit {
+    val minSize = 10.sp
+    var size = baseStyle.fontSize
+    while (size.value > minSize.value) {
+        val style = baseStyle.copy(fontSize = size, fontWeight = fontWeight ?: baseStyle.fontWeight)
+        val width = textMeasurer.measure(
+            text = text,
+            style = style,
+            maxLines = 1,
+            softWrap = false,
+        ).size.width
+        if (width <= maxWidthPx) {
+            return size
+        }
+        size = (size.value - 0.5f).sp
+    }
+    return minSize
+}
+
+private fun fittedValuesSize(
+    textMeasurer: TextMeasurer,
+    baseStyle: TextStyle,
+    maxWidthPx: Int,
     amountText: String,
     strikethroughText: String?,
     percentText: String?,
@@ -393,12 +455,6 @@ private fun fittedFontSize(
     var size = baseStyle.fontSize
     while (size.value > minSize.value) {
         val style = baseStyle.copy(fontSize = size)
-        val labelWidth = textMeasurer.measure(
-            text = label,
-            style = style,
-            maxLines = 1,
-            softWrap = false,
-        ).size.width
         var numbersWidth = textMeasurer.measure(
             text = amountText,
             style = style.copy(fontWeight = FontWeight.Medium),
@@ -421,7 +477,7 @@ private fun fittedFontSize(
                 softWrap = false,
             ).size.width + badgeExtraPx.toInt()
         }
-        if (labelWidth + rowGapPx + numbersWidth <= maxWidthPx) {
+        if (numbersWidth <= maxWidthPx) {
             return size
         }
         size = (size.value - 0.5f).sp

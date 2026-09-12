@@ -46,6 +46,16 @@ object LoanCardDayColors {
         return start to end
     }
 
+    fun highlightForDay(day: Int, strength: Float = 0.10f): Color {
+        val color = colorForDay(day)
+        return Color(
+            red = color.red * strength + (1f - strength),
+            green = color.green * strength + (1f - strength),
+            blue = color.blue * strength + (1f - strength),
+            alpha = 1f,
+        )
+    }
+
     private fun darken(color: Color, factor: Float): Color {
         return Color(
             red = color.red * (1f - factor),

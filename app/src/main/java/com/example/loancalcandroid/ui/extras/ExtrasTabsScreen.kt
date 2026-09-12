@@ -1,5 +1,6 @@
 package com.example.loancalcandroid.ui.extras
 
+import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
@@ -15,6 +16,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material3.AlertDialog
@@ -26,7 +28,7 @@ import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
-import com.example.loancalcandroid.ui.common.LoanTabRow
+import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
@@ -45,17 +47,25 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.example.loancalcandroid.R
 import com.example.loancalcandroid.navigation.Route
+import com.example.loancalcandroid.ui.common.AutoShrinkText
 import com.example.loancalcandroid.ui.common.LoanCalcScaffold
+import com.example.loancalcandroid.ui.common.LoanTabRow
 import com.example.loancalcandroid.ui.extrasListViewModel
 import com.example.loancalcandroid.ui.theme.LoanBlueDark
+import com.example.loancalcandroid.ui.theme.LoanCardSurface
 import com.example.loancalcandroid.ui.theme.LoanTextSecondary
 import com.example.loancalcandroid.util.Formatters
 
 private val TableHeaderBackground = Color(0xFFF5F5F5)
+private val SavedMoneyCardBackground = Color(0xFFF3FBF6)
+private val SavedMoneyCardBorder = Color(0xFFC5E6D0)
+private val SavedMoneyTitleColor = Color(0xFF5E6A63)
+private val SavedMoneyAmountColor = Color(0xFF1C1C1E)
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -90,7 +100,8 @@ fun ExtrasTabsScreen(
         Column(
             modifier = Modifier
                 .fillMaxSize()
-                .padding(innerPadding),
+                .padding(innerPadding)
+                .background(LoanCardSurface),
         ) {
             LoanTabRow(
                 selectedTabIndex = selectedTab,
@@ -152,7 +163,11 @@ private fun ExtrasListContent(
         return
     }
 
-    Column(modifier = Modifier.fillMaxSize()) {
+    Column(
+        modifier = Modifier
+            .fillMaxSize()
+            .background(LoanCardSurface),
+    ) {
         ExtrasTableHeader()
         HorizontalDivider(color = Color.Black, thickness = 1.dp)
 
@@ -184,24 +199,10 @@ private fun ExtrasListContent(
         }
 
         if (category == ExtraCategory.EARLY) {
-            Row(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(horizontal = 8.dp, vertical = 6.dp),
-                horizontalArrangement = Arrangement.SpaceBetween,
-                verticalAlignment = Alignment.CenterVertically,
-            ) {
-                Text(
-                    text = stringResource(R.string.extras_saved_money),
-                    style = MaterialTheme.typography.bodyMedium,
-                    color = LoanTextSecondary,
-                )
-                Text(
-                    text = Formatters.moneyFixed(uiState.savedMoney),
-                    style = MaterialTheme.typography.bodyMedium,
-                    fontWeight = FontWeight.Bold,
-                )
-            }
+            SavedMoneyCard(
+                savedMoney = uiState.savedMoney,
+                modifier = Modifier.padding(horizontal = 16.dp, vertical = 10.dp),
+            )
             Button(
                 onClick = onBestDateClick,
                 modifier = Modifier
@@ -219,6 +220,62 @@ private fun ExtrasListContent(
             }
         }
     }
+}
+
+@Composable
+private fun SavedMoneyCard(
+    savedMoney: Double,
+    modifier: Modifier = Modifier,
+) {
+    Surface(
+        modifier = modifier.fillMaxWidth(),
+        shape = RoundedCornerShape(14.dp),
+        color = SavedMoneyCardBackground,
+        border = BorderStroke(1.dp, SavedMoneyCardBorder),
+    ) {
+        Row(
+            modifier = Modifier.padding(horizontal = 16.dp, vertical = 14.dp),
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.spacedBy(14.dp),
+        ) {
+            SavedMoneyIcon()
+            Column(
+                modifier = Modifier.weight(1f),
+                verticalArrangement = Arrangement.spacedBy(2.dp),
+            ) {
+                Text(
+                    text = stringResource(R.string.extras_saved_money),
+                    fontSize = 13.sp,
+                    lineHeight = 16.sp,
+                    fontWeight = FontWeight.Normal,
+                    color = SavedMoneyTitleColor,
+                    maxLines = 1,
+                    overflow = TextOverflow.Ellipsis,
+                )
+                AutoShrinkText(
+                    text = stringResource(
+                        R.string.extras_saved_money_amount,
+                        Formatters.moneyFixed(savedMoney),
+                    ),
+                    style = MaterialTheme.typography.headlineSmall.copy(
+                        fontWeight = FontWeight.Bold,
+                        color = SavedMoneyAmountColor,
+                        fontSize = 28.sp,
+                        lineHeight = 32.sp,
+                    ),
+                )
+            }
+        }
+    }
+}
+
+@Composable
+private fun SavedMoneyIcon() {
+    Image(
+        painter = painterResource(R.drawable.ic_wallet),
+        contentDescription = null,
+        modifier = Modifier.size(46.dp),
+    )
 }
 
 @Composable

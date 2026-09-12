@@ -176,6 +176,10 @@ fun HomeScreen(
                     item {
                         DebtProgressSection(
                             details = details,
+                            firstPaymentDay = uiState.loanCards
+                                .firstOrNull { it.id == selectedLoanId }
+                                ?.firstPaymentDay
+                                ?: 1,
                             onCurrentPaymentClick = { onScheduleClick(selectedLoanId) },
                         )
                         Spacer(modifier = Modifier.height(16.dp))

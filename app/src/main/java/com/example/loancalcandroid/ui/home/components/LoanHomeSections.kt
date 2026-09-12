@@ -1,5 +1,6 @@
 package com.example.loancalcandroid.ui.home.components
 
+import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -388,6 +389,7 @@ private fun QuickActionItem(
 fun DebtProgressSection(
     details: LoanDetailsUiModel,
     onCurrentPaymentClick: () -> Unit,
+    firstPaymentDay: Int,
     modifier: Modifier = Modifier,
 ) {
     Column(
@@ -397,6 +399,8 @@ fun DebtProgressSection(
         DebtProgressCard(details = details)
         CurrentPaymentCard(
             details = details,
+            accentColor = LoanCardDayColors.colorForDay(firstPaymentDay),
+            highlightColor = LoanCardDayColors.highlightForDay(firstPaymentDay),
             onClick = onCurrentPaymentClick,
         )
     }
@@ -490,6 +494,8 @@ private fun DebtProgressCard(details: LoanDetailsUiModel) {
 @Composable
 private fun CurrentPaymentCard(
     details: LoanDetailsUiModel,
+    accentColor: Color,
+    highlightColor: Color,
     onClick: () -> Unit,
 ) {
     Surface(
@@ -497,7 +503,8 @@ private fun CurrentPaymentCard(
             .fillMaxWidth()
             .clickable(onClick = onClick),
         shape = RoundedCornerShape(12.dp),
-        color = LoanCardSurface,
+        color = highlightColor,
+        border = BorderStroke(2.dp, accentColor),
     ) {
         Column(modifier = Modifier.padding(horizontal = 16.dp, vertical = 14.dp)) {
             Text(

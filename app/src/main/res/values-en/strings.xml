@@ -68,6 +68,7 @@
     <string name="extras_tab_early">Early payments</string>
     <string name="extras_tab_commission">Commission and insurance</string>
     <string name="extras_saved_money">Saved with extras</string>
+    <string name="extras_saved_money_amount">%1$s</string>
     <string name="extras_best_date_button">Calc best extra payment date</string>
     <string name="add_commission">Commission and insurance</string>
     <string name="menu_extras_savings">Savings %1$s</string>
@@ -175,6 +176,7 @@
     <string name="forecast_detailed_desc">Entered value will be using for monthly payment, and rest - for extra payment</string>
     <string name="forecast_closes_in">Loan will be paid off in</string>
     <string name="forecast_instead_of">Instead of %1$s</string>
+    <string name="forecast_saved">Will be saved</string>
     <string name="forecast_overpay">Overpayment</string>
     <string name="forecast_total_payout">Total payout</string>
     <string name="forecast_payoff_date">Payoff date</string>

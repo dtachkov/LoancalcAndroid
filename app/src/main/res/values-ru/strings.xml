@@ -68,7 +68,8 @@
     <string name="extras_tab_list">Список</string>
     <string name="extras_tab_early">Досрочные</string>
     <string name="extras_tab_commission">Комиссии</string>
-    <string name="extras_saved_money">Сэкономлено на досрочках:</string>
+    <string name="extras_saved_money">Сэкономлено на досрочках</string>
+    <string name="extras_saved_money_amount">%1$s ₽</string>
     <string name="extras_best_date_button">👉 Узнать лучшую дату досрочки</string>
     <string name="add_commission">Комиссия / страховка</string>
     <string name="menu_extras_savings">Экономия %1$s</string>
@@ -178,6 +179,7 @@
     <string name="forecast_detailed_desc">Расчёт будет произведён следующим образом: указанная сумма платежа будет отправлена на погашение ежемесячного платежа, а оставшаяся часть — на досрочное погашение с указанным типом. Дату начала прогноза лучше задать позднее даты последней досрочки.</string>
     <string name="forecast_closes_in">Кредит закроется через</string>
     <string name="forecast_instead_of">Вместо %1$s</string>
+    <string name="forecast_saved">Будет сэкономлено</string>
     <string name="forecast_overpay">Сумма переплаты</string>
     <string name="forecast_total_payout">Общая выплата</string>
     <string name="forecast_payoff_date">Дата погашения</string>
