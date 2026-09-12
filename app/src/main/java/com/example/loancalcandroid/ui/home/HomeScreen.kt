@@ -26,6 +26,7 @@ import com.example.loancalcandroid.ui.analytics.AllLoansAnalyticsSection
 import com.example.loancalcandroid.ui.common.rememberSpeechRecognitionLauncher
 import com.example.loancalcandroid.ui.home.components.AllLoansMenuSection
 import com.example.loancalcandroid.ui.home.components.AllLoansPaymentsSection
+import com.example.loancalcandroid.ui.home.components.CurrentPaymentCard
 import com.example.loancalcandroid.ui.home.components.DebtProgressSection
 import com.example.loancalcandroid.ui.home.components.HomeTopBar
 import com.example.loancalcandroid.ui.home.components.PremiumLockedLoanSection
@@ -35,6 +36,7 @@ import com.example.loancalcandroid.ui.home.components.NavigationMenuSection
 import com.example.loancalcandroid.ui.home.components.QuickActionsRow
 import com.example.loancalcandroid.ui.home.components.InterestStatsSection
 import com.example.loancalcandroid.ui.home.components.OverpayStatsSection
+import com.example.loancalcandroid.ui.theme.LoanCardDayColors
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -198,21 +200,27 @@ fun HomeScreen(
                             onScheduleClick = { onScheduleClick(selectedLoanId) },
                             onRequisitesClick = { onRequisitesClick(selectedLoanId) },
                         )
-                        Spacer(modifier = Modifier.height(24.dp))
+                        Spacer(modifier = Modifier.height(16.dp))
+                    }
+                    item {
+                        val firstPaymentDay = uiState.loanCards
+                            .firstOrNull { it.id == selectedLoanId }
+                            ?.firstPaymentDay
+                            ?: 1
+                        CurrentPaymentCard(
+                            details = details,
+                            accentColor = LoanCardDayColors.colorForDay(firstPaymentDay),
+                            highlightColor = LoanCardDayColors.highlightForDay(firstPaymentDay),
+                            onClick = { onScheduleClick(selectedLoanId) },
+                        )
+                        Spacer(modifier = Modifier.height(16.dp))
                     }
                     item {
                         OverpayStatsSection(details = details)
                         Spacer(modifier = Modifier.height(16.dp))
                     }
                     item {
-                        DebtProgressSection(
-                            details = details,
-                            firstPaymentDay = uiState.loanCards
-                                .firstOrNull { it.id == selectedLoanId }
-                                ?.firstPaymentDay
-                                ?: 1,
-                            onCurrentPaymentClick = { onScheduleClick(selectedLoanId) },
-                        )
+                        DebtProgressSection(details = details)
                         Spacer(modifier = Modifier.height(16.dp))
                     }
                     item {

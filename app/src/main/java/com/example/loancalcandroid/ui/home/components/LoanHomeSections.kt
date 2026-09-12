@@ -412,32 +412,25 @@ private fun QuickActionItem(
 @Composable
 fun DebtProgressSection(
     details: LoanDetailsUiModel,
-    onCurrentPaymentClick: () -> Unit,
-    firstPaymentDay: Int,
     modifier: Modifier = Modifier,
 ) {
-    Column(
-        modifier = modifier.fillMaxWidth(),
-        verticalArrangement = Arrangement.spacedBy(12.dp),
-    ) {
-        DebtProgressCard(details = details)
-        CurrentPaymentCard(
-            details = details,
-            accentColor = LoanCardDayColors.colorForDay(firstPaymentDay),
-            highlightColor = LoanCardDayColors.highlightForDay(firstPaymentDay),
-            onClick = onCurrentPaymentClick,
-        )
-    }
+    DebtProgressCard(
+        details = details,
+        modifier = modifier,
+    )
 }
 
 @Composable
-private fun DebtProgressCard(details: LoanDetailsUiModel) {
+private fun DebtProgressCard(
+    details: LoanDetailsUiModel,
+    modifier: Modifier = Modifier,
+) {
     val paidFraction = details.paidFraction.coerceIn(0f, 1f)
     val debtFraction = (1f - paidFraction).coerceAtLeast(0f)
     val paidPercentLabel = "(${(paidFraction * 100f).roundToInt()}%)"
 
     Surface(
-        modifier = Modifier.fillMaxWidth(),
+        modifier = modifier.fillMaxWidth(),
         shape = RoundedCornerShape(12.dp),
         color = LoanCardSurface,
     ) {
@@ -516,7 +509,7 @@ private fun DebtProgressCard(details: LoanDetailsUiModel) {
 }
 
 @Composable
-private fun CurrentPaymentCard(
+fun CurrentPaymentCard(
     details: LoanDetailsUiModel,
     accentColor: Color,
     highlightColor: Color,
