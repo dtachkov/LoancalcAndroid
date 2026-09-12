@@ -204,7 +204,7 @@
     <string name="best_date_end_date">Конечная дата</string>
     <string name="best_date_progress">Расчёт для даты: %1$s</string>
     <string name="best_date_stop">Стоп</string>
-    <string name="best_date_result">Лучшая дата досрочки</string>
+    <string name="best_date_result">Самая выгодная дата досрочки</string>
     <string name="best_date_table_date">Дата</string>
     <string name="best_date_table_overpay">Переплата</string>
     <string name="best_date_add_extra">Добавить в досрочные платежи</string>

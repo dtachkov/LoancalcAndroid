@@ -2,10 +2,8 @@ package com.example.loancalcandroid.ui.bestdate
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
@@ -21,6 +19,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.example.loancalcandroid.LoanCalcApplication
@@ -149,17 +148,42 @@ fun BestDateScreen(
             }
 
             uiState.bestDate?.let { bestDate ->
-                Spacer(modifier = Modifier.height(8.dp))
-                Text(
-                    text = stringResource(R.string.best_date_result),
-                    style = MaterialTheme.typography.titleMedium,
-                    fontWeight = FontWeight.SemiBold,
-                )
-                Text(
-                    text = Formatters.date(bestDate),
-                    style = MaterialTheme.typography.headlineSmall,
-                    color = MaterialTheme.colorScheme.primary,
-                )
+                Column(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(top = 8.dp, bottom = 4.dp),
+                    horizontalAlignment = Alignment.CenterHorizontally,
+                    verticalArrangement = Arrangement.spacedBy(4.dp),
+                ) {
+                    Text(
+                        text = Formatters.date(bestDate),
+                        style = MaterialTheme.typography.displaySmall,
+                        fontWeight = FontWeight.Bold,
+                        color = MaterialTheme.colorScheme.primary,
+                        textAlign = TextAlign.Center,
+                        modifier = Modifier.fillMaxWidth(),
+                    )
+                    Text(
+                        text = stringResource(R.string.best_date_result),
+                        style = MaterialTheme.typography.bodyLarge,
+                        color = LoanTextSecondary,
+                        textAlign = TextAlign.Center,
+                        modifier = Modifier.fillMaxWidth(),
+                    )
+                }
+
+                Button(
+                    onClick = {
+                        onAddExtra(
+                            uiState.amount,
+                            bestDate.time,
+                            viewModel.selectedExtraType().name,
+                        )
+                    },
+                    modifier = Modifier.fillMaxWidth(),
+                ) {
+                    Text(stringResource(R.string.best_date_add_extra).uppercase())
+                }
 
                 val selectedIndex = uiState.rows.indexOfFirst { it.date == bestDate }
                 FeatureResultTable(
@@ -176,19 +200,6 @@ fun BestDateScreen(
                     selectedRowIndex = selectedIndex.takeIf { it >= 0 },
                     modifier = Modifier.padding(top = 8.dp),
                 )
-
-                Button(
-                    onClick = {
-                        onAddExtra(
-                            uiState.amount,
-                            bestDate.time,
-                            viewModel.selectedExtraType().name,
-                        )
-                    },
-                    modifier = Modifier.fillMaxWidth(),
-                ) {
-                    Text(stringResource(R.string.best_date_add_extra))
-                }
             }
         }
     }

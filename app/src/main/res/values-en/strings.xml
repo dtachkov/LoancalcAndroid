@@ -201,7 +201,7 @@
     <string name="best_date_end_date">End date</string>
     <string name="best_date_progress">Calculation for date: %1$s</string>
     <string name="best_date_stop">Stop</string>
-    <string name="best_date_result">Best Extra Payment Date</string>
+    <string name="best_date_result">The most profitable extra payment date</string>
     <string name="best_date_table_date">Date</string>
     <string name="best_date_table_overpay">OverPayment</string>
     <string name="best_date_add_extra">Add to extra payments</string>
