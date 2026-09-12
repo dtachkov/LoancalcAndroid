@@ -45,7 +45,7 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.ViewModelStoreOwner
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.example.loancalcandroid.R
-import com.example.loancalcandroid.review.RequestRuStoreReviewEffect
+import com.example.loancalcandroid.review.RequestReviewEffect
 import com.example.loancalcandroid.ui.common.FeatureDateRow
 import com.example.loancalcandroid.ui.common.LoanCalcScaffold
 import com.example.loancalcandroid.ui.common.LoanDecimalOutlinedTextField
@@ -79,7 +79,7 @@ fun ExtraFormScreen(
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
     var showDatePicker by remember { mutableStateOf(false) }
 
-    RequestRuStoreReviewEffect(uiState.reviewRequestTrigger)
+    RequestReviewEffect(uiState.reviewRequestTrigger)
 
     LaunchedEffect(uiState.saved) {
         if (uiState.saved) onSaved(uiState.category)

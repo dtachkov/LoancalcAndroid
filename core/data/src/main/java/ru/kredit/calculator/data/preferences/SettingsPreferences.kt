@@ -17,15 +17,6 @@ class SettingsPreferences(context: Context) {
         preferences.edit().putBoolean(PreferenceKeys.LOAD_LAST_LOAN_AT_START, enabled).apply()
     }
 
-    fun getLanguageCode(): String {
-        return preferences.getString(PreferenceKeys.LANGUAGE, java.util.Locale.getDefault().language)
-            ?: java.util.Locale.getDefault().language
-    }
-
-    fun setLanguageCode(code: String) {
-        preferences.edit().putString(PreferenceKeys.LANGUAGE, code).apply()
-    }
-
     fun areNotificationsEnabled(): Boolean {
         return preferences.getBoolean(PreferenceKeys.NOTIFICATION_ENABLED, false)
     }

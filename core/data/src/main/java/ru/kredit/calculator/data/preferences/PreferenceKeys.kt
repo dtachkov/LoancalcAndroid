@@ -5,7 +5,6 @@ object PreferenceKeys {
     const val NOTIFICATION_DAYS = "notific_day"
     const val NOTIFICATION_HOUR = "notific_hour"
     const val NOTIFICATION_MINUTE = "notific_minute"
-    const val LANGUAGE = "set_language"
     const val LOAD_LAST_LOAN_AT_START = "perform_updates"
 
     const val LAST_CALCULATED_LOAN_ID = "last_calculated_loan_id"

@@ -1,19 +1,14 @@
 package com.example.loancalcandroid.ui.purchase
 
-import androidx.compose.foundation.background
-import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.defaultMinSize
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxHeight
+import androidx.compose.foundation.layout.defaultMinSize
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
@@ -22,7 +17,8 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
-import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -35,15 +31,12 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
-import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
@@ -55,34 +48,19 @@ import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.compose.ui.zIndex
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.loancalcandroid.R
 import com.example.loancalcandroid.billing.BillingSupportUtil
+import com.example.loancalcandroid.support.DeveloperSupportUtil
 import com.example.loancalcandroid.ui.theme.LoanTextSecondary
 import com.example.loancalcandroid.ui.theme.PaywallBackground
-import com.example.loancalcandroid.ui.theme.PaywallBadgeGrey
 import com.example.loancalcandroid.ui.theme.PaywallFeatureCard
-import com.example.loancalcandroid.ui.theme.PaywallOrange
 import com.example.loancalcandroid.ui.theme.PaywallOrangeDark
-import com.example.loancalcandroid.ui.theme.PaywallPlanButton
 import com.example.loancalcandroid.ui.theme.PaywallSocialProof
+import kotlinx.coroutines.launch
 
 private val PaywallFeatureCardHeight = 88.dp
-private val PaywallCenterCardHeight = 228.dp
-private val PaywallSideCardHeight = 196.dp
-private val PaywallPlanButtonHeight = 56.dp
-private val PaywallCrownSlotHeight = 20.dp
-private val PaywallCrownButtonGap = 12.dp
-private val PaywallPlanTitleSlotHeight = 32.dp
-private val PaywallPlanPriceSlotHeight = 34.dp
-private val PaywallPlanHorizontalPadding = 6.dp
-private val PaywallBadgeOverlap = 14.dp
-private val PaywallCrownWidth = 34.dp
-private val PaywallCrownHeight = 18.dp
-private val PaywallContentTop =
-    (PaywallCenterCardHeight - PaywallSideCardHeight) / 2 + 10.dp
 
 private data class PaywallFeatureItem(
     val iconRes: Int,
@@ -105,17 +83,8 @@ fun PurchaseScreen(
     )
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
     val snackbarHostState = remember { SnackbarHostState() }
-
-    LaunchedEffect(uiState.message) {
-        val message = uiState.message ?: return@LaunchedEffect
-        val text = when (message) {
-            "products_unavailable" -> context.getString(R.string.play_store_unavailable)
-            "purchase_not_confirmed" -> context.getString(R.string.buy_complete)
-            else -> message
-        }
-        snackbarHostState.showSnackbar(text)
-        viewModel.clearMessage()
-    }
+    val coroutineScope = rememberCoroutineScope()
+    val noEmailAppMessage = stringResource(R.string.developer_email_no_app)
 
     Scaffold(
         snackbarHost = { SnackbarHost(snackbarHostState) },
@@ -156,29 +125,16 @@ fun PurchaseScreen(
             Spacer(modifier = Modifier.height(20.dp))
 
             if (!uiState.isLicensed) {
-                if (uiState.isLoadingProducts) {
-                    Box(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(vertical = 32.dp),
-                        contentAlignment = Alignment.Center,
-                    ) {
-                        CircularProgressIndicator(color = PaywallPlanButton)
-                    }
-                } else {
-                    PaywallPlansRow(
-                        options = uiState.options,
-                        purchaseInProgress = uiState.purchaseInProgress,
-                        onBuy = { productId ->
-                            viewModel.purchase(
-                                productId = productId,
-                                onSuccess = onPurchased,
-                                onError = {},
-                                onCancelled = {},
-                            )
-                        },
-                    )
-                }
+                PaywallUnavailableSection(
+                    onContactDeveloper = {
+                        val sent = DeveloperSupportUtil.sendFullVersionEmail(context)
+                        if (!sent) {
+                            coroutineScope.launch {
+                                snackbarHostState.showSnackbar(noEmailAppMessage)
+                            }
+                        }
+                    },
+                )
                 Spacer(modifier = Modifier.height(20.dp))
             }
 
@@ -268,6 +224,41 @@ private fun PaywallHeader() {
 }
 
 @Composable
+private fun PaywallUnavailableSection(
+    onContactDeveloper: () -> Unit,
+) {
+    Column(
+        modifier = Modifier.fillMaxWidth(),
+        horizontalAlignment = Alignment.CenterHorizontally,
+    ) {
+        Text(
+            text = stringResource(R.string.paywall_purchase_unavailable),
+            modifier = Modifier.fillMaxWidth(),
+            style = MaterialTheme.typography.bodyMedium.copy(lineHeight = 22.sp),
+            color = LoanTextSecondary,
+            textAlign = TextAlign.Center,
+        )
+        Spacer(modifier = Modifier.height(16.dp))
+        Button(
+            onClick = onContactDeveloper,
+            modifier = Modifier
+                .fillMaxWidth()
+                .height(52.dp),
+            shape = RoundedCornerShape(12.dp),
+            colors = ButtonDefaults.buttonColors(
+                containerColor = PaywallOrangeDark,
+                contentColor = Color.White,
+            ),
+        ) {
+            Text(
+                text = stringResource(R.string.menu_item_contact_developer),
+                style = MaterialTheme.typography.titleMedium.copy(fontWeight = FontWeight.SemiBold),
+            )
+        }
+    }
+}
+
+@Composable
 private fun PaywallFeaturesGrid() {
     val features = remember {
         listOf(
@@ -338,229 +329,6 @@ private fun PaywallFeatureCard(
                     lineHeight = 16.sp,
                     fontSize = 12.sp,
                 ),
-            )
-        }
-    }
-}
-
-@Composable
-private fun PaywallPlansRow(
-    options: List<PurchaseOptionUi>,
-    purchaseInProgress: String?,
-    onBuy: (String) -> Unit,
-) {
-    Row(
-        modifier = Modifier
-            .fillMaxWidth()
-            .height(PaywallCenterCardHeight)
-            .graphicsLayer { clip = false }
-            .padding(top = PaywallBadgeOverlap),
-        horizontalArrangement = Arrangement.spacedBy(6.dp),
-    ) {
-        options.forEach { option ->
-            PaywallPlanCard(
-                option = option,
-                isLoading = purchaseInProgress == option.productId,
-                onBuy = { onBuy(option.productId) },
-                modifier = Modifier
-                    .weight(1f)
-                    .fillMaxHeight(),
-            )
-        }
-    }
-}
-
-@Composable
-private fun PaywallPlanCard(
-    option: PurchaseOptionUi,
-    isLoading: Boolean,
-    onBuy: () -> Unit,
-    modifier: Modifier = Modifier,
-) {
-    val cardShape = RoundedCornerShape(16.dp)
-    val isRecommended = option.isRecommended
-    val cardHeight = if (isRecommended) PaywallCenterCardHeight else PaywallSideCardHeight
-
-    Box(
-        modifier = modifier.graphicsLayer { clip = false },
-    ) {
-        Surface(
-            modifier = Modifier
-                .align(if (isRecommended) Alignment.TopCenter else Alignment.Center)
-                .height(cardHeight)
-                .fillMaxWidth()
-                .then(
-                    if (isRecommended) {
-                        Modifier
-                            .shadow(10.dp, cardShape, ambientColor = PaywallOrange, spotColor = PaywallOrange)
-                            .border(2.5.dp, PaywallOrange, cardShape)
-                    } else {
-                        Modifier
-                    },
-                ),
-            shape = cardShape,
-            color = PaywallFeatureCard,
-        ) {}
-
-        Column(
-            modifier = Modifier
-                .align(Alignment.TopCenter)
-                .fillMaxWidth()
-                .padding(
-                    top = PaywallContentTop,
-                    start = PaywallPlanHorizontalPadding,
-                    end = PaywallPlanHorizontalPadding,
-                ),
-            horizontalAlignment = Alignment.CenterHorizontally,
-        ) {
-            PaywallPlanTitleSlot(text = stringResource(option.planTitleRes))
-            PaywallPlanPriceSlot(text = option.price)
-            PaywallPlanCrownSlot(filled = option.crownFilled)
-            Spacer(modifier = Modifier.height(PaywallCrownButtonGap))
-            PaywallPlanButton(
-                text = stringResource(option.buttonTextRes),
-                isRecommended = isRecommended,
-                isLoading = isLoading,
-                onClick = onBuy,
-                modifier = Modifier.height(PaywallPlanButtonHeight),
-            )
-        }
-
-        if (isRecommended && option.discountPercent != null) {
-            PaywallBadge(
-                modifier = Modifier
-                    .align(Alignment.TopCenter)
-                    .offset(y = (-PaywallBadgeOverlap))
-                    .zIndex(2f),
-                text = stringResource(R.string.paywall_discount, option.discountPercent),
-                backgroundColor = PaywallBadgeGrey,
-            )
-        }
-    }
-}
-
-@Composable
-private fun PaywallPlanTitleSlot(text: String) {
-    Box(
-        modifier = Modifier
-            .fillMaxWidth()
-            .height(PaywallPlanTitleSlotHeight),
-        contentAlignment = Alignment.Center,
-    ) {
-        Text(
-            text = text,
-            style = MaterialTheme.typography.labelMedium.copy(
-                color = LoanTextSecondary,
-                textAlign = TextAlign.Center,
-                lineHeight = 14.sp,
-                fontSize = 10.sp,
-            ),
-            textAlign = TextAlign.Center,
-            maxLines = 2,
-        )
-    }
-}
-
-@Composable
-private fun PaywallPlanPriceSlot(text: String) {
-    Box(
-        modifier = Modifier
-            .fillMaxWidth()
-            .height(PaywallPlanPriceSlotHeight),
-        contentAlignment = Alignment.Center,
-    ) {
-        Text(
-            text = text,
-            style = MaterialTheme.typography.titleMedium.copy(
-                fontWeight = FontWeight.Bold,
-                fontSize = 15.sp,
-            ),
-            textAlign = TextAlign.Center,
-            maxLines = 2,
-        )
-    }
-}
-
-@Composable
-private fun PaywallPlanCrownSlot(filled: Boolean) {
-    Box(
-        modifier = Modifier
-            .fillMaxWidth()
-            .height(PaywallCrownSlotHeight),
-        contentAlignment = Alignment.Center,
-    ) {
-        Icon(
-            painter = painterResource(
-                if (filled) R.drawable.ic_crown_filled else R.drawable.ic_crown_outline,
-            ),
-            contentDescription = null,
-            modifier = Modifier.size(width = PaywallCrownWidth, height = PaywallCrownHeight),
-            tint = Color.Unspecified,
-        )
-    }
-}
-
-@Composable
-private fun PaywallBadge(
-    text: String,
-    backgroundColor: Color,
-    modifier: Modifier = Modifier,
-) {
-    Box(
-        modifier = modifier
-            .shadow(2.dp, RoundedCornerShape(14.dp))
-            .clip(RoundedCornerShape(14.dp))
-            .background(backgroundColor)
-            .padding(horizontal = 10.dp, vertical = 5.dp),
-    ) {
-        Text(
-            text = text,
-            style = MaterialTheme.typography.labelSmall.copy(
-                color = Color.White,
-                fontWeight = FontWeight.SemiBold,
-                fontSize = 10.sp,
-            ),
-        )
-    }
-}
-
-@Composable
-private fun PaywallPlanButton(
-    text: String,
-    isRecommended: Boolean,
-    isLoading: Boolean,
-    onClick: () -> Unit,
-    modifier: Modifier = Modifier,
-) {
-    val backgroundColor = if (isRecommended) PaywallOrangeDark else PaywallPlanButton
-
-    Box(
-        modifier = modifier
-            .fillMaxWidth()
-            .clip(RoundedCornerShape(10.dp))
-            .background(backgroundColor)
-            .clickable(enabled = !isLoading, onClick = onClick)
-            .padding(horizontal = 4.dp, vertical = 8.dp),
-        contentAlignment = Alignment.Center,
-    ) {
-        if (isLoading) {
-            CircularProgressIndicator(
-                modifier = Modifier.size(18.dp),
-                color = Color.White,
-                strokeWidth = 2.dp,
-            )
-        } else {
-            Text(
-                text = text,
-                style = MaterialTheme.typography.labelSmall.copy(
-                    color = Color.White,
-                    fontWeight = FontWeight.SemiBold,
-                    textAlign = TextAlign.Center,
-                    lineHeight = 13.sp,
-                    fontSize = 10.sp,
-                ),
-                textAlign = TextAlign.Center,
-                maxLines = 3,
             )
         }
     }

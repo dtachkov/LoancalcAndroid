@@ -70,23 +70,6 @@ inline fun <reified VM : ViewModel> extraFormViewModel(
 }
 
 @Composable
-inline fun <reified VM : ViewModel> offerDetailViewModel(
-    offerId: Long,
-    crossinline creator: (Application, Long) -> VM,
-): VM {
-    val application = LocalContext.current.applicationContext as Application
-    return viewModel(
-        key = "offer-$offerId",
-        factory = object : ViewModelProvider.Factory {
-            @Suppress("UNCHECKED_CAST")
-            override fun <T : ViewModel> create(modelClass: Class<T>): T {
-                return creator(application, offerId) as T
-            }
-        },
-    )
-}
-
-@Composable
 inline fun <reified VM : ViewModel> loanExtraViewModel(
     loanId: Long,
     extraId: Long,

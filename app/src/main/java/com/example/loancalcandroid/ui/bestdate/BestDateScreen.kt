@@ -24,7 +24,7 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.example.loancalcandroid.LoanCalcApplication
 import com.example.loancalcandroid.R
-import com.example.loancalcandroid.review.RequestRuStoreReviewEffect
+import com.example.loancalcandroid.review.RequestReviewEffect
 import com.example.loancalcandroid.ui.common.DatePickerField
 import com.example.loancalcandroid.ui.common.FeatureCalculationProgress
 import com.example.loancalcandroid.ui.common.FeatureResultTable
@@ -47,7 +47,7 @@ fun BestDateScreen(
     val licenseManager = (LocalContext.current.applicationContext as LoanCalcApplication).licenseManager
     val isLicensed by licenseManager.isLicensed.collectAsStateWithLifecycle()
 
-    RequestRuStoreReviewEffect(uiState.reviewRequestTrigger)
+    RequestReviewEffect(uiState.reviewRequestTrigger)
 
     LoanCalcScaffold(
         title = stringResource(R.string.menu_best_date),

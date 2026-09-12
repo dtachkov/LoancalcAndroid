@@ -5,12 +5,10 @@ import ru.kredit.calculator.data.model.ExtraType
 import ru.kredit.calculator.data.model.Loan
 import ru.kredit.calculator.data.model.LoanDetails
 import ru.kredit.calculator.data.model.LoanType
-import ru.kredit.calculator.data.model.Offer
 import ru.kredit.calculator.data.util.DateFormats
 import ru.kredit.calculator.database.entity.ExtraEntity
 import ru.kredit.calculator.database.entity.LoanDetailsEntity
 import ru.kredit.calculator.database.entity.LoanEntity
-import ru.kredit.calculator.database.entity.OfferEntity
 
 private fun Long.toEntityId(): Long? = takeIf { it != 0L }
 
@@ -107,42 +105,5 @@ fun Extra.toEntity(): ExtraEntity {
         type = type.toInt(),
         date = DateFormats.formatDate(date),
         loanId = loanId,
-    )
-}
-
-fun OfferEntity.toDomain(): Offer {
-    val rateType = Offer.decodeRateType(rateType)
-    return Offer(
-        id = id ?: 0,
-        name = name,
-        organizationName = orgName,
-        documents = docs,
-        requirements = requirements,
-        extraPaymentRules = extraPaymentRules,
-        limit = amountLimit?.toDouble() ?: 0.0,
-        term = term ?: 0,
-        link = link,
-        logoImage = logoImage,
-        logoColor = logoColor,
-        rate = Offer.decodeRate(rateType, rate),
-    )
-}
-
-fun Offer.toEntity(): OfferEntity {
-    val rateType = Offer.rateTypeOf(rate)
-    return OfferEntity(
-        id = id.toEntityId(),
-        name = name,
-        orgName = organizationName,
-        docs = documents,
-        requirements = requirements,
-        extraPaymentRules = extraPaymentRules,
-        amountLimit = limit.toFloat(),
-        term = term,
-        link = link,
-        logoImage = logoImage,
-        logoColor = logoColor,
-        rateType = Offer.encodeRateType(rateType),
-        rate = Offer.encodeRate(rate),
     )
 }

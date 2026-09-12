@@ -6,7 +6,7 @@ import androidx.compose.ui.platform.LocalContext
 import com.example.loancalcandroid.util.findActivity
 
 @Composable
-fun RequestRuStoreReviewEffect(trigger: Int) {
+fun RequestReviewEffect(trigger: Int) {
     val activity = LocalContext.current.findActivity() ?: return
     LaunchedEffect(trigger) {
         if (trigger > 0) {

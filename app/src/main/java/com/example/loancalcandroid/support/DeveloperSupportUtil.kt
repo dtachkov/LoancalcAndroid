@@ -63,6 +63,15 @@ object DeveloperSupportUtil {
         return launchEmailChooser(context, sendIntent)
     }
 
+    fun sendFullVersionEmail(context: Context): Boolean {
+        val sendIntent = Intent(Intent.ACTION_SEND).apply {
+            type = "message/rfc822"
+            putExtra(Intent.EXTRA_EMAIL, arrayOf(context.getString(R.string.support_email)))
+            putExtra(Intent.EXTRA_SUBJECT, context.getString(R.string.paywall_full_version_email_subject))
+        }
+        return launchEmailChooser(context, sendIntent)
+    }
+
     private fun fileUri(context: Context, file: File): Uri {
         return FileProvider.getUriForFile(
             context,

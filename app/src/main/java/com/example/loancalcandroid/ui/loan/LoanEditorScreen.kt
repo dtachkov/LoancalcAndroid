@@ -36,7 +36,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.example.loancalcandroid.R
-import com.example.loancalcandroid.review.RequestRuStoreReviewEffect
+import com.example.loancalcandroid.review.RequestReviewEffect
 import com.example.loancalcandroid.ui.common.DatePickerField
 import com.example.loancalcandroid.ui.common.LoanCalcScaffold
 import com.example.loancalcandroid.ui.common.LoanDecimalOutlinedTextField
@@ -62,7 +62,7 @@ fun LoanEditorScreen(
     }
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
 
-    RequestRuStoreReviewEffect(uiState.reviewRequestTrigger)
+    RequestReviewEffect(uiState.reviewRequestTrigger)
 
     LaunchedEffect(uiState.purchaseRequired) {
         if (uiState.purchaseRequired) {

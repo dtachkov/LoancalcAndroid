@@ -74,7 +74,6 @@
     <string name="cancel">Cancel</string>
     <string name="back">Back</string>
     <string name="settings">Einstellungen</string>
-    <string name="offers_screen">Offers</string>
     <string name="add_loan">Add</string>
     <string name="feature_placeholder">Screen under development</string>
     <string name="no_loans_hint">Tap + to add your first loan</string>
@@ -158,7 +157,7 @@
     <string name="share_mail_extras_title">Vorfristzahlungen und Verträgsänderungen</string>
     <string name="share_mail_schedule_title">Tilgungsplan</string>
     <string name="share_mail_footer">Berechnet unter Verwendung eines</string>
-    <string name="share_mail_program_link">https://apps.rustore.ru/app/ru.kredit.calculator</string>
+    <string name="share_mail_program_link">https://play.google.com/store/apps/details?id=ru.kredit.calculator</string>
     <string name="share_mail_program_name">KreditRechner</string>
     <string name="share_col_amount_or_rate">Betrag oder Zinsen</string>
     <string name="help_title">Hilfe</string>
@@ -196,20 +195,6 @@
     <string name="compare_result">Best loan for extra payment</string>
     <string name="compare_table_loan">Loan name</string>
     <string name="compare_table_savings">Can be saved with extra</string>
-    <string name="offers_settings_hint">Offers</string>
-    <string name="offers_refresh">Refresh offers</string>
-    <string name="offers_empty">No saved offers. Tap Refresh.</string>
-    <string name="offers_amount_limit">Up to %1$s</string>
-    <string name="offers_rate_term">%1$s up to %2$d months</string>
-    <string name="offers_order">Order</string>
-    <string name="offer_detail_title">Offer</string>
-    <string name="offer_amount">Kreditbetrag</string>
-    <string name="offer_monthly_payment">Monthly payment</string>
-    <string name="offer_overpay">Overpay</string>
-    <string name="offer_documents">Documents</string>
-    <string name="offer_requirements">Requirements</string>
-    <string name="offer_early_payments">Sondertilgung</string>
-    <string name="offer_save_loan">Save to list</string>
     <string name="setting_load_last_calculated_loan_at_start">Beim Starten letzten Kredit hochladen</string>
     <string name="setting_summary_load_last_calculated_loan_on">Sicherungsanfrage – wenn diese Option aktiviert ist, fordert das Programm eine Bestätigung fürs Löschen der Kredit-Parameter nach BerechnungеnBeim Starten letzten Kredit laden – wenn diese Option aktiviert ist, wird beim Starten der Anwendung der letzte berechnete Kredit geladen.</string>
     <string name="setting_summary_load_last_calculated_loan_off">Do not load last calculated loan when application starts.</string>

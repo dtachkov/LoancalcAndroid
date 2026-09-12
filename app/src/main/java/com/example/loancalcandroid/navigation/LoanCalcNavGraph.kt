@@ -39,9 +39,7 @@ import com.example.loancalcandroid.billing.LoanLicensePolicy
 import com.example.loancalcandroid.billing.navigateToAddLoanIfAllowed
 import com.example.loancalcandroid.billing.navigateToPurchase
 import com.example.loancalcandroid.billing.navigateWithLicenseCheck
-import com.example.loancalcandroid.ui.offers.OfferDetailScreen
 import com.example.loancalcandroid.ui.purchase.PurchaseScreen
-import com.example.loancalcandroid.ui.offers.OffersScreen
 import com.example.loancalcandroid.ui.requisites.RequisitesScreen
 import com.example.loancalcandroid.ui.schedule.SchedulePaymentDetailScreen
 import com.example.loancalcandroid.ui.schedule.ScheduleScreen
@@ -122,7 +120,6 @@ fun LoanCalcNavGraph(
         composable(Route.SETTINGS) {
             SettingsScreen(
                 onBack = { navController.popBackStack() },
-                onOffersClick = { navController.navigate(Route.OFFERS) },
                 onHelpClick = { navController.navigate(Route.helpTopic(Route.HELP_TOPIC_APP)) },
                 onVoteClick = { navController.navigate(Route.helpTopic(Route.HELP_TOPIC_VOTE)) },
                 onExtraTypesHelpClick = { navController.navigate(Route.helpTopic(Route.HELP_TOPIC_EXTRA_TYPES)) },
@@ -436,27 +433,6 @@ fun LoanCalcNavGraph(
                 onBack = { navController.popBackStack() },
                 onPurchaseRequired = {
                     navController.navigateToPurchase(R.string.feature_best_loan)
-                },
-            )
-        }
-
-        composable(Route.OFFERS) {
-            OffersScreen(
-                onBack = { navController.popBackStack() },
-                onOfferClick = { offerId -> navController.navigate(Route.offerDetail(offerId)) },
-            )
-        }
-
-        composable(
-            route = Route.OFFER_DETAIL,
-            arguments = listOf(navArgument(Route.ARG_OFFER_ID) { type = NavType.LongType }),
-        ) { backStackEntry ->
-            val offerId = backStackEntry.arguments?.getLong(Route.ARG_OFFER_ID) ?: return@composable
-            OfferDetailScreen(
-                offerId = offerId,
-                onBack = { navController.popBackStack() },
-                onPurchaseRequired = {
-                    navController.navigateToPurchase(R.string.paywall_feature_extra_payments)
                 },
             )
         }

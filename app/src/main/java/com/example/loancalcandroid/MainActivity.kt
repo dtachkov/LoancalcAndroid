@@ -8,7 +8,6 @@ import androidx.activity.enableEdgeToEdge
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.ui.Modifier
-import com.example.loancalcandroid.billing.RuStorePayHelper
 import com.example.loancalcandroid.navigation.LoanCalcNavGraph
 import com.example.loancalcandroid.notification.NotificationActions
 import com.example.loancalcandroid.ui.theme.LoanCalcAndroidTheme
@@ -20,7 +19,6 @@ class MainActivity : ComponentActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        RuStorePayHelper.proceedPaymentIntent(this, intent)
         handleNotificationIntent(intent)
         enableEdgeToEdge()
         setContent {
@@ -37,8 +35,12 @@ class MainActivity : ComponentActivity() {
     override fun onNewIntent(intent: Intent) {
         super.onNewIntent(intent)
         setIntent(intent)
-        RuStorePayHelper.proceedPaymentIntent(this, intent)
         handleNotificationIntent(intent)
+    }
+
+    override fun onResume() {
+        super.onResume()
+        (application as LoanCalcApplication).licenseManager.refreshPurchases()
     }
 
     private fun handleNotificationIntent(intent: Intent?) {

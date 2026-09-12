@@ -24,7 +24,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.example.loancalcandroid.R
-import com.example.loancalcandroid.review.RequestRuStoreReviewEffect
+import com.example.loancalcandroid.review.RequestReviewEffect
 import com.example.loancalcandroid.ui.common.FeatureResultTable
 import com.example.loancalcandroid.ui.loanViewModel
 import com.example.loancalcandroid.ui.theme.LoanTextSecondary
@@ -37,7 +37,7 @@ fun TaxScreen(
     val viewModel: TaxViewModel = loanViewModel(loanId, ::TaxViewModel)
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
 
-    RequestRuStoreReviewEffect(uiState.reviewRequestTrigger)
+    RequestReviewEffect(uiState.reviewRequestTrigger)
 
     LoanCalcScaffold(
         title = stringResource(R.string.menu_tax),

@@ -53,7 +53,6 @@ import com.example.loancalcandroid.ui.theme.LoanTextSecondary
 @Composable
 fun SettingsScreen(
     onBack: () -> Unit,
-    onOffersClick: () -> Unit,
     onHelpClick: () -> Unit,
     onVoteClick: () -> Unit,
     onExtraTypesHelpClick: () -> Unit,
@@ -324,11 +323,6 @@ fun SettingsScreen(
                         title = stringResource(R.string.label_extra_types_help),
                         subtitle = stringResource(R.string.label_extra_types_help_hint),
                         onClick = onExtraTypesHelpClick,
-                    )
-                    MenuNavigationRow(
-                        title = stringResource(R.string.offers_screen),
-                        subtitle = stringResource(R.string.offers_settings_hint),
-                        onClick = onOffersClick,
                         showDivider = false,
                     )
                 }

@@ -4,7 +4,6 @@ import android.content.Context
 import kotlinx.coroutines.Dispatchers
 import ru.kredit.calculator.data.calculation.FeatureCalculators
 import ru.kredit.calculator.data.calculation.LoanCalculator
-import ru.kredit.calculator.data.network.OffersApiFactory
 import ru.kredit.calculator.data.network.WebLoanApiFactory
 import ru.kredit.calculator.data.preferences.ApplicationReviewPreferences
 import ru.kredit.calculator.data.preferences.ChestPreferences
@@ -13,7 +12,6 @@ import ru.kredit.calculator.data.preferences.ShownNotificationsPreferences
 import ru.kredit.calculator.data.repository.ExtraRepository
 import ru.kredit.calculator.data.repository.ImportExportRepository
 import ru.kredit.calculator.data.repository.LoanRepository
-import ru.kredit.calculator.data.repository.OfferRepository
 import ru.kredit.calculator.data.repository.WebLoanImportRepository
 import ru.kredit.calculator.database.LoancalcDatabase
 
@@ -21,7 +19,6 @@ class LoanCalcData private constructor(
     val database: LoancalcDatabase,
     val loanRepository: LoanRepository,
     val extraRepository: ExtraRepository,
-    val offerRepository: OfferRepository,
     val importExportRepository: ImportExportRepository,
     val webLoanImportRepository: WebLoanImportRepository,
     val settingsPreferences: SettingsPreferences,
@@ -61,11 +58,6 @@ class LoanCalcData private constructor(
                 extraDao = database.extraDao(),
                 ioDispatcher = ioDispatcher,
             )
-            val offerRepository = OfferRepository(
-                offerDao = database.offerDao(),
-                offersApi = OffersApiFactory.create(),
-                ioDispatcher = ioDispatcher,
-            )
             val importExportRepository = ImportExportRepository(
                 loanRepository = loanRepository,
                 extraRepository = extraRepository,
@@ -84,7 +76,6 @@ class LoanCalcData private constructor(
                 database = database,
                 loanRepository = loanRepository,
                 extraRepository = extraRepository,
-                offerRepository = offerRepository,
                 importExportRepository = importExportRepository,
                 webLoanImportRepository = webLoanImportRepository,
                 settingsPreferences = SettingsPreferences(context),

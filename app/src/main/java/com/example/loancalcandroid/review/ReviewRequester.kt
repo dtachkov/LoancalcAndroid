@@ -2,8 +2,8 @@ package com.example.loancalcandroid.review
 
 import android.app.Activity
 import com.example.loancalcandroid.analytics.AnalyticsHelper
+import com.google.android.play.core.review.ReviewManagerFactory
 import ru.kredit.calculator.data.LoanCalcData
-import ru.rustore.sdk.review.RuStoreReviewManagerFactory
 
 object ReviewRequester {
     private var reviewFlowInProgress = false
@@ -16,21 +16,20 @@ object ReviewRequester {
         reviewFlowInProgress = true
         AnalyticsHelper.logEvent("REQUEST_REVIEW", "REQUEST")
 
-        val manager = RuStoreReviewManagerFactory.create(activity)
+        val manager = ReviewManagerFactory.create(activity)
         manager.requestReviewFlow()
-            .addOnSuccessListener { reviewInfo ->
-                manager.launchReviewFlow(reviewInfo)
-                    .addOnSuccessListener {
-                        reviewPreferences.setDontAskForReview()
+            .addOnCompleteListener { requestTask ->
+                if (!requestTask.isSuccessful) {
+                    reviewFlowInProgress = false
+                    return@addOnCompleteListener
+                }
+                manager.launchReviewFlow(activity, requestTask.result)
+                    .addOnCompleteListener { launchTask ->
+                        if (launchTask.isSuccessful) {
+                            reviewPreferences.setDontAskForReview()
+                        }
                         reviewFlowInProgress = false
                     }
-                    .addOnFailureListener {
-                        reviewFlowInProgress = false
-                    }
-            }
-            .addOnFailureListener {
-                // RuStore may silently refuse to show the dialog.
-                reviewFlowInProgress = false
             }
     }
 }

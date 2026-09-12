@@ -1,55 +1,45 @@
 package com.example.loancalcandroid.analytics
 
-import android.content.ActivityNotFoundException
 import android.content.Context
-import android.content.Intent
-import android.net.Uri
 import android.util.Log
 import com.example.loancalcandroid.BuildConfig
 import io.appmetrica.analytics.AppMetrica
 
 object AnalyticsHelper {
     private const val TAG = "Analytics"
+    private const val EVENT_SUFFIX = "_GP"
     private val isAnalyticsEnabled: Boolean
         get() = !BuildConfig.DEBUG
 
     fun logEvent(eventName: String, eventText: String = "") {
-        Log.d(TAG, "$eventName: $eventText")
+        val reportedName = eventName.withStoreSuffix()
+        Log.d(TAG, "$reportedName: $eventText")
         if (!isAnalyticsEnabled) return
         val params = mapOf("text" to eventText)
         runCatching {
-            AppMetrica.reportEvent(eventName, params)
+            AppMetrica.reportEvent(reportedName, params)
         }.onFailure {
-            Log.w(TAG, "Failed to report event $eventName", it)
+            Log.w(TAG, "Failed to report event $reportedName", it)
         }
     }
 
     fun logCalculation(amount: Float, source: String) {
-        Log.d(TAG, "CALC_LOAN: amount=$amount source=$source")
+        val reportedName = "CALC_LOAN".withStoreSuffix()
+        Log.d(TAG, "$reportedName: amount=$amount source=$source")
         if (!isAnalyticsEnabled) return
         val params = mapOf(
             "amount" to amount.toString(),
             "source" to source,
         )
         runCatching {
-            AppMetrica.reportEvent("CALC_LOAN", params)
+            AppMetrica.reportEvent(reportedName, params)
         }.onFailure {
-            Log.w(TAG, "Failed to report CALC_LOAN", it)
+            Log.w(TAG, "Failed to report $reportedName", it)
         }
     }
 
-    fun logOfferOpening(offerName: String?) {
-        logEvent("PRESS_LEAD", offerName.orEmpty())
-    }
-
-    fun openOfferLink(context: Context, offerName: String?, link: String) {
-        logOfferOpening(offerName)
-        val intent = Intent(Intent.ACTION_VIEW, Uri.parse(link))
-        try {
-            context.startActivity(intent)
-        } catch (e: ActivityNotFoundException) {
-            Log.w(TAG, "No activity found for offer link: $link", e)
-        }
+    private fun String.withStoreSuffix(): String {
+        return if (endsWith(EVENT_SUFFIX)) this else this + EVENT_SUFFIX
     }
 
     fun activate(context: Context) {

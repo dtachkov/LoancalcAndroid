@@ -6,12 +6,12 @@ plugins {
 
 android {
     namespace = "com.example.loancalcandroid"
-    compileSdk = 35
+    compileSdk = 36
 
     defaultConfig {
         applicationId = "ru.kredit.calculator"
         minSdk = 30
-        targetSdk = 35
+        targetSdk = 36
         versionCode = 61
         versionName = "2.8"
 
@@ -81,11 +81,8 @@ dependencies {
     implementation(libs.androidx.ui.tooling.preview)
     implementation(libs.androidx.material3)
     implementation("androidx.compose.material:material-icons-core")
-    implementation(libs.coil.compose)
-    implementation(platform(libs.rustore.bom))
-    implementation(libs.rustore.pay)
-    implementation(libs.rustore.review)
-    implementation(libs.rustore.billingclient)
+    implementation(libs.billing.ktx)
+    implementation(libs.play.review.ktx)
     implementation(libs.appmetrica.analytics)
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)

@@ -31,10 +31,6 @@
 -keep class io.appmetrica.analytics.** { *; }
 -dontwarn io.appmetrica.analytics.**
 
-# RuStore SDK
--keep class ru.rustore.sdk.** { *; }
--dontwarn ru.rustore.sdk.**
-
 # Android components referenced from manifest
 -keep class com.example.loancalcandroid.MainActivity { *; }
 -keep class com.example.loancalcandroid.LoanCalcApplication { *; }

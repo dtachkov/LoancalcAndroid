@@ -6,25 +6,19 @@ import android.appwidget.AppWidgetManager
 import android.content.ComponentName
 import android.os.Bundle
 import com.example.loancalcandroid.analytics.AnalyticsHelper
-import com.example.loancalcandroid.billing.RuStoreLicenseManager
+import com.example.loancalcandroid.billing.LicenseManager
 import com.example.loancalcandroid.notification.NotificationScheduler
 import com.example.loancalcandroid.notification.PaymentNotificationHelper
 import com.example.loancalcandroid.widget.LoanWidgetProvider
 import com.example.loancalcandroid.widget.WidgetUpdateCoordinator
 import com.example.loancalcandroid.widget.WidgetUpdater
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.SupervisorJob
-import kotlinx.coroutines.launch
 import ru.kredit.calculator.data.LoanCalcData
 import ru.kredit.calculator.database.DatabaseContract
 import ru.kredit.calculator.database.DatabasePathResolver
 import java.io.File
 
 class LoanCalcApplication : Application() {
-    private val applicationScope = CoroutineScope(SupervisorJob() + Dispatchers.IO)
-
-    lateinit var licenseManager: RuStoreLicenseManager
+    lateinit var licenseManager: LicenseManager
         private set
 
     var currentActivity: Activity? = null
@@ -36,15 +30,12 @@ class LoanCalcApplication : Application() {
         if (!isMainProcess()) {
             return
         }
-        val data = LoanCalcData.initialize(
+        LoanCalcData.initialize(
             context = this,
             buildType = BuildConfig.BUILD_TYPE,
         )
-        licenseManager = RuStoreLicenseManager(this)
+        licenseManager = LicenseManager(this)
         registerActivityLifecycleCallbacks(ActivityTracker())
-        applicationScope.launch {
-            data.offerRepository.refreshOffers(data.settingsPreferences.getLanguageCode())
-        }
         PaymentNotificationHelper.ensureChannel(this)
         NotificationScheduler.applySettings(this)
         WidgetUpdateCoordinator.start(this)
