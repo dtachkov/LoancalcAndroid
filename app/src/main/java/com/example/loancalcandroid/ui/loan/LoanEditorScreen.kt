@@ -13,6 +13,7 @@ import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.LocalTextStyle
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.RadioButton
 import androidx.compose.material3.Switch
@@ -21,9 +22,17 @@ import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.focus.FocusRequester
+import androidx.compose.ui.focus.focusRequester
+import androidx.compose.ui.focus.onFocusChanged
+import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.example.loancalcandroid.R
@@ -34,6 +43,9 @@ import com.example.loancalcandroid.ui.common.LoanDecimalOutlinedTextField
 import com.example.loancalcandroid.ui.common.LoanNumberOutlinedTextField
 import com.example.loancalcandroid.ui.common.LoanOutlinedTextField
 import com.example.loancalcandroid.ui.loanEditorViewModel
+import com.example.loancalcandroid.util.AmountSpellOut
+import com.example.loancalcandroid.util.Formatters
+import kotlinx.coroutines.delay
 import ru.kredit.calculator.data.model.LoanType
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -120,6 +132,25 @@ fun LoanEditorScreen(
             return@LoanCalcScaffold
         }
 
+        val isAddMode = !uiState.isEditMode
+        val amountFocusRequester = remember { FocusRequester() }
+        val termFocusRequester = remember { FocusRequester() }
+        val addInputTextStyle = MaterialTheme.typography.bodyLarge.copy(fontWeight = FontWeight.Bold)
+        var amountFocused by remember { mutableStateOf(isAddMode) }
+        var termFocused by remember { mutableStateOf(false) }
+        val showAmountChips = rememberFocusChipVisibility(visibleWhenFocused = isAddMode && amountFocused)
+        val showTermChips = rememberFocusChipVisibility(visibleWhenFocused = termFocused)
+        val locale = LocalConfiguration.current.locales[0]
+        val amountInWords = remember(uiState.amount, locale) {
+            AmountSpellOut.format(Formatters.parseMoney(uiState.amount).toDouble(), locale)
+        }
+
+        LaunchedEffect(isAddMode) {
+            if (isAddMode) {
+                amountFocusRequester.requestFocus()
+            }
+        }
+
         Column(
             modifier = Modifier
                 .fillMaxSize()
@@ -135,37 +166,79 @@ fun LoanEditorScreen(
                 modifier = Modifier.fillMaxWidth(),
                 singleLine = true,
             )
-            LoanDecimalOutlinedTextField(
-                value = uiState.amount,
-                onValueChange = viewModel::updateAmount,
-                label = { Text(stringResource(R.string.loan_editor_amount)) },
-                modifier = Modifier.fillMaxWidth(),
-                singleLine = true,
-                isError = uiState.amountError != null,
-                supportingText = uiState.amountError?.let { { Text(it) } },
-            )
+            Column(verticalArrangement = Arrangement.spacedBy(4.dp)) {
+                LoanDecimalOutlinedTextField(
+                    value = uiState.amount,
+                    onValueChange = viewModel::updateAmount,
+                    label = { Text(stringResource(R.string.loan_editor_amount)) },
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .onFocusChanged { amountFocused = it.isFocused }
+                        .then(if (isAddMode) Modifier.focusRequester(amountFocusRequester) else Modifier),
+                    singleLine = true,
+                    textStyle = if (isAddMode) addInputTextStyle else LocalTextStyle.current,
+                    isError = uiState.amountError != null,
+                    supportingText = when {
+                        uiState.amountError != null -> {
+                            { Text(uiState.amountError.orEmpty()) }
+                        }
+                        amountInWords != null -> {
+                            {
+                                Text(
+                                    text = amountInWords.orEmpty(),
+                                    color = MaterialTheme.colorScheme.onSurfaceVariant,
+                                )
+                            }
+                        }
+                        else -> null
+                    },
+                )
+                if (showAmountChips) {
+                    LoanAmountPresetChips(
+                        selectedAmountText = uiState.amount,
+                        onAmountSelected = { amount ->
+                            viewModel.updateAmount(amount)
+                            amountFocusRequester.requestFocus()
+                        },
+                    )
+                }
+            }
             LoanDecimalOutlinedTextField(
                 value = uiState.rate,
                 onValueChange = viewModel::updateRate,
                 label = { Text(stringResource(R.string.loan_editor_rate)) },
                 modifier = Modifier.fillMaxWidth(),
                 singleLine = true,
+                textStyle = if (isAddMode) addInputTextStyle else LocalTextStyle.current,
+                suffix = { Text(stringResource(R.string.loan_editor_rate_suffix)) },
                 isError = uiState.rateError != null,
                 supportingText = uiState.rateError?.let { { Text(it) } },
             )
-            LoanNumberOutlinedTextField(
-                value = uiState.term,
-                onValueChange = viewModel::updateTerm,
-                label = { Text(stringResource(R.string.loan_editor_term)) },
-                modifier = Modifier.fillMaxWidth(),
-                singleLine = true,
-                isError = uiState.termError != null,
-                supportingText = uiState.termError?.let { { Text(it) } },
-            )
-            LoanTermPresetChips(
-                selectedTermMonths = uiState.term.trim().toIntOrNull(),
-                onTermMonthsSelected = { viewModel.updateTerm(it.toString()) },
-            )
+            Column(verticalArrangement = Arrangement.spacedBy(4.dp)) {
+                LoanNumberOutlinedTextField(
+                    value = uiState.term,
+                    onValueChange = viewModel::updateTerm,
+                    label = { Text(stringResource(R.string.loan_editor_term)) },
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .focusRequester(termFocusRequester)
+                        .onFocusChanged { termFocused = it.isFocused },
+                    singleLine = true,
+                    textStyle = if (isAddMode) addInputTextStyle else LocalTextStyle.current,
+                    suffix = { Text(stringResource(R.string.loan_editor_term_suffix)) },
+                    isError = uiState.termError != null,
+                    supportingText = uiState.termError?.let { { Text(it) } },
+                )
+                if (showTermChips) {
+                    LoanTermPresetChips(
+                        selectedTermMonths = uiState.term.trim().toIntOrNull(),
+                        onTermMonthsSelected = { months ->
+                            viewModel.updateTerm(months.toString())
+                            termFocusRequester.requestFocus()
+                        },
+                    )
+                }
+            }
 
             Text(text = stringResource(R.string.loan_type), style = MaterialTheme.typography.titleSmall)
             LoanTypeRow(LoanType.ANNUITY, uiState.loanType, viewModel::updateLoanType, stringResource(R.string.loan_type_annuity))
@@ -234,6 +307,20 @@ fun LoanEditorScreen(
             }
         }
     }
+}
+
+@Composable
+private fun rememberFocusChipVisibility(visibleWhenFocused: Boolean): Boolean {
+    var visible by remember { mutableStateOf(visibleWhenFocused) }
+    LaunchedEffect(visibleWhenFocused) {
+        if (visibleWhenFocused) {
+            visible = true
+        } else {
+            delay(200)
+            visible = false
+        }
+    }
+    return visible
 }
 
 @Composable

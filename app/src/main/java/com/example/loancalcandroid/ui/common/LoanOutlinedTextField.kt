@@ -2,6 +2,7 @@ package com.example.loancalcandroid.ui.common
 
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.LocalTextStyle
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.OutlinedTextFieldDefaults
@@ -9,6 +10,7 @@ import androidx.compose.material3.TextFieldColors
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.input.KeyboardType
 import com.example.loancalcandroid.ui.theme.LoanInputBorder
 
@@ -50,7 +52,9 @@ fun LoanOutlinedTextField(
     singleLine: Boolean = false,
     maxLines: Int = if (singleLine) 1 else Int.MAX_VALUE,
     minLines: Int = 1,
+    textStyle: TextStyle = LocalTextStyle.current,
     keyboardOptions: KeyboardOptions = KeyboardOptions.Default,
+    suffix: @Composable (() -> Unit)? = null,
     trailingIcon: @Composable (() -> Unit)? = null,
 ) {
     OutlinedTextField(
@@ -66,7 +70,9 @@ fun LoanOutlinedTextField(
         singleLine = singleLine,
         maxLines = maxLines,
         minLines = minLines,
+        textStyle = textStyle,
         keyboardOptions = keyboardOptions,
+        suffix = suffix,
         trailingIcon = trailingIcon,
         colors = loanOutlinedTextFieldColors(),
     )
@@ -86,6 +92,8 @@ fun LoanDecimalOutlinedTextField(
     singleLine: Boolean = false,
     maxLines: Int = if (singleLine) 1 else Int.MAX_VALUE,
     minLines: Int = 1,
+    textStyle: TextStyle = LocalTextStyle.current,
+    suffix: @Composable (() -> Unit)? = null,
     trailingIcon: @Composable (() -> Unit)? = null,
 ) {
     LoanOutlinedTextField(
@@ -101,7 +109,9 @@ fun LoanDecimalOutlinedTextField(
         singleLine = singleLine,
         maxLines = maxLines,
         minLines = minLines,
+        textStyle = textStyle,
         keyboardOptions = LoanKeyboardOptions.Decimal,
+        suffix = suffix,
         trailingIcon = trailingIcon,
     )
 }
@@ -120,6 +130,8 @@ fun LoanNumberOutlinedTextField(
     singleLine: Boolean = false,
     maxLines: Int = if (singleLine) 1 else Int.MAX_VALUE,
     minLines: Int = 1,
+    textStyle: TextStyle = LocalTextStyle.current,
+    suffix: @Composable (() -> Unit)? = null,
     trailingIcon: @Composable (() -> Unit)? = null,
 ) {
     LoanOutlinedTextField(
@@ -135,7 +147,9 @@ fun LoanNumberOutlinedTextField(
         singleLine = singleLine,
         maxLines = maxLines,
         minLines = minLines,
+        textStyle = textStyle,
         keyboardOptions = LoanKeyboardOptions.Number,
+        suffix = suffix,
         trailingIcon = trailingIcon,
     )
 }

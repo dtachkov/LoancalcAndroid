@@ -103,8 +103,11 @@
     <string name="ok">ОК</string>
     <string name="loan_title">Название кредита</string>
     <string name="loan_editor_amount">Сумма кредита</string>
-    <string name="loan_editor_rate">Процентная ставка (%)</string>
-    <string name="loan_editor_term">Срок кредита (мес)</string>
+    <string name="loan_editor_rate">Процентная ставка</string>
+    <string name="loan_editor_term">Срок кредита</string>
+    <string name="loan_editor_rate_suffix">%</string>
+    <string name="loan_editor_term_suffix">мес.</string>
+    <string name="loan_amount_preset_thousands">%dК</string>
     <plurals name="loan_term_preset_years">
         <item quantity="one">%d год</item>
         <item quantity="few">%d года</item>
