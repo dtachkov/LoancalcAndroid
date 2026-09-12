@@ -11,9 +11,10 @@ import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import com.example.loancalcandroid.analytics.AnalyticsHelper
-import com.example.loancalcandroid.R
 import ru.kredit.calculator.data.LoanCalcData
 import ru.kredit.calculator.data.calculation.CalculationErrors
+import ru.kredit.calculator.data.calculation.ForecastComparison
+import ru.kredit.calculator.data.model.Extra
 import ru.kredit.calculator.data.model.ExtraType
 import ru.kredit.calculator.data.model.Loan
 import java.util.Date
@@ -28,6 +29,7 @@ data class ForecastUiState(
     val decreaseAmount: Boolean = true,
     val monthlyPaymentError: String? = null,
     val daysError: String? = null,
+    val comparison: ForecastComparison? = null,
     val message: String? = null,
     val error: String? = null,
 )
@@ -51,7 +53,12 @@ class ForecastViewModel(
 
     fun setForecastEnabled(enabled: Boolean) {
         _uiState.update {
-            it.copy(forecastEnabled = enabled, message = null, error = null)
+            it.copy(
+                forecastEnabled = enabled,
+                comparison = if (enabled) it.comparison else null,
+                message = null,
+                error = null,
+            )
         }
         if (!enabled) {
             saveAndCalculate(disableOnly = true)
@@ -93,6 +100,9 @@ class ForecastViewModel(
                     decreaseAmount = loaded.forecastExtraType != ExtraType.PAYMENT_FOR_DECREASE_TERM,
                 )
             }
+            if (loaded.isForecastActive) {
+                runComparison(loaded)
+            }
         }
     }
 
@@ -108,25 +118,64 @@ class ForecastViewModel(
 
                 if (!updatedLoan.isForecastActive) {
                     _uiState.update {
-                        it.copy(isCalculating = false, message = "Прогноз отключён")
+                        it.copy(
+                            isCalculating = false,
+                            comparison = null,
+                            message = "Прогноз отключён",
+                        )
                     }
                     return@launch
                 }
 
                 val extras = extraRepository.getExtras(loanId)
-                withContext(Dispatchers.Default) {
-                    loanCalculator.calculate(updatedLoan, extras)
-                }
+                val comparison = compareForecast(updatedLoan, extras)
                 _uiState.update {
                     it.copy(
                         isCalculating = false,
-                        message = getApplication<Application>().getString(R.string.forecast_calculated),
+                        comparison = comparison,
+                        message = null,
                     )
                 }
                 AnalyticsHelper.logEvent("CALC_FORECAST")
             } catch (e: Exception) {
-                _uiState.update { it.copy(isCalculating = false, error = CalculationErrors.format(e)) }
+                _uiState.update {
+                    it.copy(
+                        isCalculating = false,
+                        comparison = null,
+                        error = CalculationErrors.format(e),
+                    )
+                }
             }
+        }
+    }
+
+    private suspend fun runComparison(loan: Loan) {
+        _uiState.update { it.copy(isCalculating = true, error = null) }
+        try {
+            val extras = extraRepository.getExtras(loanId)
+            val comparison = compareForecast(loan, extras)
+            _uiState.update {
+                it.copy(isCalculating = false, comparison = comparison, message = null)
+            }
+        } catch (e: Exception) {
+            _uiState.update {
+                it.copy(
+                    isCalculating = false,
+                    comparison = null,
+                    error = CalculationErrors.format(e),
+                )
+            }
+        }
+    }
+
+    private suspend fun compareForecast(loan: Loan, extras: List<Extra>): ForecastComparison {
+        return withContext(Dispatchers.Default) {
+            val withForecast = loanCalculator.calculate(loan, extras)
+            val withoutForecast = loanCalculator.calculate(
+                loan.copy(isForecastActive = false),
+                extras,
+            )
+            ForecastComparison.from(withForecast, withoutForecast, loan.amount.toDouble())
         }
     }
 

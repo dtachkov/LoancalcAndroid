@@ -159,29 +159,31 @@ fun HomeScreen(
                     Spacer(modifier = Modifier.height(24.dp))
                 }
             } else if (selectedLoanId != null && details != null) {
-                item {
-                    QuickActionsRow(
-                        enabled = true,
-                        onEarlyPaymentClick = { onEarlyPaymentClick(selectedLoanId) },
-                        onScheduleClick = { onScheduleClick(selectedLoanId) },
-                        onRequisitesClick = { onRequisitesClick(selectedLoanId) },
-                    )
-                    Spacer(modifier = Modifier.height(24.dp))
-                }
-                item {
-                    OverpayStatsSection(details = details)
-                    Spacer(modifier = Modifier.height(16.dp))
-                }
-                item {
-                    DebtProgressSection(
-                        details = details,
-                        onCurrentPaymentClick = { onScheduleClick(selectedLoanId) },
-                    )
-                    Spacer(modifier = Modifier.height(16.dp))
-                }
-                item {
-                    InterestStatsSection(details = details)
-                    Spacer(modifier = Modifier.height(16.dp))
+                if (details.hasCalculation) {
+                    item {
+                        QuickActionsRow(
+                            enabled = true,
+                            onEarlyPaymentClick = { onEarlyPaymentClick(selectedLoanId) },
+                            onScheduleClick = { onScheduleClick(selectedLoanId) },
+                            onRequisitesClick = { onRequisitesClick(selectedLoanId) },
+                        )
+                        Spacer(modifier = Modifier.height(24.dp))
+                    }
+                    item {
+                        OverpayStatsSection(details = details)
+                        Spacer(modifier = Modifier.height(16.dp))
+                    }
+                    item {
+                        DebtProgressSection(
+                            details = details,
+                            onCurrentPaymentClick = { onScheduleClick(selectedLoanId) },
+                        )
+                        Spacer(modifier = Modifier.height(16.dp))
+                    }
+                    item {
+                        InterestStatsSection(details = details)
+                        Spacer(modifier = Modifier.height(16.dp))
+                    }
                 }
                 item {
                     NavigationMenuSection(

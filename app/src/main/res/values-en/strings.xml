@@ -74,6 +74,7 @@
     <string name="menu_forecast">Extra payment forecast</string>
     <string name="menu_forecast_disabled">Disabled</string>
     <string name="menu_forecast_enabled">Enabled</string>
+    <string name="menu_forecast_error">Error</string>
     <string name="menu_best_date">Best date for extra payment</string>
     <string name="menu_best_date_hint">You will know the best date for extra payment. It helps you to save money, you pay less interest to the bank</string>
     <string name="menu_tax">Return Tax</string>
@@ -172,6 +173,22 @@
     <string name="forecast_calculate">Calculate</string>
     <string name="forecast_calculated">Forecast calculated, payment table has been changed</string>
     <string name="forecast_detailed_desc">Entered value will be using for monthly payment, and rest - for extra payment</string>
+    <string name="forecast_closes_in">Loan will be paid off in</string>
+    <string name="forecast_instead_of">Instead of %1$s</string>
+    <string name="forecast_overpay">Overpayment</string>
+    <string name="forecast_total_payout">Total payout</string>
+    <string name="forecast_payoff_date">Payoff date</string>
+    <string name="forecast_date_change">%1$s → %2$s</string>
+    <string name="forecast_money">%1$s</string>
+    <string name="forecast_duration_combined">%1$s %2$s</string>
+    <plurals name="forecast_duration_years">
+        <item quantity="one">%d year</item>
+        <item quantity="other">%d years</item>
+    </plurals>
+    <plurals name="forecast_duration_months">
+        <item quantity="one">%d month</item>
+        <item quantity="other">%d months</item>
+    </plurals>
     <string name="menu_share">Share</string>
     <string name="share_schedule_loan_not_found">Error: loan not found</string>
     <string name="share_schedule_save_failed">Failed to save file for sharing</string>

@@ -645,9 +645,18 @@ fun NavigationMenuSection(
             MenuNavigationRow(
                 title = stringResource(R.string.menu_forecast),
                 subtitle = stringResource(
-                    if (details.forecastEnabled) R.string.menu_forecast_enabled
-                    else R.string.menu_forecast_disabled,
+                    when {
+                        details.forecastError -> R.string.menu_forecast_error
+                        details.forecastEnabled -> R.string.menu_forecast_enabled
+                        else -> R.string.menu_forecast_disabled
+                    },
                 ),
+                subtitleColor = when {
+                    details.forecastError -> LoanRed
+                    details.forecastEnabled -> LoanGreen
+                    else -> LoanTextSecondary
+                },
+                showOnIndicator = details.forecastEnabled && !details.forecastError,
                 onClick = onForecastClick,
             )
             MenuNavigationRow(
@@ -671,6 +680,8 @@ fun MenuNavigationRow(
     subtitle: String? = null,
     onClick: () -> Unit,
     showDivider: Boolean = true,
+    subtitleColor: Color = LoanTextSecondary,
+    showOnIndicator: Boolean = false,
 ) {
     Row(
         modifier = Modifier
@@ -682,11 +693,19 @@ fun MenuNavigationRow(
         Column(modifier = Modifier.weight(1f)) {
             Text(text = title, style = MaterialTheme.typography.bodyLarge)
             if (!subtitle.isNullOrBlank()) {
-                Text(
-                    text = subtitle,
-                    style = MaterialTheme.typography.bodySmall,
-                    color = LoanTextSecondary,
-                )
+                Row(
+                    verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.spacedBy(6.dp),
+                ) {
+                    if (showOnIndicator) {
+                        OnStatusLamp()
+                    }
+                    Text(
+                        text = subtitle,
+                        style = MaterialTheme.typography.bodySmall,
+                        color = subtitleColor,
+                    )
+                }
             }
         }
         Icon(
@@ -697,6 +716,22 @@ fun MenuNavigationRow(
     }
     if (showDivider) {
         HorizontalDivider(modifier = Modifier.padding(start = 16.dp))
+    }
+}
+
+@Composable
+private fun OnStatusLamp() {
+    Box(
+        modifier = Modifier
+            .size(14.dp)
+            .background(LoanGreen.copy(alpha = 0.22f), CircleShape),
+        contentAlignment = Alignment.Center,
+    ) {
+        Box(
+            modifier = Modifier
+                .size(7.dp)
+                .background(LoanGreen, CircleShape),
+        )
     }
 }
 

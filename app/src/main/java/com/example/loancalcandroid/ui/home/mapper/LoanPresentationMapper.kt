@@ -99,6 +99,39 @@ object LoanPresentationMapper {
             extrasSavings = Formatters.money(calculation.savedMoney),
             extrasCount = earlyExtras,
             forecastEnabled = loan.isForecastActive,
+            forecastError = false,
+            hasCalculation = true,
+        )
+    }
+
+    fun toUnavailableDetails(
+        loan: Loan,
+        extras: List<Extra>,
+        forecastError: Boolean,
+    ): LoanDetailsUiModel {
+        val earlyExtras = extras.count {
+            it.type != ExtraType.FEE && it.type != ExtraType.INSURANCE
+        }
+        return LoanDetailsUiModel(
+            loanId = loan.id,
+            title = loan.title.orEmpty().ifBlank { "Кредит #${loan.id}" },
+            paidAmount = "—",
+            debtAmount = "—",
+            paidFraction = 0f,
+            currentPayment = "—",
+            paymentDueDate = "—",
+            interestPaid = "—",
+            remainingToPay = "—",
+            totalInterest = "—",
+            totalCommission = "—",
+            totalInsurance = "—",
+            totalOverpay = "—",
+            totalToPay = "—",
+            extrasSavings = Formatters.money(0.0),
+            extrasCount = earlyExtras,
+            forecastEnabled = loan.isForecastActive,
+            forecastError = forecastError,
+            hasCalculation = false,
         )
     }
 

@@ -44,4 +44,6 @@ data class LoanDetailsUiModel(
     val extrasSavings: String,
     val extrasCount: Int,
     val forecastEnabled: Boolean,
+    val forecastError: Boolean = false,
+    val hasCalculation: Boolean = true,
 )

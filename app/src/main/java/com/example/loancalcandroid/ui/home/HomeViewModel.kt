@@ -16,6 +16,7 @@ import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import ru.kredit.calculator.data.LoanCalcData
+import ru.kredit.calculator.data.calculation.CalculationErrors
 import ru.kredit.calculator.data.calculation.LoanCalculationResult
 import ru.kredit.calculator.data.model.Loan
 
@@ -52,9 +53,9 @@ class HomeViewModel(
                 .collect { loans ->
                 val calculations = calculateLoans(loans)
                 val cards = loans.map { loan ->
-                    LoanPresentationMapper.toCard(loan, calculations[loan.id])
+                    LoanPresentationMapper.toCard(loan, calculations.results[loan.id])
                 }
-                val summary = LoanPresentationMapper.toAllLoansSummary(loans, calculations)
+                val summary = LoanPresentationMapper.toAllLoansSummary(loans, calculations.results)
                 val current = _uiState.value
                 val pagerIndex = resolvePagerIndex(
                     loans = loans,
@@ -140,7 +141,12 @@ class HomeViewModel(
         }
     }
 
-    private suspend fun calculateLoans(loans: List<Loan>): Map<Long, LoanCalculationResult> {
+    private data class LoanCalculations(
+        val results: Map<Long, LoanCalculationResult>,
+        val forecastErrorIds: Set<Long>,
+    )
+
+    private suspend fun calculateLoans(loans: List<Loan>): LoanCalculations {
         val extrasByLoan = buildMap {
             for (loan in loans) {
                 if (!loan.validate()) continue
@@ -148,36 +154,49 @@ class HomeViewModel(
             }
         }
         return withContext(Dispatchers.Default) {
-            buildMap {
-                for (loan in loans) {
-                    if (!loan.validate()) continue
-                    runCatching {
-                        loanCalculator.calculate(loan, extrasByLoan[loan.id].orEmpty())
-                    }.onSuccess { put(loan.id, it) }
-                }
+            val results = linkedMapOf<Long, LoanCalculationResult>()
+            val forecastErrorIds = linkedSetOf<Long>()
+            for (loan in loans) {
+                if (!loan.validate()) continue
+                runCatching {
+                    loanCalculator.calculate(loan, extrasByLoan[loan.id].orEmpty())
+                }.onSuccess { results[loan.id] = it }
+                    .onFailure { error ->
+                        if (CalculationErrors.isExtraForecastError(error)) {
+                            forecastErrorIds += loan.id
+                        }
+                    }
             }
+            LoanCalculations(results = results, forecastErrorIds = forecastErrorIds)
         }
     }
 
     private fun loadLoanDetails(
         loanId: Long?,
-        calculations: Map<Long, LoanCalculationResult>,
+        calculations: LoanCalculations,
     ) {
         if (loanId == null) {
             _uiState.update { it.copy(loanDetails = null) }
             return
         }
         val loan = _uiState.value.loansRaw.firstOrNull { it.id == loanId }
-        val calculation = calculations[loanId]
-        if (loan == null || calculation == null) {
+        if (loan == null) {
             _uiState.update { it.copy(loanDetails = null) }
             return
         }
+        val calculation = calculations.results[loanId]
         viewModelScope.launch {
             val extras = extraRepository.getExtras(loanId)
-            _uiState.update {
-                it.copy(loanDetails = LoanPresentationMapper.toDetails(loan, extras, calculation))
+            val details = if (calculation != null) {
+                LoanPresentationMapper.toDetails(loan, extras, calculation)
+            } else {
+                LoanPresentationMapper.toUnavailableDetails(
+                    loan = loan,
+                    extras = extras,
+                    forecastError = loanId in calculations.forecastErrorIds || loan.isForecastActive,
+                )
             }
+            _uiState.update { it.copy(loanDetails = details) }
         }
     }
 
