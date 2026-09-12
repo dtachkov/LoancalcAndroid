@@ -6,6 +6,7 @@ import androidx.lifecycle.viewModelScope
 import com.example.loancalcandroid.analytics.AnalyticsHelper
 import com.example.loancalcandroid.LoanCalcApplication
 import com.example.loancalcandroid.billing.LoanLicensePolicy
+import com.example.loancalcandroid.util.SpokenLoanParser
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -77,6 +78,22 @@ class LoanEditorViewModel(
     }
 
     fun updateTitle(value: String) = _uiState.update { it.copy(title = value) }
+
+    fun applySpokenPhrase(phrase: String) {
+        val parsed = SpokenLoanParser.parse(phrase)
+        _uiState.update { state ->
+            state.copy(
+                title = phrase,
+                amount = parsed.amount ?: state.amount,
+                rate = parsed.rate ?: state.rate,
+                term = parsed.termMonths ?: state.term,
+                amountError = null,
+                rateError = null,
+                termError = null,
+            )
+        }
+    }
+
     fun updateAmount(value: String) = _uiState.update { it.copy(amount = value, amountError = null) }
     fun updateRate(value: String) = _uiState.update { it.copy(rate = value, rateError = null) }
     fun updateTerm(value: String) = _uiState.update { it.copy(term = value, termError = null) }

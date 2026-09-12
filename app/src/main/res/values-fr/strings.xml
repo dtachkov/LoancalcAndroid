@@ -80,6 +80,11 @@
     <string name="no_loans_hint">Tap + to add your first loan</string>
     <string name="select_loan_hint">Select a loan</string>
     <string name="save">Sauver</string>
+    <string name="voice_input">Saisie vocale</string>
+    <string name="speech_recognition_prompt">Par exemple 100 mille roubles 1 an 25%</string>
+    <string name="speech_recognition_unavailable">La reconnaissance vocale n\'est pas disponible sur cet appareil</string>
+    <string name="speak_loan">Ajouter à la voix</string>
+    <string name="speech_loan_parse_error">Impossible de reconnaître : %1$s</string>
     <string name="ok">Ok</string>
     <string name="loan_title">Nom du prêt</string>
     <string name="loan_term">Durée</string>

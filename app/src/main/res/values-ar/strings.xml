@@ -80,6 +80,11 @@
     <string name="no_loans_hint">Tap + to add your first loan</string>
     <string name="select_loan_hint">Select a loan</string>
     <string name="save">Сохранить</string>
+    <string name="voice_input">إدخال صوتي</string>
+    <string name="speech_recognition_prompt">مثلاً 100 ألف روبل سنة واحدة 25%</string>
+    <string name="speech_recognition_unavailable">التعرّف على الكلام غير متاح على هذا الجهاز</string>
+    <string name="speak_loan">إضافة بالصوت</string>
+    <string name="speech_loan_parse_error">تعذّر التعرّف: %1$s</string>
     <string name="ok">Ok</string>
     <string name="loan_title">اسم المقترض</string>
     <string name="loan_term">شرط</string>

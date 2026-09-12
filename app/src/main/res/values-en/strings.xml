@@ -99,6 +99,11 @@
     <string name="home_get_premium">Get Premium</string>
     <string name="select_loan_hint">Select a loan</string>
     <string name="save">Save</string>
+    <string name="voice_input">Voice input</string>
+    <string name="speech_recognition_prompt">For example 100 thousand rubles 1 year 25%</string>
+    <string name="speech_recognition_unavailable">Speech recognition is not available on this device</string>
+    <string name="speak_loan">Add by voice</string>
+    <string name="speech_loan_parse_error">Could not recognize: %1$s</string>
     <string name="ok">Ok</string>
     <string name="loan_title">Loan Name</string>
     <string name="loan_editor_amount">Loan Amount</string>

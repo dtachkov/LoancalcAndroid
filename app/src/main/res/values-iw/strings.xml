@@ -80,6 +80,11 @@
     <string name="no_loans_hint">Tap + to add your first loan</string>
     <string name="select_loan_hint">Select a loan</string>
     <string name="save">Save</string>
+    <string name="voice_input">קלט קולי</string>
+    <string name="speech_recognition_prompt">לדוגמה 100 אלף רובל שנה אחת 25%</string>
+    <string name="speech_recognition_unavailable">זיהוי דיבור אינו זמין במכשיר זה</string>
+    <string name="speak_loan">הוסף בקול</string>
+    <string name="speech_loan_parse_error">לא ניתן לזהות: %1$s</string>
     <string name="ok">Ok</string>
     <string name="loan_title">שם ההלוואה</string>
     <string name="loan_term">מספר חודשים</string>

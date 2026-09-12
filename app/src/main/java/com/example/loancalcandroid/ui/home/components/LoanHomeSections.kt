@@ -7,6 +7,7 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.ColumnScope
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxHeight
@@ -40,6 +41,7 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.StrokeCap
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
@@ -68,6 +70,7 @@ fun LoanCardsPager(
     onPageChanged: (Int) -> Unit,
     onLoanCardClick: (Long) -> Unit,
     onAddLoanClick: () -> Unit,
+    onSpeakLoanClick: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
     val pageCount = 1 + loanCards.size
@@ -98,6 +101,7 @@ fun LoanCardsPager(
                 page == 0 -> SummaryLoanCard(
                     summary = summary,
                     onAddLoanClick = onAddLoanClick,
+                    onSpeakLoanClick = onSpeakLoanClick,
                 )
                 else -> SingleLoanCard(
                     card = loanCards[page - 1],
@@ -116,19 +120,17 @@ fun LoanCardsPager(
 private fun SummaryLoanCard(
     summary: AllLoansSummaryUiModel?,
     onAddLoanClick: () -> Unit,
+    onSpeakLoanClick: () -> Unit,
 ) {
     val isEmpty = summary == null || summary.loansCount == 0
     LoanGradientCard(
-        modifier = if (isEmpty) {
-            Modifier.clickable(onClick = onAddLoanClick)
-        } else {
-            Modifier
-        },
+        height = if (isEmpty) 200.dp else 168.dp,
     ) {
         if (isEmpty) {
-            Box(
+            Column(
                 modifier = Modifier.fillMaxSize(),
-                contentAlignment = Alignment.Center,
+                verticalArrangement = Arrangement.Center,
+                horizontalAlignment = Alignment.CenterHorizontally,
             ) {
                 Text(
                     text = stringResource(R.string.all_loans_empty_message),
@@ -136,8 +138,30 @@ private fun SummaryLoanCard(
                     color = Color.White,
                     fontWeight = FontWeight.Medium,
                     textAlign = TextAlign.Center,
-                    modifier = Modifier.padding(horizontal = 12.dp),
+                    modifier = Modifier
+                        .padding(horizontal = 12.dp)
+                        .clickable(onClick = onAddLoanClick),
                 )
+                Spacer(modifier = Modifier.height(12.dp))
+                Button(
+                    onClick = onSpeakLoanClick,
+                    colors = ButtonDefaults.buttonColors(
+                        containerColor = Color.White,
+                        contentColor = LoanBlueDark,
+                    ),
+                    contentPadding = PaddingValues(horizontal = 16.dp, vertical = 8.dp),
+                ) {
+                    Icon(
+                        painter = painterResource(android.R.drawable.ic_btn_speak_now),
+                        contentDescription = null,
+                        modifier = Modifier.size(20.dp),
+                    )
+                    Spacer(modifier = Modifier.size(8.dp))
+                    Text(
+                        text = stringResource(R.string.speak_loan),
+                        fontWeight = FontWeight.SemiBold,
+                    )
+                }
             }
         } else {
             Column(modifier = Modifier.fillMaxSize()) {

@@ -13,6 +13,8 @@ import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.LocalTextStyle
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.RadioButton
@@ -30,7 +32,9 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.focus.onFocusChanged
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalConfiguration
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
@@ -39,6 +43,7 @@ import com.example.loancalcandroid.R
 import com.example.loancalcandroid.review.RequestRuStoreReviewEffect
 import com.example.loancalcandroid.ui.common.DatePickerField
 import com.example.loancalcandroid.ui.common.LoanCalcScaffold
+import com.example.loancalcandroid.ui.common.rememberSpeechRecognitionLauncher
 import com.example.loancalcandroid.ui.common.LoanDecimalOutlinedTextField
 import com.example.loancalcandroid.ui.common.LoanNumberOutlinedTextField
 import com.example.loancalcandroid.ui.common.LoanOutlinedTextField
@@ -97,6 +102,27 @@ fun LoanEditorScreen(
         uiState.savedLoanId?.let { onSaved(it) }
     }
 
+    var speechDialogText by remember { mutableStateOf<String?>(null) }
+    val speechPrompt = stringResource(R.string.speech_recognition_prompt)
+    val speechUnavailable = stringResource(R.string.speech_recognition_unavailable)
+    val startSpeechRecognition = rememberSpeechRecognitionLauncher(
+        prompt = speechPrompt,
+        onResult = viewModel::applySpokenPhrase,
+        onUnavailable = { speechDialogText = speechUnavailable },
+    )
+
+    speechDialogText?.let { text ->
+        AlertDialog(
+            onDismissRequest = { speechDialogText = null },
+            text = { Text(text) },
+            confirmButton = {
+                TextButton(onClick = { speechDialogText = null }) {
+                    Text(stringResource(R.string.ok))
+                }
+            },
+        )
+    }
+
     val title = if (uiState.isEditMode) {
         stringResource(R.string.action_edit_loan)
     } else {
@@ -107,14 +133,28 @@ fun LoanEditorScreen(
         title = title,
         onBack = onBack,
         actions = {
-            TextButton(
+            val actionsEnabled = !uiState.isSaving && !uiState.isLoading
+            IconButton(
+                onClick = startSpeechRecognition,
+                enabled = actionsEnabled,
+            ) {
+                Icon(
+                    painter = painterResource(android.R.drawable.ic_btn_speak_now),
+                    contentDescription = stringResource(R.string.voice_input),
+                )
+            }
+            IconButton(
                 onClick = viewModel::save,
-                enabled = !uiState.isSaving && !uiState.isLoading,
+                enabled = actionsEnabled,
             ) {
                 if (uiState.isSaving) {
                     CircularProgressIndicator(modifier = Modifier.size(18.dp))
                 } else {
-                    Text(stringResource(R.string.save))
+                    Icon(
+                        painter = painterResource(R.drawable.ic_save),
+                        contentDescription = stringResource(R.string.save),
+                        tint = Color.Unspecified,
+                    )
                 }
             }
         },

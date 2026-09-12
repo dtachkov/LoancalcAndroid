@@ -3,10 +3,14 @@ package com.example.loancalcandroid.ui.home
 import android.app.Application
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.viewModelScope
+import com.example.loancalcandroid.R
+import com.example.loancalcandroid.analytics.AnalyticsHelper
 import com.example.loancalcandroid.ui.home.mapper.LoanPresentationMapper
 import com.example.loancalcandroid.ui.home.model.AllLoansSummaryUiModel
 import com.example.loancalcandroid.ui.home.model.LoanCardUiModel
 import com.example.loancalcandroid.ui.home.model.LoanDetailsUiModel
+import com.example.loancalcandroid.util.Formatters
+import com.example.loancalcandroid.util.SpokenLoanParser
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -19,6 +23,9 @@ import ru.kredit.calculator.data.LoanCalcData
 import ru.kredit.calculator.data.calculation.CalculationErrors
 import ru.kredit.calculator.data.calculation.LoanCalculationResult
 import ru.kredit.calculator.data.model.Loan
+import ru.kredit.calculator.data.model.LoanType
+import java.util.Calendar
+import java.util.Date
 
 data class HomeUiState(
     val loanCards: List<LoanCardUiModel> = emptyList(),
@@ -28,6 +35,7 @@ data class HomeUiState(
     val loanDetails: LoanDetailsUiModel? = null,
     val isLoading: Boolean = true,
     val loansRaw: List<Loan> = emptyList(),
+    val spokenLoanError: String? = null,
 )
 
 class HomeViewModel(
@@ -125,6 +133,53 @@ class HomeViewModel(
             val saved = loanRepository.saveLoan(duplicate)
             selectLoan(saved.id)
         }
+    }
+
+    fun createLoanFromSpokenPhrase(phrase: String) {
+        val parsed = SpokenLoanParser.parse(phrase)
+        val amount = parsed.amount?.let(Formatters::parseMoney) ?: 0f
+        val rate = parsed.rate?.let(Formatters::parsePercent) ?: 0f
+        val term = parsed.termMonths?.let(Formatters::parseInt) ?: 0
+        if (amount <= 0f || rate <= 0f || term <= 0) {
+            AnalyticsHelper.logEvent("ERROR_SPEECH_LOAN", phrase)
+            _uiState.update {
+                it.copy(
+                    spokenLoanError = getApplication<Application>().getString(
+                        R.string.speech_loan_parse_error,
+                        phrase,
+                    ),
+                )
+            }
+            return
+        }
+
+        viewModelScope.launch {
+            try {
+                val loan = Loan(
+                    title = phrase,
+                    amount = amount,
+                    rate = rate,
+                    term = term,
+                    type = LoanType.ANNUITY,
+                    firstPaymentDate = Date().clearTime(),
+                )
+                val monthlyPayment = withContext(Dispatchers.Default) {
+                    loanCalculator.calculate(loan, emptyList()).currentPayment.toFloat()
+                }
+                val saved = loanRepository.saveLoan(loan.copy(monthlyPayment = monthlyPayment))
+                AnalyticsHelper.logCalculation(loan.amount, "HomeViewModel")
+                selectLoan(saved.id)
+            } catch (e: Exception) {
+                AnalyticsHelper.logEvent("ERROR_SPEECH_LOAN", phrase)
+                _uiState.update {
+                    it.copy(spokenLoanError = CalculationErrors.format(e))
+                }
+            }
+        }
+    }
+
+    fun consumeSpokenLoanError() {
+        _uiState.update { it.copy(spokenLoanError = null) }
     }
 
     fun deleteSelectedLoan() {
@@ -233,5 +288,15 @@ class HomeViewModel(
     private fun pagerIndexToLoanId(page: Int, loans: List<Loan>): Long? {
         if (page <= 0) return null
         return loans.getOrNull(page - 1)?.id
+    }
+
+    private fun Date.clearTime(): Date {
+        val calendar = Calendar.getInstance()
+        calendar.time = this
+        calendar.set(Calendar.HOUR_OF_DAY, 0)
+        calendar.set(Calendar.MINUTE, 0)
+        calendar.set(Calendar.SECOND, 0)
+        calendar.set(Calendar.MILLISECOND, 0)
+        return calendar.time
     }
 }

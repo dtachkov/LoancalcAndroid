@@ -11,6 +11,12 @@
 
     <uses-permission android:name="com.android.vending.BILLING" />
 
+    <queries>
+        <intent>
+            <action android:name="android.speech.action.RECOGNIZE_SPEECH" />
+        </intent>
+    </queries>
+
     <application
         android:name=".LoanCalcApplication"
         android:allowBackup="true"

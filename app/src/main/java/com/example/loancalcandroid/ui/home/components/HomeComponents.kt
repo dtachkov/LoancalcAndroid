@@ -34,6 +34,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.loancalcandroid.R
@@ -94,12 +95,13 @@ fun LoanGradientCard(
     modifier: Modifier = Modifier,
     gradientStart: Color = LoanBlueStart,
     gradientEnd: Color = LoanBlueEnd,
+    height: Dp = 168.dp,
     content: @Composable () -> Unit,
 ) {
     Box(
         modifier = modifier
             .fillMaxWidth()
-            .height(168.dp)
+            .height(height)
             .clip(RoundedCornerShape(20.dp))
             .background(
                 brush = Brush.linearGradient(

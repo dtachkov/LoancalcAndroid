@@ -23,6 +23,7 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.example.loancalcandroid.R
 import com.example.loancalcandroid.ui.analytics.AllLoansAnalyticsSection
+import com.example.loancalcandroid.ui.common.rememberSpeechRecognitionLauncher
 import com.example.loancalcandroid.ui.home.components.AllLoansMenuSection
 import com.example.loancalcandroid.ui.home.components.AllLoansPaymentsSection
 import com.example.loancalcandroid.ui.home.components.DebtProgressSection
@@ -57,6 +58,14 @@ fun HomeScreen(
 ) {
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
     var showDeleteDialog by remember { mutableStateOf(false) }
+    var speechUnavailableText by remember { mutableStateOf<String?>(null) }
+    val speechPrompt = stringResource(R.string.speech_recognition_prompt)
+    val speechUnavailable = stringResource(R.string.speech_recognition_unavailable)
+    val startSpeechRecognition = rememberSpeechRecognitionLauncher(
+        prompt = speechPrompt,
+        onResult = viewModel::createLoanFromSpokenPhrase,
+        onUnavailable = { speechUnavailableText = speechUnavailable },
+    )
     val selectedLoanId = uiState.selectedLoanId
     val details = uiState.loanDetails
     val globalFeatureLoanId = viewModel.globalFeatureLoanId()
@@ -86,6 +95,27 @@ fun HomeScreen(
         )
     }
 
+    val speechError = speechUnavailableText ?: uiState.spokenLoanError
+    if (speechError != null) {
+        AlertDialog(
+            onDismissRequest = {
+                speechUnavailableText = null
+                viewModel.consumeSpokenLoanError()
+            },
+            text = { Text(speechError) },
+            confirmButton = {
+                TextButton(
+                    onClick = {
+                        speechUnavailableText = null
+                        viewModel.consumeSpokenLoanError()
+                    },
+                ) {
+                    Text(stringResource(R.string.ok))
+                }
+            },
+        )
+    }
+
     Scaffold(
         modifier = Modifier.fillMaxSize(),
         topBar = {
@@ -109,6 +139,7 @@ fun HomeScreen(
                     onPageChanged = viewModel::onPagerPageChanged,
                     onLoanCardClick = onEditLoanClick,
                     onAddLoanClick = onAddLoanClick,
+                    onSpeakLoanClick = startSpeechRecognition,
                 )
                 Spacer(modifier = Modifier.height(20.dp))
             }
