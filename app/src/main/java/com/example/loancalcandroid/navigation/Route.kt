@@ -20,6 +20,7 @@ object Route {
     const val TAX = "loans/{loanId}/tax"
     const val COMPARE = "loans/{loanId}/compare"
     const val SUM_BY_PAYMENT = "sum-by-payment"
+    const val RATE_BY_PAYMENT = "rate-by-payment"
     const val OFFERS = "offers"
     const val OFFER_DETAIL = "offers/{offerId}"
     const val PURCHASE = "purchase/{featureTitle}"

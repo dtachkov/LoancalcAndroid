@@ -14,6 +14,8 @@
     <string name="menu_all_loans_analytics_hint">Диаграммы и графики по всем кредитам</string>
     <string name="menu_all_loans_sum_by_payment">Сумма по платежу</string>
     <string name="menu_all_loans_sum_by_payment_hint">Сколько можно взять в кредит при таком платеже</string>
+    <string name="menu_all_loans_rate_by_payment">Ставка по сумме платежа</string>
+    <string name="menu_all_loans_rate_by_payment_hint">Какая была ставка если знаем платеж срок и сумму кредита</string>
     <string name="sum_by_payment">Сумма по платежу</string>
     <string name="sum_by_payment_monthly">Я могу платить в месяц</string>
     <string name="sum_by_payment_rate_from">Ставка от, %</string>
@@ -33,6 +35,10 @@
     <string name="sum_by_payment_error_rate_zero">Начальная и конечная ставка не должны равняться 0</string>
     <string name="sum_by_payment_error_term">Начальный срок должен быть меньше либо равен конечному сроку</string>
     <string name="sum_by_payment_error_term_zero">Начальный и конечный срок не должны равняться нулю</string>
+    <string name="rate_by_payment">Ставка по сумме платежа</string>
+    <string name="rate_by_payment_amount">Сумма платежа</string>
+    <string name="rate_by_payment_result">Ставка</string>
+    <string name="rate_by_payment_error_total">Общая сумма платежей (срок × платёж) должна быть больше суммы кредита</string>
     <string name="loan_amount">Сумма</string>
     <string name="loan_rate">Ставка</string>
     <string name="loan_issue_date">Дата выдачи</string>

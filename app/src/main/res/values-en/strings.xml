@@ -14,6 +14,8 @@
     <string name="menu_all_loans_analytics_hint">Charts and diagrams for all loans</string>
     <string name="menu_all_loans_sum_by_payment">Sum by payment</string>
     <string name="menu_all_loans_sum_by_payment_hint">Payment by sum</string>
+    <string name="menu_all_loans_rate_by_payment">Rate by payment amount</string>
+    <string name="menu_all_loans_rate_by_payment_hint">What was the rate if we know the payment, term, and loan amount</string>
     <string name="sum_by_payment">Sum by payment</string>
     <string name="sum_by_payment_monthly">I can pay in month</string>
     <string name="sum_by_payment_rate_from">Rate from, %</string>
@@ -33,6 +35,10 @@
     <string name="sum_by_payment_error_rate_zero">Rate value can\\\'t be equal zero!</string>
     <string name="sum_by_payment_error_term">Start term must be less or equal end term</string>
     <string name="sum_by_payment_error_term_zero">Term can\\\'t be 0</string>
+    <string name="rate_by_payment">Rate by payment amount</string>
+    <string name="rate_by_payment_amount">Payment amount</string>
+    <string name="rate_by_payment_result">Rate</string>
+    <string name="rate_by_payment_error_total">The total of payments (term × payment) must be greater than the loan amount</string>
     <string name="loan_amount">Loan Amount:</string>
     <string name="loan_rate">Rate per Year (%):</string>
     <string name="loan_issue_date">Date of issue</string>

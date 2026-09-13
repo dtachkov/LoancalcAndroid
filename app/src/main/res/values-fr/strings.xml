@@ -12,6 +12,8 @@
     <string name="menu_all_loans_compare_hint">Savings from early repayment are valid on the date of the last payment on the loan</string>
     <string name="menu_all_loans_sum_by_payment">Sum by payment</string>
     <string name="menu_all_loans_sum_by_payment_hint">Payment by sum</string>
+    <string name="menu_all_loans_rate_by_payment">Rate by payment amount</string>
+    <string name="menu_all_loans_rate_by_payment_hint">What was the rate if we know the payment, term, and loan amount</string>
     <string name="sum_by_payment">Sum by payment</string>
     <string name="sum_by_payment_monthly">I can pay in month</string>
     <string name="sum_by_payment_rate_from">Rate from, %</string>
@@ -31,6 +33,10 @@
     <string name="sum_by_payment_error_rate_zero">Rate value can\\\'t be equal zero!</string>
     <string name="sum_by_payment_error_term">Start term must be less or equal end term</string>
     <string name="sum_by_payment_error_term_zero">Term can\\\'t be 0</string>
+    <string name="rate_by_payment">Rate by payment amount</string>
+    <string name="rate_by_payment_amount">Payment amount</string>
+    <string name="rate_by_payment_result">Rate</string>
+    <string name="rate_by_payment_error_total">The total of payments (term × payment) must be greater than the loan amount</string>
     <string name="loan_amount">Montant du prêt</string>
     <string name="loan_rate">Taux par an</string>
     <string name="loan_issue_date">Date d`émission</string>

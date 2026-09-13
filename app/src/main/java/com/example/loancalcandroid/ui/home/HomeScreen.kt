@@ -58,6 +58,7 @@ fun HomeScreen(
     onTaxClick: (Long) -> Unit,
     onCompareClick: (Long) -> Unit,
     onSumByPaymentClick: () -> Unit,
+    onRateByPaymentClick: () -> Unit,
 ) {
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
     var showDeleteDialog by remember { mutableStateOf(false) }
@@ -164,6 +165,7 @@ fun HomeScreen(
                             globalFeatureLoanId?.let(onCompareClick)
                         },
                         onSumByPaymentClick = onSumByPaymentClick,
+                        onRateByPaymentClick = onRateByPaymentClick,
                     )
                     Spacer(modifier = Modifier.height(16.dp))
                 }

@@ -621,6 +621,7 @@ private fun StatRow(
 fun AllLoansMenuSection(
     onCompareClick: () -> Unit,
     onSumByPaymentClick: () -> Unit,
+    onRateByPaymentClick: () -> Unit,
     showCompare: Boolean = true,
     modifier: Modifier = Modifier,
 ) {
@@ -641,6 +642,11 @@ fun AllLoansMenuSection(
                 title = stringResource(R.string.menu_all_loans_sum_by_payment),
                 subtitle = stringResource(R.string.menu_all_loans_sum_by_payment_hint),
                 onClick = onSumByPaymentClick,
+            )
+            MenuNavigationRow(
+                title = stringResource(R.string.menu_all_loans_rate_by_payment),
+                subtitle = stringResource(R.string.menu_all_loans_rate_by_payment_hint),
+                onClick = onRateByPaymentClick,
                 showDivider = false,
             )
         }

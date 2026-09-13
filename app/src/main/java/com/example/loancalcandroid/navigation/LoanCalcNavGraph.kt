@@ -47,6 +47,7 @@ import com.example.loancalcandroid.ui.offers.OffersScreen
 import com.example.loancalcandroid.ui.requisites.RequisitesScreen
 import com.example.loancalcandroid.ui.schedule.SchedulePaymentDetailScreen
 import com.example.loancalcandroid.ui.schedule.ScheduleScreen
+import com.example.loancalcandroid.ui.ratebypayment.RateByPaymentScreen
 import com.example.loancalcandroid.ui.sumbypayment.SumByPaymentScreen
 import com.example.loancalcandroid.ui.tax.TaxScreen
 import ru.kredit.calculator.data.model.ExtraType
@@ -115,11 +116,16 @@ fun LoanCalcNavGraph(
                 onTaxClick = { loanId -> navController.navigate(Route.tax(loanId)) },
                 onCompareClick = { loanId -> navController.navigate(Route.compare(loanId)) },
                 onSumByPaymentClick = { navController.navigate(Route.SUM_BY_PAYMENT) },
+                onRateByPaymentClick = { navController.navigate(Route.RATE_BY_PAYMENT) },
             )
         }
 
         composable(Route.SUM_BY_PAYMENT) {
             SumByPaymentScreen(onBack = { navController.popBackStack() })
+        }
+
+        composable(Route.RATE_BY_PAYMENT) {
+            RateByPaymentScreen(onBack = { navController.popBackStack() })
         }
 
         composable(Route.SETTINGS) {
