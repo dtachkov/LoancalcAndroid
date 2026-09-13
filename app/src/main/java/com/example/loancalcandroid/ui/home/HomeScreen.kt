@@ -54,6 +54,7 @@ fun HomeScreen(
     onExtrasClick: (Long) -> Unit,
     onForecastClick: (Long) -> Unit,
     onBestDateClick: (Long) -> Unit,
+    onFullRepaymentClick: (Long) -> Unit,
     onTaxClick: (Long) -> Unit,
     onCompareClick: (Long) -> Unit,
     onSumByPaymentClick: () -> Unit,
@@ -234,6 +235,7 @@ fun HomeScreen(
                         onExtrasClick = { onExtrasClick(selectedLoanId) },
                         onForecastClick = { onForecastClick(selectedLoanId) },
                         onBestDateClick = { onBestDateClick(selectedLoanId) },
+                        onFullRepaymentClick = { onFullRepaymentClick(selectedLoanId) },
                         onTaxClick = { onTaxClick(selectedLoanId) },
                     )
                     Spacer(modifier = Modifier.height(16.dp))

@@ -56,9 +56,8 @@ object ScheduleRowsGenerator {
             val isNewYear = year != prevYear
             prevYear = year
 
-            val hasRateChange = payment.rateExtra > 0.001
-            val hasExtraAmount = payment.extras > 0.001
-            val hasExtras = hasExtraAmount || hasRateChange
+            val hasRateChange = payment.rateExtra > PaymentSummary.EXTRA_EPS
+            val hasExtras = payment.hasExtras
 
             val type: ScheduleRowType
             val displayNumber: String

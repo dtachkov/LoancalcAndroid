@@ -58,7 +58,7 @@ inline fun <reified VM : ViewModel> extraFormViewModel(
     val application = LocalContext.current.applicationContext as Application
     return viewModel(
         viewModelStoreOwner = viewModelStoreOwner,
-        key = "${loanId}-${extraId ?: "new"}-${category.name}-${prefill.dateMillis}",
+        key = "${loanId}-${extraId ?: "new"}-${category.name}-${prefill.dateMillis}-${prefill.amount}",
         factory = object : ViewModelProvider.Factory {
             @Suppress("UNCHECKED_CAST")
             override fun <T : ViewModel> create(modelClass: Class<T>, extras: CreationExtras): T {

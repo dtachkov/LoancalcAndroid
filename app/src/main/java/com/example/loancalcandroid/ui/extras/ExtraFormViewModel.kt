@@ -185,7 +185,7 @@ class ExtraFormViewModel(
             extras = extrasForCalculation,
             extraDate = state.date,
         )
-        val extraAmount = com.example.loancalcandroid.util.Formatters.parseMoney(state.amount).toDouble()
+        val extraAmount = com.example.loancalcandroid.util.Formatters.parseMoneyDouble(state.amount)
         val netExtra = extraAmount - interest
         _uiState.update {
             it.copy(

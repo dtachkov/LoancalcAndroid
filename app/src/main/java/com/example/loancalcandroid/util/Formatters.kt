@@ -68,13 +68,15 @@ object Formatters {
         return inputDateFormat.format(date)
     }
 
-    fun parseMoney(text: String): Float {
+    fun parseMoney(text: String): Float = parseMoneyDouble(text).toFloat()
+
+    fun parseMoneyDouble(text: String): Double {
         val normalized = text
             .replace(" ", "")
             .replace(",", ".")
             .trim()
-        if (normalized.isBlank()) return 0f
-        return normalized.toFloatOrNull() ?: 0f
+        if (normalized.isBlank()) return 0.0
+        return normalized.toDoubleOrNull() ?: 0.0
     }
 
     fun parsePercent(text: String): Float = parseMoney(text)

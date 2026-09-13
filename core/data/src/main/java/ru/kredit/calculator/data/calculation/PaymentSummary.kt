@@ -14,7 +14,12 @@ data class PaymentSummary(
     val rateExtra: Double,
     val isCurrent: Boolean,
 ) {
+    val hasExtras: Boolean
+        get() = extras > EXTRA_EPS || rateExtra > EXTRA_EPS
+
     companion object {
+        const val EXTRA_EPS = 0.001
+
         fun from(payment: Payment, currentIndex: Int): PaymentSummary {
             return PaymentSummary(
                 index = payment.index,

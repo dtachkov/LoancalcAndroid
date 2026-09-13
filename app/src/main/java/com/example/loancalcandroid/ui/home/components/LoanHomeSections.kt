@@ -653,6 +653,7 @@ fun NavigationMenuSection(
     onExtrasClick: () -> Unit,
     onForecastClick: () -> Unit,
     onBestDateClick: () -> Unit,
+    onFullRepaymentClick: () -> Unit,
     onTaxClick: () -> Unit,
 ) {
     Surface(
@@ -687,6 +688,11 @@ fun NavigationMenuSection(
                 title = stringResource(R.string.menu_best_date),
                 subtitle = stringResource(R.string.menu_best_date_hint),
                 onClick = onBestDateClick,
+            )
+            MenuNavigationRow(
+                title = stringResource(R.string.menu_full_repayment),
+                subtitle = stringResource(R.string.menu_full_repayment_hint),
+                onClick = onFullRepaymentClick,
             )
             MenuNavigationRow(
                 title = stringResource(R.string.menu_tax),

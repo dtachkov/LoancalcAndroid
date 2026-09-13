@@ -27,6 +27,7 @@ import com.example.loancalcandroid.ui.extras.ExtraFormPrefill
 import com.example.loancalcandroid.ui.extras.ExtraFormScreen
 import com.example.loancalcandroid.ui.extras.ExtrasTabsScreen
 import com.example.loancalcandroid.ui.forecast.ForecastScreen
+import com.example.loancalcandroid.ui.fullrepayment.FullRepaymentScreen
 import com.example.loancalcandroid.ui.help.ExtraTypesHelpScreen
 import com.example.loancalcandroid.ui.help.ScheduleHelpScreen
 import com.example.loancalcandroid.ui.help.WebViewScreen
@@ -37,6 +38,7 @@ import com.example.loancalcandroid.ui.loan.LoanEditorScreen
 import com.example.loancalcandroid.LoanCalcApplication
 import com.example.loancalcandroid.billing.LoanLicensePolicy
 import com.example.loancalcandroid.billing.navigateToAddLoanIfAllowed
+import com.example.loancalcandroid.billing.navigateToExtraFormIfLicensed
 import com.example.loancalcandroid.billing.navigateToPurchase
 import com.example.loancalcandroid.billing.navigateWithLicenseCheck
 import com.example.loancalcandroid.ui.offers.OfferDetailScreen
@@ -109,6 +111,7 @@ fun LoanCalcNavGraph(
                 onExtrasClick = { loanId -> navController.navigate(Route.extrasList(loanId)) },
                 onForecastClick = { loanId -> navController.navigate(Route.forecast(loanId)) },
                 onBestDateClick = { loanId -> navController.navigate(Route.bestDate(loanId)) },
+                onFullRepaymentClick = { loanId -> navController.navigate(Route.fullRepayment(loanId)) },
                 onTaxClick = { loanId -> navController.navigate(Route.tax(loanId)) },
                 onCompareClick = { loanId -> navController.navigate(Route.compare(loanId)) },
                 onSumByPaymentClick = { navController.navigate(Route.SUM_BY_PAYMENT) },
@@ -312,14 +315,25 @@ fun LoanCalcNavGraph(
                 ?: ExtraCategory.EARLY.name
             val category = runCatching { ExtraCategory.valueOf(categoryName) }
                 .getOrDefault(ExtraCategory.EARLY)
-            val prefillHandle = navController.previousBackStackEntry?.savedStateHandle
-            val prefillAmount = prefillHandle?.get<String>(Route.ARG_PREFILL_AMOUNT).orEmpty()
-            val prefillDateMillis = prefillHandle?.get<Long>(Route.ARG_PREFILL_DATE_MILLIS) ?: 0L
-            val prefillExtraTypeName = prefillHandle?.get<String>(Route.ARG_PREFILL_EXTRA_TYPE).orEmpty()
+            val destHandle = backStackEntry.savedStateHandle
+            val previousHandle = navController.previousBackStackEntry?.savedStateHandle
+            if (previousHandle?.contains(Route.ARG_PREFILL_DATE_MILLIS) == true ||
+                previousHandle?.contains(Route.ARG_PREFILL_AMOUNT) == true
+            ) {
+                destHandle[Route.ARG_PREFILL_AMOUNT] =
+                    previousHandle.get<String>(Route.ARG_PREFILL_AMOUNT).orEmpty()
+                destHandle[Route.ARG_PREFILL_DATE_MILLIS] =
+                    previousHandle.get<Long>(Route.ARG_PREFILL_DATE_MILLIS) ?: 0L
+                destHandle[Route.ARG_PREFILL_EXTRA_TYPE] =
+                    previousHandle.get<String>(Route.ARG_PREFILL_EXTRA_TYPE).orEmpty()
+                previousHandle.remove<String>(Route.ARG_PREFILL_AMOUNT)
+                previousHandle.remove<Long>(Route.ARG_PREFILL_DATE_MILLIS)
+                previousHandle.remove<String>(Route.ARG_PREFILL_EXTRA_TYPE)
+            }
+            val prefillAmount = destHandle.get<String>(Route.ARG_PREFILL_AMOUNT).orEmpty()
+            val prefillDateMillis = destHandle.get<Long>(Route.ARG_PREFILL_DATE_MILLIS) ?: 0L
+            val prefillExtraTypeName = destHandle.get<String>(Route.ARG_PREFILL_EXTRA_TYPE).orEmpty()
             val prefillExtraType = runCatching { ExtraType.valueOf(prefillExtraTypeName) }.getOrNull()
-            prefillHandle?.remove<String>(Route.ARG_PREFILL_AMOUNT)
-            prefillHandle?.remove<Long>(Route.ARG_PREFILL_DATE_MILLIS)
-            prefillHandle?.remove<String>(Route.ARG_PREFILL_EXTRA_TYPE)
             ExtraFormScreen(
                 loanId = loanId,
                 extraId = null,
@@ -402,17 +416,30 @@ fun LoanCalcNavGraph(
                     navController.navigateToPurchase(R.string.feature_best_date)
                 },
                 onAddExtra = { amount, dateMillis, extraType ->
-                    navController.currentBackStackEntry?.savedStateHandle?.apply {
-                        set(Route.ARG_PREFILL_AMOUNT, amount)
-                        set(Route.ARG_PREFILL_DATE_MILLIS, dateMillis)
-                        set(Route.ARG_PREFILL_EXTRA_TYPE, extraType)
-                    }
-                    navController.navigateWithLicenseCheck(
-                        featureTitleRes = R.string.feature_extra_payments,
-                        destinationRoute = Route.extraForm(
-                            loanId = loanId,
-                            category = ExtraCategory.EARLY,
-                        ),
+                    navController.navigateToExtraFormIfLicensed(
+                        loanId = loanId,
+                        prefillAmount = amount,
+                        prefillDateMillis = dateMillis,
+                        prefillExtraType = extraType,
+                    )
+                },
+            )
+        }
+
+        composable(
+            route = Route.FULL_REPAYMENT,
+            arguments = listOf(navArgument(Route.ARG_LOAN_ID) { type = NavType.LongType }),
+        ) { backStackEntry ->
+            val loanId = backStackEntry.arguments?.getLong(Route.ARG_LOAN_ID) ?: return@composable
+            FullRepaymentScreen(
+                loanId = loanId,
+                onBack = { navController.popBackStack() },
+                onAddExtra = { amount, dateMillis, extraType ->
+                    navController.navigateToExtraFormIfLicensed(
+                        loanId = loanId,
+                        prefillAmount = amount,
+                        prefillDateMillis = dateMillis,
+                        prefillExtraType = extraType,
                     )
                 },
             )
