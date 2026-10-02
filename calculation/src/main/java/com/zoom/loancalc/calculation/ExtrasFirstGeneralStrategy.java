@@ -129,7 +129,7 @@ public class ExtrasFirstGeneralStrategy extends GeneralCalculationStrategy {
             // Если была изменена дата, пропускаем создание планового платежа на старую дату
             if (mIsDateChangedInPeriod) {
                 mIsDateChangedInPeriod = false;
-                state.startDate = state.endDate;
+                // state.startDate = state.endDate;
                 if (state.balance <= 0) {
                     break;
                 }
@@ -407,6 +407,7 @@ public class ExtrasFirstGeneralStrategy extends GeneralCalculationStrategy {
                 case Extra.TERM: {
                     double newTerm = calculationStrategy.termFromState(state);
                     state.term = (int) (newTerm + 0.5);
+
                     this.is_term_changed = true;
                     mIndexSinceLastTermRecalculation = 1;
                     break;

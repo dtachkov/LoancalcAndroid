@@ -18,6 +18,8 @@ public final class AnnuityStrategy extends BaseCalculationStrategy {
     @Override
     public void refreshStateStaticPart(State state) {
 
+
+
        // System.out.println("state old annuity =" + state.annuity);
        //System.out.println("Current Balance =" + state.balance);
         double m = Math.pow(1.0 + state.ratePerMonth,  state.term - state.index);

@@ -111,7 +111,7 @@ public class RaiffeisenBankGeneralStrategy extends GeneralCalculationStrategy {
             // Если была изменена дата, пропускаем создание планового платежа на старую дату
             if (mIsDateChangedInPeriod) {
                 mIsDateChangedInPeriod = false;
-                state.startDate = state.endDate;
+                //state.startDate = state.endDate;
                 if (state.balance <= 0) {
                     break;
                 }
