@@ -24,6 +24,7 @@ public class RaiffeisenBankGeneralStrategy extends GeneralCalculationStrategy {
     protected Double interest_last_pay = 0.0;
     private Date      startLoanDate ;
     Boolean should_add_old_percent;
+    protected boolean mIsDateChangedInPeriod = false;
     public RaiffeisenBankGeneralStrategy(Loan loan, LoanCalendar cal, BaseCalculationStrategy calculationStrategy) {
 
         super(loan, cal, calculationStrategy);
@@ -33,7 +34,7 @@ public class RaiffeisenBankGeneralStrategy extends GeneralCalculationStrategy {
     protected void initState() {
 
         super.initState();
-
+        mIsDateChangedInPeriod = false;
         indexSinceLastTermRecalculation = 0;
     }
 
@@ -105,6 +106,18 @@ public class RaiffeisenBankGeneralStrategy extends GeneralCalculationStrategy {
 
             oldSize = payments.size();
             state.startDate = getPaymentsFromExtrasAndReturnLastExtraDate(state.startDate, state.endDate, payments);
+
+
+            // Если была изменена дата, пропускаем создание планового платежа на старую дату
+            if (mIsDateChangedInPeriod) {
+                mIsDateChangedInPeriod = false;
+                state.startDate = state.endDate;
+                if (state.balance <= 0) {
+                    break;
+                }
+                continue; // Переходим к следующей итерации с новыми правильными датами
+            }
+
             newSize = payments.size();
             //добавили досрочку
             if(oldSize != newSize)
@@ -247,6 +260,7 @@ public class RaiffeisenBankGeneralStrategy extends GeneralCalculationStrategy {
                     extras.remove(extra);
                     //тут же получается что потом она переопределится при новой ветке цикла
                     //state.endDate =  cal.addMonthsToDate(startDate, 1);
+                    mIsDateChangedInPeriod = true;
                     break;
                 }
 

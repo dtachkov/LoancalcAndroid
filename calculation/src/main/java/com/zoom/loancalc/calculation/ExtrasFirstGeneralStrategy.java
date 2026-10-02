@@ -28,6 +28,7 @@ public class ExtrasFirstGeneralStrategy extends GeneralCalculationStrategy {
      * проценты
      */
     protected boolean mNextPaymentInterestOnly;
+    protected boolean mIsDateChangedInPeriod = false;
 
     public ExtrasFirstGeneralStrategy(Loan loan, LoanCalendar cal, BaseCalculationStrategy calculationStrategy) {
 
@@ -38,7 +39,7 @@ public class ExtrasFirstGeneralStrategy extends GeneralCalculationStrategy {
     protected void initState() {
 
         super.initState();
-
+         mIsDateChangedInPeriod = false;
         mIndexSinceLastTermRecalculation = 0;
         mNextPaymentInterestOnly = false;
         mShouldRecalculateAnnuity = true;
@@ -124,6 +125,16 @@ public class ExtrasFirstGeneralStrategy extends GeneralCalculationStrategy {
                 continue;
             }
             state.startDate = getPaymentsFromExtrasAndReturnLastExtraDate(state.startDate, state.endDate, payments);
+
+            // Если была изменена дата, пропускаем создание планового платежа на старую дату
+            if (mIsDateChangedInPeriod) {
+                mIsDateChangedInPeriod = false;
+                state.startDate = state.endDate;
+                if (state.balance <= 0) {
+                    break;
+                }
+                continue; // Переходим к следующей итерации с новыми правильными датами
+            }
 
             if (state.balance <= 0) {
                 break;
@@ -321,6 +332,7 @@ public class ExtrasFirstGeneralStrategy extends GeneralCalculationStrategy {
                      lastExtraDate =  extra.getDate();   //cal.date(cal_local.get(Calendar.YEAR),cal_local.get(Calendar.MONTH), cal_local.get(Calendar.DAY_OF_MONTH));
                      extra_counter ++;
                      extras.remove(extra);
+                     mIsDateChangedInPeriod = true; // ✅ Ставим флаг: дата в этом периоде была изменена
                      //тут же получается что потом она переопределится при новой ветке цикла
                     //пока убрали ибо не считались будущие досрчоки
                    //  state.endDate =  cal.addMonthsToDate(lastExtraDate, 1);
@@ -450,7 +462,9 @@ public class ExtrasFirstGeneralStrategy extends GeneralCalculationStrategy {
         //такого дня может не быть в данном месяце?
 
         Calendar cal_start = Calendar.getInstance();
-        cal_start.setTime(startLoanDate);
+        //здесь поменяли чтоб потом платеж
+        //cal_start.setTime(extra.getDate());
+         cal_start.setTime(startLoanDate);
         cal_start.set(Calendar.DAY_OF_MONTH, cal_local.get(Calendar.DAY_OF_MONTH));
         //а если для февраля и хотим задать 31 - задаем ноую дату
         //временно меняем дату
