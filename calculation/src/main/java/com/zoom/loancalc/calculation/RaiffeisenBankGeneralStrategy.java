@@ -246,7 +246,7 @@ public class RaiffeisenBankGeneralStrategy extends GeneralCalculationStrategy {
                     startDate =  extra.getDate();   //cal.date(cal_local.get(Calendar.YEAR),cal_local.get(Calendar.MONTH), cal_local.get(Calendar.DAY_OF_MONTH));
                     extras.remove(extra);
                     //тут же получается что потом она переопределится при новой ветке цикла
-                    state.endDate =  cal.addMonthsToDate(startDate, 1);
+                    //state.endDate =  cal.addMonthsToDate(startDate, 1);
                     break;
                 }
 

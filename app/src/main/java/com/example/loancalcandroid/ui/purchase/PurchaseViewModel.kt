@@ -5,6 +5,7 @@ import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.loancalcandroid.LoanCalcApplication
 import com.example.loancalcandroid.R
+import com.example.loancalcandroid.analytics.AnalyticsHelper
 import com.example.loancalcandroid.billing.BillingProducts
 import com.example.loancalcandroid.billing.RuStoreLicenseManager
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -65,6 +66,7 @@ class PurchaseViewModel(
             }
         }
         licenseManager.loadProducts()
+        AnalyticsHelper.logPaywallShown(featureTitle)
     }
 
     fun purchase(
@@ -73,6 +75,7 @@ class PurchaseViewModel(
         onError: (String) -> Unit,
         onCancelled: () -> Unit,
     ) {
+        AnalyticsHelper.logPaywallBuy(productId)
         val activity = getApplication<LoanCalcApplication>().currentActivity ?: return
         _uiState.update { it.copy(purchaseInProgress = productId, message = null) }
         licenseManager.purchase(

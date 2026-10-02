@@ -42,6 +42,14 @@ object AnalyticsHelper {
         logEvent("PRESS_LEAD", offerName.orEmpty())
     }
 
+    fun logPaywallShown(featureTitle: String) {
+        logEvent("SHOW_PAYWALL", featureTitle)
+    }
+
+    fun logPaywallBuy(productId: String) {
+        logEvent("PRESS_BUY", productId)
+    }
+
     fun openOfferLink(context: Context, offerName: String?, link: String) {
         logOfferOpening(offerName)
         val intent = Intent(Intent.ACTION_VIEW, Uri.parse(link))

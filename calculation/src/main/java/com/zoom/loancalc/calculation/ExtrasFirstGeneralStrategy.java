@@ -322,7 +322,8 @@ public class ExtrasFirstGeneralStrategy extends GeneralCalculationStrategy {
                      extra_counter ++;
                      extras.remove(extra);
                      //тут же получается что потом она переопределится при новой ветке цикла
-                     state.endDate =  cal.addMonthsToDate(lastExtraDate, 1);
+                    //пока убрали ибо не считались будущие досрчоки
+                   //  state.endDate =  cal.addMonthsToDate(lastExtraDate, 1);
                     break;
                 }
 
